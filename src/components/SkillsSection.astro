@@ -5,22 +5,108 @@ interface Props {
 }
 
 const { title, skills } = Astro.props;
+
+const techColorMap: Record<string, { bg: string; text: string }> = {
+  HTML: { bg: "#E34F26", text: "text-white" },
+  CSS: { bg: "#1572B6", text: "text-white" },
+  JavaScript: { bg: "#F7DF1E", text: "text-black" },
+  TypeScript: { bg: "#3178C6", text: "text-white" },
+  Angular: { bg: "#DD0031", text: "text-white" },
+  React: { bg: "#61DAFB", text: "text-black" },
+  ".NET": { bg: "#512BD4", text: "text-white" },
+  Java: { bg: "#007396", text: "text-white" },
+  "Node.js": { bg: "#339933", text: "text-white" },
+  MongoDB: { bg: "#47A248", text: "text-white" },
+  "SQL Server": { bg: "#CC2927", text: "text-white" },
+  MySQL: { bg: "#4479A1", text: "text-white" },
+  Firebase: { bg: "#FFCA28", text: "text-black" },
+  Tailwind: { bg: "#06B6D4", text: "text-black" },
+  Bootstrap: { bg: "#7952B3", text: "text-white" },
+  Astro: { bg: "#FF5D01", text: "text-white" },
+  "Next.js": { bg: "#000000", text: "text-white" },
+  "Azure DevOps": { bg: "#0078D4", text: "text-white" },
+  GitHub: { bg: "#181717", text: "text-white" },
+  Git: { bg: "#F05032", text: "text-white" },
+  Docker: { bg: "#2496ED", text: "text-white" },
+  default: {
+    bg: "bg-light-tag-bg dark:bg-dark-tag-bg",
+    text: "text-light-text dark:text-dark-text",
+  },
+};
+
+const hexToRgba = (hex: string, alpha: number = 1): string => {
+  let r = 0,
+    g = 0,
+    b = 0;
+  const hexValue = hex.startsWith("#") ? hex.slice(1) : hex;
+
+  if (hexValue.length === 3) {
+    r = parseInt(hexValue[0] + hexValue[0], 16);
+    g = parseInt(hexValue[1] + hexValue[1], 16);
+    b = parseInt(hexValue[2] + hexValue[2], 16);
+  } else if (hexValue.length === 6) {
+    r = parseInt(hexValue.slice(0, 2), 16);
+    g = parseInt(hexValue.slice(2, 4), 16);
+    b = parseInt(hexValue.slice(4, 6), 16);
+  } else {
+    return `rgba(0,0,0,0)`;
+  }
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const getSkillStyles = (skill: string) => {
+  const normalizedSkillKey = Object.keys(techColorMap).find(
+    (key) => key.toLowerCase() === skill.toLowerCase() && key !== "default"
+  );
+  const styleInfo = normalizedSkillKey
+    ? techColorMap[normalizedSkillKey]
+    : techColorMap["default"];
+
+  const opacityValue = 0.6; // 60% opacity
+  const opacityClassSuffix = "60"; // For Tailwind JIT, e.g., /60
+
+  let bgColorStyle = "";
+  let bgClass = "";
+
+  if (styleInfo.bg.startsWith("#")) {
+    bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
+  } else {
+    const classes = styleInfo.bg.split(" ");
+    bgClass = classes
+      .map((cls) => `${cls}/${opacityClassSuffix}`)
+      .join(" ");
+  }
+
+  return {
+    bgColorStyle: bgColorStyle,
+    bgClass: bgClass,
+    textClass: styleInfo.text,
+  };
+};
 ---
 
 <section class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate">
   <div class="max-w-4xl">
     <header class="scroll-animate-fast">
-      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12">
+      <h2
+        class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 title-animate"
+      >
         {title}
       </h2>
     </header>
 
-    <div class="flex flex-wrap gap-2 stagger-children">
-      {skills.map((skill) => (
-        <span class="px-3 py-1 bg-light-tag-bg dark:bg-dark-tag-bg text-light-text dark:text-dark-text text-sm rounded-full">
-          {skill}
-        </span>
-      ))}
+    <div class="flex flex-wrap gap-3 stagger-children">
+      {skills.map((skill) => {
+        const styles = getSkillStyles(skill);
+        return (
+          <span
+            class={`skill-chip px-3 py-1 text-xs font-medium rounded-md shadow-sm transition-transform duration-200 ease-in-out hover:scale-105 ${styles.textClass} ${styles.bgClass}`}
+            style={styles.bgColorStyle}
+          >
+            {skill}
+          </span>
+        );
+      })}
     </div>
   </div>
 </section>

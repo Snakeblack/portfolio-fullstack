@@ -24,8 +24,3 @@ Todos los comandos se ejecutan desde la raíz del proyecto, desde una terminal:
 - `astro.config.mjs`: Configuración de Astro.
 - `tailwind.config.mjs`: Configuración de Tailwind CSS.
 - `postcss.config.cjs`: Configuración de PostCSS.
-
-## Inspiración
-
-- Diseño inspirado en [khazifire.com](https://khazifire.com/?ref=prettyfolio)
-- Secciones de contenido basadas en [cv.mretamozo.com](https://cv.mretamozo.com)

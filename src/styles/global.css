@@ -1,4 +1,4 @@
-@import "tailwindcss"; /* Imports Tailwind's base, components, and utilities */
+@import "tailwindcss"; /* Imports Tailwind\'s base, components, and utilities */
 
 @theme {
   /* Inspired by khazifire.com style */
@@ -40,17 +40,17 @@
 @layer utilities {
   .scroll-animate {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(50px); /* Increased from 30px */
     transition-property: opacity, transform;
-    transition-duration: 0.6s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.7s; /* Increased from 0.6s */
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1); /* Smoother ease-out */
   }
   .scroll-animate-fast {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px); /* Increased from 20px */
     transition-property: opacity, transform;
-    transition-duration: 0.4s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.5s; /* Increased from 0.4s */
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1); /* Smoother ease-out */
   }
   .scroll-animate.in-view,
   .scroll-animate-fast.in-view {
@@ -62,16 +62,49 @@
   /* Individual children will need transition-delay applied via JS or inline style */
   .stagger-children > * {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px); /* Increased from 20px */
     transition-property: opacity, transform;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-out;
+    transition-duration: 0.6s; /* Increased from 0.5s */
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
 
   .stagger-children.in-view > * {
     opacity: 1;
     transform: translateY(0);
   }
+
+  /* New animation for section titles */
+  .title-animate {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .title-animate.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* New hover effect for project cards */
+  .project-card-hover {
+    transition-property: transform, box-shadow;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+  }
+
+  .project-card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Dark mode specific shadow for project cards on hover */
+  .dark .project-card-hover:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+  }
 }
 
 /* You can add other global styles or custom utilities here if needed */
+
+body {
+  font-family: 'Geist Variable', sans-serif;
+}

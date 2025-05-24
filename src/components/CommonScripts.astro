@@ -85,7 +85,7 @@
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
     // Observe elements with .scroll-animate or .scroll-animate-fast
-    const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children');
+    const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children, .title-animate'); // Added .title-animate
     elementsToAnimate.forEach(el => {
       if (el.classList.contains('stagger-children')) {
         // For stagger-children, observe the parent, but apply delays to children
