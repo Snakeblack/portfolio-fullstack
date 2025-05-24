@@ -1,0 +1,23 @@
+@import "tailwindcss"; /* Imports Tailwind's base, components, and utilities */
+
+@theme {
+  /* Custom theme values defined as CSS custom properties */
+  /* These will be available as Tailwind utilities, e.g., text-brand, bg-brand-light */
+
+  /* Brand Colors */
+  --color-brand-light: #38bdf8;
+  --color-brand: #0ea5e9; /* Replaces theme.colors.brand.DEFAULT */
+  --color-brand-dark: #0284c7;
+
+  /* Dark Mode Semantic Colors */
+  /* These are for direct use or can be mapped in components if needed */
+  --color-dark-bg: #1a202c;
+  --color-dark-card: #2d3748;
+  --color-dark-text: #e2e8f0;
+  --color-dark-subtext: #a0aec0;
+}
+
+/* Your existing custom variant for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* You can add other global styles or custom utilities here if needed */

@@ -1,0 +1,116 @@
+---
+import portfolioData from "../data/portfolio.json";
+import "../styles/global.css"; // Importa los estilos globales de Tailwind
+
+// Define navigation links based on portfolio sections
+const navLinks = [
+  { name: "About", url: "#about-header", id: "about-header" }, 
+  { name: "Experience", url: "#experience", id: "experience" },
+  { name: "Projects", url: "#projects", id: "projects" },
+  { name: "Skills", url: "#skills", id: "skills" },
+  { name: "Education", url: "#education", id: "education" },
+];
+
+const { social, personalInfo, skills: portfolioSkills } = portfolioData; // Correctly access skills
+
+interface Props {
+  title: string;
+  description?: string; // Add optional description prop
+  lang?: string; // Add optional lang prop
+}
+
+const { title, description, lang = "en" } = Astro.props; // Set default lang to "en"
+const typedLang = lang as 'es' | 'en'; // Type assertion for lang
+
+const siteUrl = Astro.site ? Astro.site.toString() : "https://mretamozo.com/";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "name": personalInfo.name,
+      "url": siteUrl,
+      "image": personalInfo.image,
+      "sameAs": [
+        social.linkedin,
+        social.github,
+        social.twitter
+      ],
+      "jobTitle": personalInfo.title[typedLang] || personalInfo.title["en"],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Exis-TI (Indra - DGC)"
+      },
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": "42 Madrid"
+      },
+      "knowsAbout": portfolioSkills // Use corrected portfolioSkills
+    },
+    {
+      "@type": "WebSite",
+      "url": siteUrl,
+      "name": personalInfo.name + " Portfolio",
+      "description": description || `Portfolio and projects of ${personalInfo.name}`,
+      "publisher": {
+        "@type": "Person",
+        "name": personalInfo.name
+      },
+      "inLanguage": typedLang
+    }
+  ]
+};
+---
+
+<!doctype html>
+<html lang={typedLang}> {/* Use dynamic lang attribute */}
+	<head>
+		<meta charset="UTF-8" />
+		{/* Use provided description or a more generic one if not provided */}
+		<meta name="description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+	</head>
+	<body class="bg-white dark:bg-dark-bg text-gray-800 dark:text-dark-text antialiased selection:bg-brand selection:text-white">
+		<main> {/* Wrap slot in main tag */}
+			<slot />
+		</main>
+		<script is:inline>
+      // Script to initialize theme based on localStorage or prefers-color-scheme
+      if (localStorage.getItem('color-theme') === 'dark' || 
+          (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+	</body>
+</html>
+<style is:global>
+	/* :root {
+		--accent: 136, 58, 234;
+		--accent-light: 224, 204, 250;
+		--accent-dark: 49, 10, 101;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			rgb(var(--accent-light)) 30%,
+			white 60%
+		);
+	} */
+	html {
+		font-family: 'Inter', system-ui, sans-serif; /* Use Inter font */
+    scroll-behavior: smooth; /* Para un desplazamiento suave a las secciones */
+		/* background: #13151a; */ /* Removed default dark background, Tailwind will control this */
+		/* background-size: 224px; */
+	}
+	code {
+		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+			Bitstream Vera Sans Mono, Courier New, monospace;
+	}
+</style>

@@ -1,0 +1,52 @@
+---
+interface ExperienceJob {
+  company: string;
+  position: { [key: string]: string };
+  period: string;
+  description: { [key: string]: string };
+}
+
+interface Props {
+  title: string;
+  experience: ExperienceJob[];
+  currentLocale: string;
+}
+
+const { title, experience, currentLocale } = Astro.props;
+---
+
+<section id="work" class="max-w-6xl mx-auto px-6 py-16">
+  <div class="max-w-4xl">
+    <header>
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
+        {title}
+      </h2>
+    </header>
+    
+    <div class="space-y-12">
+      {experience.map((job) => (
+        <article class="relative pl-8 border-l-2 border-gray-200 dark:border-gray-700">
+          <div class="absolute -left-2 top-0 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+          
+          <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-3">
+            <div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                {job.position[currentLocale]}
+              </h3>
+              <p class="text-blue-600 dark:text-blue-400 font-medium">
+                {job.company}
+              </p>
+            </div>
+            <span class="text-sm text-gray-500 dark:text-gray-400 mt-1 md:mt-0">
+              {job.period}
+            </span>
+          </header>
+          
+          <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+            {job.description[currentLocale]}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

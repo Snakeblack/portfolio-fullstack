@@ -1,0 +1,87 @@
+---
+interface ProjectItem {
+  name: string;
+  description: { [key: string]: string };
+  url: string;
+  technologies?: string[];
+  year: string;
+}
+
+interface Props {
+  title: string;
+  projects: ProjectItem[];
+  currentLocale: string;
+  viewAllText: string;
+  maxProjects?: number;
+}
+
+const { title, projects, currentLocale, viewAllText, maxProjects = 3 } = Astro.props;
+---
+
+<section id="projects" class="max-w-6xl mx-auto px-6 py-16">
+  <div class="max-w-4xl">
+    <header class="flex items-center justify-between mb-12"> {/* Wrap h2 and link in header */}
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        {title}
+      </h2>
+      <a 
+        href="#" 
+        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+      >
+        {viewAllText}
+      </a>
+    </header>
+
+    <div class="grid gap-8 md:gap-12">
+      {projects.slice(0, maxProjects).map((project) => (
+        <article class="group"> {/* Change div to article */}
+          <a 
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block"
+          >
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-gray-100 dark:group-hover:bg-gray-700 transition-colors">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-gray-400 dark:text-gray-500">
+                  <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </div>
+            </div>
+            
+            <div>
+              <header class="flex items-center justify-between mb-2"> {/* Wrap project name and year in header */}
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {project.name}
+                </h3>
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                  {project.year}
+                </span>
+              </header>
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {project.description[currentLocale]}
+              </p>
+              
+              {project.technologies && project.technologies.length > 0 && (
+                <div class="flex flex-wrap gap-2 mt-4">
+                  {project.technologies.slice(0, 4).map((tech) => (
+                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm rounded-full">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        </article> /* Change div to article */
+      ))}
+    </div>
+  </div>
+</section>

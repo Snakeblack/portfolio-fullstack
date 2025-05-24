@@ -1,0 +1,141 @@
+{
+  "personalInfo": {
+    "name": "Manuel Michael Retamozo García",
+    "title": {
+      "es": "Desarrollador Full Stack",
+      "en": "Full Stack Developer"
+    },
+    "greeting": {
+      "es": "Hola, soy ",
+      "en": "Hello, I'm "
+    },
+    "description": {
+      "es": "Creo sitios web y aplicaciones web para diferentes industrias, enfocándome en un enfoque de diseño modular para construir interfaces flexibles y escalables.",
+      "en": "I create websites and web applications for different industries, focusing on a modular design approach to build flexible and scalable interfaces."
+    },
+    "about": {
+      "es": "Apasionado por la informática y el desarrollo web, actualmente estoy enfocado en Angular para el frontend. Además, tengo habilidades en React y conocimientos en Next.js, que he aplicado en proyectos personales. Soy competente en HTML, CSS y JavaScript. En el backend, tengo experiencia con .NET, Java y Node.js, especialmente utilizando .NET. Mis conocimientos en bases de datos incluyen SQL Server, MongoDB y MySQL. Siempre estoy comprometido con el aprendizaje continuo y al tanto de las últimas tendencias tecnológicas.",
+      "en": "Passionate about computer science and web development, I'm currently focused on Angular for frontend. Additionally, I have skills in React and knowledge in Next.js, which I've applied in personal projects. I'm proficient in HTML, CSS and JavaScript. On the backend, I have experience with .NET, Java and Node.js, especially using .NET. My database knowledge includes SQL Server, MongoDB and MySQL. I'm always committed to continuous learning and staying up to date with the latest technological trends."
+    },
+    "sleepingMessage": {
+      "es": "😴 Probablemente esté durmiendo ahora, ¡pero responderé tan pronto como pueda!",
+      "en": "😴 I'm probably sleeping right now, but I'll reply as soon as I can!"
+    },
+    "location": "Madrid, España",
+    "email": "mmretamozo@gmail.com",
+    "phone": "+34 666 666 666",
+    "image": "/profile.png"
+  },
+  "social": {
+    "linkedin": "https://www.linkedin.com/in/mmretamozo/",
+    "github": "https://github.com/snakeblack",
+    "twitter": "https://twitter.com/michael_snake"
+  },
+  "experience": [
+    {
+      "company": "Exis-TI (Indra - DGC)",
+      "position": {
+        "es": "Ingeniero de Software",
+        "en": "Software Engineer"
+      },
+      "period": "2024 - Actual",
+      "description": {
+        "es": "En Indra, desarrollo aplicaciones Fullstack para el proyecto de Valoraciones Catastrales del Gobierno de España, utilizando .NET, Angular, y PL/SQL. Aseguro rendimiento, seguridad y colaboro con equipos multidisciplinarios siguiendo metodologías ágiles para modernizar procesos catastrales.",
+        "en": "At Indra, I develop Fullstack applications for the Spanish Government's Cadastral Valuations project, using .NET, Angular, and PL/SQL. I ensure performance, security and collaborate with multidisciplinary teams following agile methodologies to modernize cadastral processes."
+      }
+    },
+    {
+      "company": "CEF.- Centro de Estudios Financieros",
+      "position": {
+        "es": "Desarrollador web",
+        "en": "Web Developer"
+      },
+      "period": "2022 - 2024",
+      "description": {
+        "es": "Desarrollo aplicaciones web desde cero usando Angular y .NET, con un fuerte enfoque en el frontend. Tengo amplia experiencia creando soluciones completas, desde el diseño inicial hasta la implementación y el lanzamiento.",
+        "en": "Develop web applications from scratch using Angular and .NET, with a strong focus on frontend. I have extensive experience creating complete solutions, from initial design to implementation and launch."
+      }
+    },
+    {
+      "company": "CEF.- Centro de Estudios Financieros",
+      "position": {
+        "es": "Técnico de TI",
+        "en": "IT Technician"
+      },
+      "period": "2021 - 2023",
+      "description": {
+        "es": "Experiencia en la instalación y configuración de software y hardware, ofreciendo soporte técnico tanto presencial como remoto a usuarios.",
+        "en": "Experience in software and hardware installation and configuration, providing both on-site and remote technical support to users."
+      }
+    },
+    {
+      "company": "La fábrica de software",
+      "position": {
+        "es": "Programador",
+        "en": "Programmer"
+      },
+      "period": "2019 - 2020",
+      "description": {
+        "es": "Experiencia en el desarrollo de aplicaciones de escritorio utilizando VB.NET y C#, incluyendo la creación de nuevas soluciones y el mantenimiento de las ya existentes.",
+        "en": "Experience in developing desktop applications using VB.NET and C#, including creating new solutions and maintaining existing ones."
+      }
+    }
+  ],
+  "projects": [
+    {
+      "name": "Baterias Express",
+      "description": {
+        "es": "Landing page para una servicio delivery de venta y reparaciones de baterias",
+        "en": "Landing page for a delivery service for battery sales and repairs"
+      },
+      "url": "https://www.bateriascoches24horas.es/",
+      "technologies": ["Astro", "Tailwindcss", "Vercel"],
+      "year": "2024"
+    },
+    {
+      "name": "Recambios las Margaritas",
+      "description": {
+        "es": "Landing page para una tienda de recambios de coches",
+        "en": "Landing page for a car parts store"
+      },
+      "url": "https://recambioslasmargaritas.es/",
+      "technologies": ["Astro", "Tailwindcss", "Vercel"],
+      "year": "2024"
+    },
+    {
+      "name": "Blog",
+      "description": {
+        "es": "Blog de desarrollo web y tecnología",
+        "en": "Web development and technology blog"
+      },
+      "url": "https://blog.mretamozo.com/",
+      "technologies": ["Next.js", "Tailwindcss", "Mdx"],
+      "year": "2023"
+    },
+    {
+      "name": "Prueba Tecnica: Reactive Forms",
+      "description": {
+        "es": "Prueba técnica para una oferta de trabajo, consiste en un formulario reactivo con Angular",
+        "en": "Technical test for a job offer, consists of a reactive form with Angular"
+      },
+      "url": "https://github.com/Snakeblack/prueba-tecnica-alicunde",
+      "technologies": ["Angular", "Clean Code", "Reactive Forms"],
+      "year": "2023"
+    },
+    {
+      "name": "Device Manager",
+      "description": {
+        "es": "Aplicación para gestionar dispositivos electrónicos, inventariado y demás.",
+        "en": "Application to manage electronic devices, inventory and more."
+      },
+      "url": "https://github.com/Snakeblack/device-manager",
+      "technologies": ["Next.js", "Tailwind", "MySql"],
+      "year": "2022"
+    }
+  ],
+  "skills": [
+    "HTML", "CSS", "JavaScript", "TypeScript", "Angular", "React", ".NET", 
+    "Java", "Node.js", "MongoDB", "SQL Server", "MySQL", "Firebase", 
+    "Tailwind", "Bootstrap", "Astro", "Next.js", "Azure DevOps", "GitHub", "Git", "Docker"
+  ]
+}

@@ -1,0 +1,51 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { getTranslations } from '../utils/translations.ts';
+
+interface Props {
+  currentLocale: 'es' | 'en';
+  name: string;
+}
+
+const { currentLocale, name } = Astro.props;
+const t = getTranslations(currentLocale);
+
+const otherLocaleUrl = currentLocale === 'es' ? '/en' : '/';
+const otherLocaleName = currentLocale === 'es' ? 'EN' : 'ES';
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
+  <div class="max-w-6xl mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <a href="#" class="font-medium text-gray-900 dark:text-white">
+        {name}
+      </a>
+      
+      <div class="flex items-center gap-8">
+        <ul class="flex items-center gap-8">
+          <li>
+            <a href="#about" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {t.nav.about}
+            </a>
+          </li>
+          <li>
+            <a href="#work" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {t.nav.work}
+            </a>
+          </li>
+          <li>
+            <a href="#projects" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {t.nav.projects}
+            </a>
+          </li>
+          <li>
+            <a href={otherLocaleUrl} class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {otherLocaleName}
+            </a>
+          </li>
+        </ul>
+        <ThemeToggle />
+      </div>
+    </div>
+  </div>
+</nav>
