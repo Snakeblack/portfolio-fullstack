@@ -1,4 +1,5 @@
----
+--- 
+import "@fontsource-variable/geist/wght.css"; // Import Geist variable font weights
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css"; // Importa los estilos globales de Tailwind
 
@@ -32,13 +33,19 @@ const structuredData = {
       "@type": "Person",
       "name": personalInfo.name,
       "url": siteUrl,
-      "image": personalInfo.image,
+      "image": {
+        "@type": "ImageObject",
+        "url": ogImage,
+        "width": "1200",
+        "height": "1200"
+      },
       "sameAs": [
         social.linkedin,
         social.github,
         social.twitter
       ],
       "jobTitle": personalInfo.title[typedLang] || personalInfo.title["en"],
+      "description": personalInfo.description[typedLang] || personalInfo.description["en"],
       "worksFor": {
         "@type": "Organization",
         "name": "Exis-TI (Indra - DGC)"
@@ -47,53 +54,108 @@ const structuredData = {
         "@type": "EducationalOrganization",
         "name": "42 Madrid"
       },
-      "knowsAbout": portfolioSkills // Use corrected portfolioSkills
+      "knowsAbout": portfolioSkills,
+      "email": personalInfo.email,
+      "nationality": "Spanish",
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Madrid",
+          "addressRegion": "Madrid",
+          "addressCountry": "Spain"
+        }
+      }
     },
     {
       "@type": "WebSite",
       "url": siteUrl,
       "name": personalInfo.name + " Portfolio",
-      "description": description || `Portfolio and projects of ${personalInfo.name}`,
+      "description": description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`,
       "publisher": {
         "@type": "Person",
         "name": personalInfo.name
       },
-      "inLanguage": typedLang
+      "inLanguage": typedLang,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": siteUrl + "?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "url": new URL(Astro.url.pathname, siteUrl).href,
+      "name": title,
+      "description": description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`,
+      "inLanguage": typedLang,
+      "isPartOf": {
+        "@id": siteUrl
+      },
+      "about": {
+        "@id": siteUrl + "#person"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": siteUrl
+          }
+        ]
+      }
     }
   ]
 };
 ---
 
 <!doctype html>
-<html lang={typedLang}> {/* Use dynamic lang attribute */}
+<html lang={typedLang}>
 	<head>
 		<meta charset="UTF-8" />
-		{/* Use provided description or a more generic one if not provided */}
-		<meta name="description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+		<meta name="description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} especializado en ${personalInfo.title[typedLang]} con experiencia en Angular y .NET.`} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="canonical" href={new URL(Astro.url.pathname, siteUrl).href} />
+		
+		{/* Metadatos técnicos adicionales */}
+		<meta name="author" content={personalInfo.name} />
+		<meta name="keywords" content="portfolio, desarrollador web, full stack, frontend, backend, angular, react, .NET, programador, desarrollador" />
+		<meta name="robots" content="index, follow" />
+		<meta name="theme-color" content="#3730a3" />
+		
+		{/* Alternate language versions */}
+		<link rel="alternate" hreflang="es" href={new URL(typedLang === 'en' ? '/' : Astro.url.pathname, siteUrl).href} />
+		<link rel="alternate" hreflang="en" href={new URL(typedLang === 'es' ? '/en/' : Astro.url.pathname, siteUrl).href} />
+		<link rel="alternate" hreflang="x-default" href={new URL('/', siteUrl).href} />
 
     {/* Open Graph Tags */}
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+    <meta property="og:description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:url" content={siteUrl} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, siteUrl).href} />
     <meta property="og:site_name" content={personalInfo.name + " Portfolio"} />
+    <meta property="og:locale" content={typedLang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     {/* Twitter Card Tags */}
     <meta name="twitter:card" content="summary_large_image" />
     {social.twitter && <meta name="twitter:site" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />}
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+    <meta name="twitter:description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:creator" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 	</head>
-	<body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text antialiased selection:bg-light-accent selection:text-white dark:selection:bg-dark-accent dark:selection:text-dark-bg">
+	<body class="font-sans bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text antialiased selection:bg-light-accent selection:text-white dark:selection:bg-dark-accent dark:selection:text-dark-bg">
 		<main> {/* Wrap slot in main tag */}
 			<slot />
 		</main>
@@ -108,16 +170,3 @@ const structuredData = {
     </script>
 	</body>
 </html>
-<style is:global>
-	@import '@fontsource/inter/400.css';
-	@import '@fontsource/inter/500.css';
-	@import '@fontsource/inter/700.css';
-	html {
-		font-family: 'Inter', system-ui, sans-serif; /* Use Inter font */
-    scroll-behavior: smooth; /* Para un desplazamiento suave a las secciones */
-	}
-	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
-	}
-</style>

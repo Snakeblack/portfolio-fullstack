@@ -1,26 +1,26 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Navigation from "../components/Navigation.astro";
-import HeroSection from "../components/HeroSection.astro";
-import SocialLinks from "../components/SocialLinks.astro";
-import AboutSection from "../components/AboutSection.astro";
-import ExperienceSection from "../components/ExperienceSection.astro";
-import ProjectsSection from "../components/ProjectsSection.astro";
-import SkillsSection from "../components/SkillsSection.astro";
-import Footer from "../components/Footer.astro";
-import CommonScripts from "../components/CommonScripts.astro";
-import portfolioData from "../data/portfolio.json";
-import { getTranslations } from "../utils/translations.ts";
+import Layout from "../../layouts/Layout.astro";
+import Navigation from "../../components/Navigation.astro";
+import HeroSection from "../../components/HeroSection.astro";
+import SocialLinks from "../../components/SocialLinks.astro";
+import AboutSection from "../../components/AboutSection.astro";
+import ExperienceSection from "../../components/ExperienceSection.astro";
+import ProjectsSection from "../../components/ProjectsSection.astro";
+import SkillsSection from "../../components/SkillsSection.astro";
+import Footer from "../../components/Footer.astro";
+import CommonScripts from "../../components/CommonScripts.astro";
+import portfolioData from "../../data/portfolio.json";
+import { getTranslations } from "../../utils/translations.ts";
 
-const currentLocale = "es";
+const currentLocale = "en";
 const t = getTranslations(currentLocale);
 
 const { personalInfo, social, experience, projects, skills } = portfolioData;
 ---
 
 <Layout 
-  title={`${personalInfo.name} - ${personalInfo.title.es} | Portfolio Profesional`}
-  description={`Portfolio profesional de ${personalInfo.name}, ${personalInfo.title.es.toLowerCase()} con experiencia en Angular y .NET. Explora mis proyectos y habilidades técnicas.`}
+  title={`${personalInfo.name} - ${personalInfo.title.en} | Professional Portfolio`}
+  description={`Professional portfolio of ${personalInfo.name}, a ${personalInfo.title.en.toLowerCase()} with expertise in Angular and .NET. Explore my projects and technical skills.`}
   lang={currentLocale}
 >
   <!-- Navigation -->
@@ -73,6 +73,7 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
       skills={skills}
     />
   </main>
+
   <!-- Footer -->
   <Footer 
     builtWithText={t.ui.builtWith}

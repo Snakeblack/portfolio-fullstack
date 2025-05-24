@@ -1,4 +1,4 @@
-@import "tailwindcss"; /* Imports Tailwind\'s base, components, and utilities */
+@import "tailwindcss";
 
 @theme {
   /* Inspired by khazifire.com style */
@@ -6,11 +6,11 @@
   /* Light Mode Colors */
   --color-light-bg: oklch(0.98 0.01 240);       /* Very light, slightly cool gray */
   --color-light-text: oklch(0.25 0.02 240);      /* Dark gray for text */
-  --color-light-subtext: oklch(0.45 0.02 240);   /* Medium gray for secondary text */
+  --color-light-subtext: oklch(0.40 0.02 240);   /* Medium-dark gray for secondary text (was 0.45) */
   --color-light-card-bg: oklch(0.95 0.01 240);  /* Light gray for card backgrounds */
   --color-light-border: oklch(0.90 0.01 240);   /* Slightly darker gray for borders */
-  --color-light-accent: oklch(0.6 0.15 260);     /* Vibrant blue for accents */
-  --color-light-accent-hover: oklch(0.55 0.16 260); /* Slightly darker blue for hover */
+  --color-light-accent: oklch(0.45 0.15 260);     /* Darker blue for accents (was 0.6) */
+  --color-light-accent-hover: oklch(0.40 0.16 260); /* Darker blue for hover (was 0.55) */
 
   /* Dark Mode Colors */
   --color-dark-bg: oklch(0.15 0.01 240);        /* Very dark, slightly cool gray */

@@ -2,12 +2,12 @@
 interface Props {
   builtWithText: string;
   andText: string;
-  copyrightText: string;
+  copyrightName: string; // Changed from copyrightText
 }
 
-const { builtWithText, andText, copyrightText: initialCopyrightText } = Astro.props;
+const { builtWithText, andText, copyrightName } = Astro.props; // Changed from copyrightText
 const currentYear = new Date().getFullYear();
-const copyrightText = initialCopyrightText.replace("2025", currentYear.toString());
+const copyrightText = `${copyrightName} © ${currentYear}`; // Construct the full text here
 ---
 
 <footer class="border-t border-gray-200 dark:border-gray-700 py-12 mt-16">
@@ -15,9 +15,9 @@ const copyrightText = initialCopyrightText.replace("2025", currentYear.toString(
     <div class="flex flex-col md:flex-row items-center justify-between">
       <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 md:mb-0">
         {builtWithText} 
-        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="text-blue-600 dark:text-blue-400 hover:underline">Astro</a> 
+        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Astro</a> 
         {andText} 
-        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" aria-label="Tailwind CSS website" class="text-blue-600 dark:text-blue-400 hover:underline">Tailwind CSS</a>.
+        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" aria-label="Tailwind CSS website" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Tailwind CSS</a>.
       </p>
       
       <div class="flex items-center gap-4">
