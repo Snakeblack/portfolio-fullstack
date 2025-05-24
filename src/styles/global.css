@@ -1,23 +1,77 @@
 @import "tailwindcss"; /* Imports Tailwind's base, components, and utilities */
 
 @theme {
-  /* Custom theme values defined as CSS custom properties */
-  /* These will be available as Tailwind utilities, e.g., text-brand, bg-brand-light */
+  /* Inspired by khazifire.com style */
 
-  /* Brand Colors */
-  --color-brand-light: #38bdf8;
-  --color-brand: #0ea5e9; /* Replaces theme.colors.brand.DEFAULT */
-  --color-brand-dark: #0284c7;
+  /* Light Mode Colors */
+  --color-light-bg: oklch(0.98 0.01 240);       /* Very light, slightly cool gray */
+  --color-light-text: oklch(0.25 0.02 240);      /* Dark gray for text */
+  --color-light-subtext: oklch(0.45 0.02 240);   /* Medium gray for secondary text */
+  --color-light-card-bg: oklch(0.95 0.01 240);  /* Light gray for card backgrounds */
+  --color-light-border: oklch(0.90 0.01 240);   /* Slightly darker gray for borders */
+  --color-light-accent: oklch(0.6 0.15 260);     /* Vibrant blue for accents */
+  --color-light-accent-hover: oklch(0.55 0.16 260); /* Slightly darker blue for hover */
 
-  /* Dark Mode Semantic Colors */
-  /* These are for direct use or can be mapped in components if needed */
-  --color-dark-bg: #1a202c;
-  --color-dark-card: #2d3748;
-  --color-dark-text: #e2e8f0;
-  --color-dark-subtext: #a0aec0;
+  /* Dark Mode Colors */
+  --color-dark-bg: oklch(0.15 0.01 240);        /* Very dark, slightly cool gray */
+  --color-dark-text: oklch(0.90 0.01 240);       /* Light gray for text */
+  --color-dark-subtext: oklch(0.65 0.01 240);    /* Medium-light gray for secondary text */
+  --color-dark-card-bg: oklch(0.20 0.01 240);   /* Dark gray for card backgrounds */
+  --color-dark-border: oklch(0.25 0.01 240);    /* Slightly lighter dark gray for borders */
+  --color-dark-accent: oklch(0.7 0.15 260);      /* Brighter blue for accents in dark mode */
+  --color-dark-accent-hover: oklch(0.75 0.16 260);/* Slightly brighter blue for hover in dark mode */
+
+  /* Original brand colors (can be removed or kept for reference) */
+  /* --color-brand-light: #38bdf8; */
+  /* --color-brand: #0ea5e9; */
+  /* --color-brand-dark: #0284c7; */
+
+  /* Original Dark Mode Semantic Colors (can be removed or kept for reference) */
+  /* --color-dark-bg: #1a202c; */
+  /* --color-dark-card: #2d3748; */
+  /* --color-dark-text: #e2e8f0; */
+  /* --color-dark-subtext: #a0aec0; */
 }
 
-/* Your existing custom variant for dark mode */
+/* Your existing custom variant for dark mode - This is good, keep it */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Animation Utilities */
+@layer utilities {
+  .scroll-animate {
+    opacity: 0;
+    transform: translateY(30px);
+    transition-property: opacity, transform;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-out;
+  }
+  .scroll-animate-fast {
+    opacity: 0;
+    transform: translateY(20px);
+    transition-property: opacity, transform;
+    transition-duration: 0.4s;
+    transition-timing-function: ease-out;
+  }
+  .scroll-animate.in-view,
+  .scroll-animate-fast.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Staggered children animation setup */
+  /* Individual children will need transition-delay applied via JS or inline style */
+  .stagger-children > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition-property: opacity, transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+  }
+
+  .stagger-children.in-view > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* You can add other global styles or custom utilities here if needed */

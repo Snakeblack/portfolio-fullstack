@@ -59,5 +59,43 @@
         }
       });
     });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1 // Trigger when 10% of the element is visible
+    };
+
+    const observerCallback = (entries, observer) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          // Apply stagger delay if the parent has .stagger-children
+          if (entry.target.parentElement && entry.target.parentElement.classList.contains('stagger-children')) {
+            // Calculate delay based on index, e.g., 100ms, 200ms, etc.
+            // The delay can be adjusted by changing the multiplier (0.1 here for 100ms)
+            entry.target.style.transitionDelay = `${index * 0.1}s`;
+          }
+          observer.unobserve(entry.target); // Optional: stop observing after animation
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe elements with .scroll-animate or .scroll-animate-fast
+    const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children');
+    elementsToAnimate.forEach(el => {
+      if (el.classList.contains('stagger-children')) {
+        // For stagger-children, observe the parent, but apply delays to children
+        observer.observe(el);
+        // We will apply in-view to children when parent is in view
+        // and transition-delay will handle the stagger
+      } else {
+        observer.observe(el);
+      }
+    });
+
   });
 </script>

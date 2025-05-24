@@ -7,17 +7,17 @@ interface Props {
 const { title, content } = Astro.props;
 ---
 
-<section id="about" class="max-w-6xl mx-auto px-6 py-16">
+<section id="about" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate">
   <div class="max-w-4xl">
-    <header>
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8">
+    <header class="scroll-animate-fast">
+      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-8">
         {title}
       </h2>
     </header>
-    <div class="prose prose-lg dark:prose-invert max-w-none">
-      <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+    <article class="prose prose-lg dark:prose-invert max-w-none scroll-animate-fast" style="transition-delay: 0.1s;">
+      <p class="text-light-subtext dark:text-dark-subtext leading-relaxed text-balance">
         {content}
       </p>
-    </div>
+    </article>
   </div>
 </section>

@@ -1,78 +1,116 @@
 ---
+import { getTranslations, type Locale } from '../utils/translations';
+
 interface ProjectItem {
   name: string;
   description: { [key: string]: string };
   url: string;
   technologies?: string[];
   year: string;
+  screenshot?: string;
 }
 
 interface Props {
   title: string;
   projects: ProjectItem[];
   currentLocale: string;
-  viewAllText: string;
+  viewAllText: string; // This will now come from translations
   maxProjects?: number;
 }
 
-const { title, projects, currentLocale, viewAllText, maxProjects = 3 } = Astro.props;
+const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
+const t = getTranslations(currentLocale as Locale);
+
+// Determine 'showAll' state from URL query parameter
+const showAll = Astro.url.searchParams.get('show_all') === 'true';
+
+const currentMaxProjects = showAll ? projects.length : initialMaxProjects;
+const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
+
+// Construct the URL for the button
+const params = new URLSearchParams(Astro.url.searchParams);
+if (showAll) {
+  params.delete('show_all'); // To revert to default (less) state
+} else {
+  params.set('show_all', 'true'); // To show all
+}
+const queryString = params.toString();
+// Ensure Astro.url.pathname is used correctly, especially if base is configured
+const basePath = Astro.site ? new URL(Astro.site).pathname.replace(/\/$/, '') : '';
+const currentPath = Astro.url.pathname.startsWith(basePath) ? Astro.url.pathname.substring(basePath.length) : Astro.url.pathname;
+
+const buttonHref = `${currentPath || '/'}${queryString ? `?${queryString}` : ''}#projects`;
+
+const showAllId = `show-all-projects-btn`;
+
 ---
 
-<section id="projects" class="max-w-6xl mx-auto px-6 py-16">
+<section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate">
   <div class="max-w-4xl">
-    <header class="flex items-center justify-between mb-12"> {/* Wrap h2 and link in header */}
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+    <header class="flex items-center justify-between mb-12 scroll-animate-fast">
+      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text text-pretty">
         {title}
       </h2>
-      <a 
-        href="#" 
-        class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        {viewAllText}
-      </a>
+      {projects.length > initialMaxProjects && (
+        <button
+          id={showAllId}
+          type="button"
+          class="text-sm text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors"
+          aria-expanded="false"
+        >
+          {t.actions.viewAll}
+        </button>
+      )}
     </header>
 
-    <div class="grid gap-8 md:gap-12">
-      {projects.slice(0, maxProjects).map((project) => (
-        <article class="group"> {/* Change div to article */}
-          <a 
+    <div class="grid gap-12 md:gap-16 stagger-children" id="projects-list">
+      {projects.map((project, idx) => (
+        <article class={`group${idx >= initialMaxProjects ? ' hidden' : ''}`} data-project-idx={idx}>
+          <a
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
             class="block"
           >
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-gray-100 dark:group-hover:bg-gray-700 transition-colors">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-gray-400 dark:text-gray-500">
-                  <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                  </svg>
+            <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
+              {project.screenshot ? (
+                <img
+                  src={project.screenshot}
+                  alt={`Screenshot of ${project.name}`}
+                  class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-light-subtext dark:text-dark-subtext">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                  </div>
                 </div>
-              </div>
+              )}
               <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-light-subtext dark:text-dark-subtext" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                 </svg>
               </div>
             </div>
-            
             <div>
-              <header class="flex items-center justify-between mb-2"> {/* Wrap project name and year in header */}
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <header class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-semibold text-light-text dark:text-dark-text group-hover:text-light-accent dark:group-hover:text-dark-accent transition-colors text-pretty">
                   {project.name}
                 </h3>
-                <span class="text-sm text-gray-500 dark:text-gray-400">
+                <span class="text-sm text-light-subtext dark:text-dark-subtext">
                   {project.year}
                 </span>
               </header>
-              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p class="text-light-text dark:text-dark-text leading-relaxed text-balance">
                 {project.description[currentLocale]}
               </p>
-              
               {project.technologies && project.technologies.length > 0 && (
                 <div class="flex flex-wrap gap-2 mt-4">
                   {project.technologies.slice(0, 4).map((tech) => (
-                    <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm rounded-full">
+                    <span class="px-3 py-1 bg-light-tag-bg dark:bg-dark-tag-bg text-light-text dark:text-dark-text text-sm rounded-full">
                       {tech}
                     </span>
                   ))}
@@ -80,8 +118,34 @@ const { title, projects, currentLocale, viewAllText, maxProjects = 3 } = Astro.p
               )}
             </div>
           </a>
-        </article> /* Change div to article */
+        </article>
       ))}
     </div>
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById("show-all-projects-btn");
+        if (btn) {
+          const projects = document.querySelectorAll('#projects-list [data-project-idx]');
+          let showingAll = false;
+          const viewAllText = "{t.actions.viewAll}";
+          const viewLessText = "{t.actions.viewLess}";
+          const initialMax = 3; // Valor literal de initialMaxProjects
+          btn.addEventListener('click', () => {
+            showingAll = !showingAll;
+            projects.forEach((el, idx) => {
+              if (showingAll || idx < initialMax) {
+                el.classList.remove('hidden');
+              } else {
+                el.classList.add('hidden');
+              }
+            });
+            btn.textContent = showingAll ? "Mostrar menos" : "Ver todos"; // Texto literal corregido
+            btn.setAttribute('aria-expanded', showingAll);
+          });
+        } else {
+          console.error('Button not found');
+        }
+      });
+    </script>
   </div>
 </section>

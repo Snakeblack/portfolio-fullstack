@@ -24,6 +24,7 @@ export const translations = {
       viewProject: 'Ver proyecto',
       viewRepo: 'Ver repositorio',
       viewAll: 'Ver todos',
+      viewLess: 'Mostrar menos', // Added
       selectedProjects: 'Proyectos Seleccionados',
       getInTouch: 'Ponerse en contacto'
     },    // Misc
@@ -65,6 +66,7 @@ export const translations = {
       viewProject: 'View project',
       viewRepo: 'View repository',
       viewAll: 'View all',
+      viewLess: 'Show less', // Added
       selectedProjects: 'Selected Projects',
       getInTouch: 'Get in touch'
     },

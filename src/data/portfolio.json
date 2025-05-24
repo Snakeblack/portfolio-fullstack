@@ -22,7 +22,7 @@
       "en": "😴 I'm probably sleeping right now, but I'll reply as soon as I can!"
     },
     "location": "Madrid, España",
-    "email": "mmretamozo@gmail.com",
+    "email": "hello@mretamozo.com",
     "phone": "+34 666 666 666",
     "image": "/profile.png"
   },
@@ -89,8 +89,13 @@
         "en": "Landing page for a delivery service for battery sales and repairs"
       },
       "url": "https://www.bateriascoches24horas.es/",
-      "technologies": ["Astro", "Tailwindcss", "Vercel"],
-      "year": "2024"
+      "technologies": [
+        "Astro",
+        "Tailwindcss",
+        "Vercel"
+      ],
+      "year": "2024",
+      "screenshot": "/assets/screenshots/bateriasexpress.webp"
     },
     {
       "name": "Recambios las Margaritas",
@@ -99,8 +104,13 @@
         "en": "Landing page for a car parts store"
       },
       "url": "https://recambioslasmargaritas.es/",
-      "technologies": ["Astro", "Tailwindcss", "Vercel"],
-      "year": "2024"
+      "technologies": [
+        "Astro",
+        "Tailwindcss",
+        "Vercel"
+      ],
+      "year": "2024",
+      "screenshot": "/assets/screenshots/recambioslasmargaritas.webp"
     },
     {
       "name": "Blog",
@@ -109,8 +119,13 @@
         "en": "Web development and technology blog"
       },
       "url": "https://blog.mretamozo.com/",
-      "technologies": ["Next.js", "Tailwindcss", "Mdx"],
-      "year": "2023"
+      "technologies": [
+        "Next.js",
+        "Tailwindcss",
+        "Mdx"
+      ],
+      "year": "2023",
+      "screenshot": "/assets/screenshots/blog.webp"
     },
     {
       "name": "Prueba Tecnica: Reactive Forms",
@@ -118,9 +133,14 @@
         "es": "Prueba técnica para una oferta de trabajo, consiste en un formulario reactivo con Angular",
         "en": "Technical test for a job offer, consists of a reactive form with Angular"
       },
-      "url": "https://github.com/Snakeblack/prueba-tecnica-alicunde",
-      "technologies": ["Angular", "Clean Code", "Reactive Forms"],
-      "year": "2023"
+      "url": "https://prueba-tecnica-alicunde.mretamozo.com/login",
+      "technologies": [
+        "Angular",
+        "Clean Code",
+        "Reactive Forms"
+      ],
+      "year": "2023",
+      "screenshot": "/assets/screenshots/pruebatecnicareactiveforms.webp"
     },
     {
       "name": "Device Manager",
@@ -129,13 +149,36 @@
         "en": "Application to manage electronic devices, inventory and more."
       },
       "url": "https://github.com/Snakeblack/device-manager",
-      "technologies": ["Next.js", "Tailwind", "MySql"],
-      "year": "2022"
+      "technologies": [
+        "Next.js",
+        "Tailwind",
+        "MySql"
+      ],
+      "year": "2022",
+      "screenshot": "/assets/screenshots/devicemanager.webp"
     }
   ],
   "skills": [
-    "HTML", "CSS", "JavaScript", "TypeScript", "Angular", "React", ".NET", 
-    "Java", "Node.js", "MongoDB", "SQL Server", "MySQL", "Firebase", 
-    "Tailwind", "Bootstrap", "Astro", "Next.js", "Azure DevOps", "GitHub", "Git", "Docker"
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "TypeScript",
+    "Angular",
+    "React",
+    ".NET",
+    "Java",
+    "Node.js",
+    "MongoDB",
+    "SQL Server",
+    "MySQL",
+    "Firebase",
+    "Tailwind",
+    "Bootstrap",
+    "Astro",
+    "Next.js",
+    "Azure DevOps",
+    "GitHub",
+    "Git",
+    "Docker"
   ]
 }

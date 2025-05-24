@@ -15,34 +15,34 @@ interface Props {
 const { title, experience, currentLocale } = Astro.props;
 ---
 
-<section id="work" class="max-w-6xl mx-auto px-6 py-16">
+<section id="work" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate">
   <div class="max-w-4xl">
-    <header>
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12">
+    <header class="scroll-animate-fast">
+      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 text-pretty">
         {title}
       </h2>
     </header>
     
-    <div class="space-y-12">
+    <div class="space-y-12 stagger-children">
       {experience.map((job) => (
-        <article class="relative pl-8 border-l-2 border-gray-200 dark:border-gray-700">
-          <div class="absolute -left-2 top-0 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+        <article class="relative pl-8 border-l-2 border-light-border dark:border-dark-border">
+          <div class="absolute -left-2 top-0 w-4 h-4 bg-light-accent dark:bg-dark-accent rounded-full"></div>
           
           <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-3">
             <div>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+              <h3 class="text-xl font-semibold text-light-text dark:text-dark-text text-pretty">
                 {job.position[currentLocale]}
               </h3>
-              <p class="text-blue-600 dark:text-blue-400 font-medium">
+              <p class="text-light-accent dark:text-dark-accent font-medium text-pretty">
                 {job.company}
               </p>
             </div>
-            <span class="text-sm text-gray-500 dark:text-gray-400 mt-1 md:mt-0">
+            <span class="text-sm text-light-subtext dark:text-dark-subtext mt-1 md:mt-0">
               {job.period}
             </span>
           </header>
           
-          <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+          <p class="text-light-subtext dark:text-dark-subtext leading-relaxed mb-4 text-balance">
             {job.description[currentLocale]}
           </p>
         </article>

@@ -23,6 +23,7 @@ const { title, description, lang = "en" } = Astro.props; // Set default lang to 
 const typedLang = lang as 'es' | 'en'; // Type assertion for lang
 
 const siteUrl = Astro.site ? Astro.site.toString() : "https://mretamozo.com/";
+const ogImage = Astro.site ? `${Astro.site}profile.png` : "https://mretamozo.com/profile.png"; // Assuming profile.png is in public folder
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -73,10 +74,26 @@ const structuredData = {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+
+    {/* Open Graph Tags */}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:site_name" content={personalInfo.name + " Portfolio"} />
+
+    {/* Twitter Card Tags */}
+    <meta name="twitter:card" content="summary_large_image" />
+    {social.twitter && <meta name="twitter:site" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />}
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description || `Portfolio and projects of ${personalInfo.name}`} />
+    <meta name="twitter:image" content={ogImage} />
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 	</head>
-	<body class="bg-white dark:bg-dark-bg text-gray-800 dark:text-dark-text antialiased selection:bg-brand selection:text-white">
+	<body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text antialiased selection:bg-light-accent selection:text-white dark:selection:bg-dark-accent dark:selection:text-dark-bg">
 		<main> {/* Wrap slot in main tag */}
 			<slot />
 		</main>
@@ -92,22 +109,9 @@ const structuredData = {
 	</body>
 </html>
 <style is:global>
-	/* :root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	} */
 	html {
 		font-family: 'Inter', system-ui, sans-serif; /* Use Inter font */
     scroll-behavior: smooth; /* Para un desplazamiento suave a las secciones */
-		/* background: #13151a; */ /* Removed default dark background, Tailwind will control this */
-		/* background-size: 224px; */
 	}
 	code {
 		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
