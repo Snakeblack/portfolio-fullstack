@@ -1,70 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  /* Inspired by khazifire.com style */
-
-  /* Light Mode Colors */
-  --color-light-bg: oklch(0.98 0.01 240);       /* Very light, slightly cool gray */
-  --color-light-text: oklch(0.25 0.02 240);      /* Dark gray for text */
-  --color-light-subtext: oklch(0.40 0.02 240);   /* Medium-dark gray for secondary text (was 0.45) */
-  --color-light-card-bg: oklch(0.95 0.01 240);  /* Light gray for card backgrounds */
-  --color-light-border: oklch(0.90 0.01 240);   /* Slightly darker gray for borders */
-  --color-light-accent: oklch(0.45 0.15 260);     /* Darker blue for accents (was 0.6) */
-  --color-light-accent-hover: oklch(0.40 0.16 260); /* Darker blue for hover (was 0.55) */
-
-  /* Dark Mode Colors */
-  --color-dark-bg: oklch(0.15 0.01 240);        /* Very dark, slightly cool gray */
-  --color-dark-text: oklch(0.90 0.01 240);       /* Light gray for text */
-  --color-dark-subtext: oklch(0.65 0.01 240);    /* Medium-light gray for secondary text */
-  --color-dark-card-bg: oklch(0.20 0.01 240);   /* Dark gray for card backgrounds */
-  --color-dark-border: oklch(0.25 0.01 240);    /* Slightly lighter dark gray for borders */
-  --color-dark-accent: oklch(0.7 0.15 260);      /* Brighter blue for accents in dark mode */
-  --color-dark-accent-hover: oklch(0.75 0.16 260);/* Slightly brighter blue for hover in dark mode */
-
-  /* Original brand colors (can be removed or kept for reference) */
-  /* --color-brand-light: #38bdf8; */
-  /* --color-brand: #0ea5e9; */
-  /* --color-brand-dark: #0284c7; */
-
-  /* Original Dark Mode Semantic Colors (can be removed or kept for reference) */
-  /* --color-dark-bg: #1a202c; */
-  /* --color-dark-card: #2d3748; */
-  /* --color-dark-text: #e2e8f0; */
-  /* --color-dark-subtext: #a0aec0; */
+  /* Colores para Modo Claro */  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
+  --color-light-text: oklch(0.25 0.02 240);      /* Gris oscuro para texto */
+  --color-light-subtext: oklch(0.40 0.02 240);   /* Gris medio-oscuro para texto secundario */
+  --color-light-card-bg: oklch(0.95 0.01 240);  /* Gris claro para fondos de tarjetas */
+  --color-light-border: oklch(0.90 0.01 240);   /* Gris ligeramente más oscuro para bordes */
+  --color-light-accent: oklch(0.45 0.15 260);     /* Azul oscuro para acentos */
+  --color-light-accent-hover: oklch(0.40 0.16 260); /* Azul más oscuro para hover */
+  /* Colores para Modo Oscuro */
+  --color-dark-bg: oklch(0.15 0.01 240);        /* Gris muy oscuro con tono fresco */
+  --color-dark-text: oklch(0.90 0.01 240);       /* Gris claro para texto */
+  --color-dark-subtext: oklch(0.65 0.01 240);    /* Gris medio-claro para texto secundario */
+  --color-dark-card-bg: oklch(0.20 0.01 240);   /* Gris oscuro para fondos de tarjetas */
+  --color-dark-border: oklch(0.25 0.01 240);    /* Gris oscuro ligeramente más claro para bordes */
+  --color-dark-accent: oklch(0.7 0.15 260);      /* Azul brillante para acentos en modo oscuro */
+  --color-dark-accent-hover: oklch(0.75 0.16 260);/* Azul ligeramente más brillante para hover */
 }
 
-/* Your existing custom variant for dark mode - This is good, keep it */
+/* Variante personalizada para modo oscuro */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Animation Utilities */
+/* Utilidades de animación */
 @layer utilities {
   .scroll-animate {
-    opacity: 0;
-    transform: translateY(50px); /* Increased from 30px */
+    opacity: 0;    transform: translateY(50px);
     transition-property: opacity, transform;
-    transition-duration: 0.7s; /* Increased from 0.6s */
-    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1); /* Smoother ease-out */
+    transition-duration: 0.7s;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
   .scroll-animate-fast {
     opacity: 0;
-    transform: translateY(30px); /* Increased from 20px */
+    transform: translateY(30px);
     transition-property: opacity, transform;
-    transition-duration: 0.5s; /* Increased from 0.4s */
-    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1); /* Smoother ease-out */
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
   .scroll-animate.in-view,
   .scroll-animate-fast.in-view {
     opacity: 1;
     transform: translateY(0);
   }
-
-  /* Staggered children animation setup */
-  /* Individual children will need transition-delay applied via JS or inline style */
+  /* Configuración de animación escalonada para elementos hijos */
+  /* Los elementos individuales necesitarán transition-delay aplicado vía JS o estilo en línea */
   .stagger-children > * {
     opacity: 0;
-    transform: translateY(30px); /* Increased from 20px */
+    transform: translateY(30px);
     transition-property: opacity, transform;
-    transition-duration: 0.6s; /* Increased from 0.5s */
+    transition-duration: 0.6s;
     transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
   }
 
@@ -73,7 +56,7 @@
     transform: translateY(0);
   }
 
-  /* New animation for section titles */
+  /* Nueva animación para títulos de sección */
   .title-animate {
     opacity: 0;
     transform: translateY(20px);
@@ -85,7 +68,7 @@
     transform: translateY(0);
   }
 
-  /* New hover effect for project cards */
+  /* Nuevo efecto hover para tarjetas de proyectos */
   .project-card-hover {
     transition-property: transform, box-shadow;
     transition-duration: 0.3s;
@@ -97,13 +80,11 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 
-  /* Dark mode specific shadow for project cards on hover */
+  /* Sombra específica para tarjetas en modo oscuro al pasar el cursor */
   .dark .project-card-hover:hover {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
   }
 }
-
-/* You can add other global styles or custom utilities here if needed */
 
 body {
   font-family: 'Geist Variable', sans-serif;

@@ -49,17 +49,11 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
     const madridTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Europe/Madrid', hour12: false });
     const hour = parseInt(madridTime.split(':')[0]);
     const sleepingMessageContainer = document.getElementById('sleeping-message-container');
-    const statusContainer = document.getElementById('status-container'); // Parent container
+    const statusContainer = document.getElementById('status-container');
 
     if (sleepingMessageContainer && statusContainer) {
-      // Show message if it's between 10 PM (22) and 7 AM (07) in Madrid
       if (hour >= 22 || hour < 7) {
-        sleepingMessageContainer.style.display = 'flex'; // Or 'block' based on desired inline behavior with the link
-      } else {
-        // If the sleeping message is not shown, we might not need to do anything special
-        // if the link is already part of the same flex container or grid.
-        // The goal is to ensure the link doesn't jump around.
-        // If they are in a flex-col, the link will naturally take the space.
+        sleepingMessageContainer.style.display = 'flex';
       }
     }
   });

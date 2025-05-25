@@ -1,11 +1,10 @@
-// @ts-check
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
-// https://astro.build/config
+// Configuración de Astro
 export default defineConfig({
-  site: "https://mretamozo.com", // Asegúrate de que esta URL sea correcta para tu sitio
+  site: "https://mretamozo.com",
   vite: {
     plugins: [tailwindcss()],
   },

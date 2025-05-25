@@ -22,16 +22,15 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
   title={`${personalInfo.name} - ${personalInfo.title.es} | Portfolio Profesional`}
   description={`Portfolio profesional de ${personalInfo.name}, ${personalInfo.title.es.toLowerCase()} con experiencia en Angular y .NET. Explora mis proyectos y habilidades técnicas.`}
   lang={currentLocale}
->
-  <!-- Navigation -->
+>  <!-- Navegación -->
   <Navigation 
     name="MMRG"
     currentLocale={currentLocale}
   />
 
-  <!-- Main Content -->
+  <!-- Contenido Principal -->
   <main class="pt-20">
-    <!-- Hero Section -->
+    <!-- Sección Hero -->
     <HeroSection 
       greeting={personalInfo.greeting[currentLocale]}
       name="Manuel M. Retamozo G."
@@ -43,22 +42,18 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
       <SocialLinks 
         social={social}
       />
-    </HeroSection>
-
-    <!-- About Section -->
+    </HeroSection>    <!-- Sección Sobre Mí -->
     <AboutSection 
       title={t.sections.about}
       content={personalInfo.about[currentLocale]}
-    />
-
-    <!-- Work Experience Section -->
+    />    <!-- Sección de Experiencia Laboral -->
     <ExperienceSection 
       title={t.sections.experience}
       experience={experience}
       currentLocale={currentLocale}
     />
 
-    <!-- Projects Section -->
+    <!-- Sección de Proyectos -->
     <ProjectsSection 
       title={t.sections.projects}
       projects={projects}
@@ -67,19 +62,19 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
       maxProjects={3}
     />
 
-    <!-- Skills Section -->
+    <!-- Sección de Habilidades -->
     <SkillsSection 
       title={t.sections.skills}
       skills={skills}
     />
   </main>
-  <!-- Footer -->
+  <!-- Pie de Página -->
   <Footer 
     builtWithText={t.ui.builtWith}
     andText={t.ui.and}
     copyrightName="Manuel Michael Retamozo García"
   />
 
-  <!-- Common Scripts -->
+  <!-- Scripts Comunes -->
   <CommonScripts />
 </Layout>

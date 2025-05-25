@@ -1,7 +1,8 @@
 export type Locale = 'es' | 'en';
 
 export const translations = {
-  es: {    // Navigation
+  es: {    
+    // Navegación
     nav: {
       about: 'Sobre mí',
       work: 'Experiencia',
@@ -10,7 +11,7 @@ export const translations = {
       contact: 'Contacto',
       me: 'Mí'
     },
-    // Sections
+    // Secciones
     sections: {
       about: 'Sobre mí',
       experience: 'Experiencia',
@@ -18,16 +19,17 @@ export const translations = {
       skills: 'Habilidades',
       contact: 'Contacto'
     },
-    // Actions
+    // Acciones
     actions: {
       contact: 'Ponerse en contacto',
       viewProject: 'Ver proyecto',
       viewRepo: 'Ver repositorio',
       viewAll: 'Ver todos',
-      viewLess: 'Mostrar menos', // Added
+      viewLess: 'Mostrar menos',
       selectedProjects: 'Proyectos Seleccionados',
       getInTouch: 'Ponerse en contacto'
-    },    // Misc
+    },
+    // UI
     ui: {
       currentPosition: 'actual',
       present: 'actual',
@@ -43,7 +45,7 @@ export const translations = {
       lightMode: 'Modo claro'
     }
   },  en: {
-    // Navigation
+    // Navegación
     nav: {
       about: 'About',
       work: 'Experience',
@@ -52,7 +54,7 @@ export const translations = {
       contact: 'Contact',
       me: 'Me'
     },
-    // Sections
+    // Secciones
     sections: {
       about: 'About',
       experience: 'Experience',
@@ -60,17 +62,17 @@ export const translations = {
       skills: 'Skills',
       contact: 'Contact'
     },
-    // Actions
+    // Acciones
     actions: {
       contact: 'Get in touch',
       viewProject: 'View project',
       viewRepo: 'View repository',
       viewAll: 'View all',
-      viewLess: 'Show less', // Added
+      viewLess: 'Show less',
       selectedProjects: 'Selected Projects',
       getInTouch: 'Get in touch'
     },
-    // Misc
+    // UI
     ui: {
       currentPosition: 'current',
       present: 'current',

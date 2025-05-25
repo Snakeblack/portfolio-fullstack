@@ -14,28 +14,28 @@ interface Props {
   title: string;
   projects: ProjectItem[];
   currentLocale: string;
-  viewAllText: string; // This will now come from translations
+  viewAllText: string;
   maxProjects?: number;
 }
 
 const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
 const t = getTranslations(currentLocale as Locale);
 
-// Determine 'showAll' state from URL query parameter
+// Determina el estado 'showAll' desde el parámetro de URL
 const showAll = Astro.url.searchParams.get('show_all') === 'true';
 
 const currentMaxProjects = showAll ? projects.length : initialMaxProjects;
 const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
 
-// Construct the URL for the button
+// Construye la URL para el botón
 const params = new URLSearchParams(Astro.url.searchParams);
 if (showAll) {
-  params.delete('show_all'); // To revert to default (less) state
+  params.delete('show_all');
 } else {
-  params.set('show_all', 'true'); // To show all
+  params.set('show_all', 'true');
 }
 const queryString = params.toString();
-// Ensure Astro.url.pathname is used correctly, especially if base is configured
+// Asegura que Astro.url.pathname se use correctamente, especialmente si base está configurado
 const basePath = Astro.site ? new URL(Astro.site).pathname.replace(/\/$/, '') : '';
 const currentPath = Astro.url.pathname.startsWith(basePath) ? Astro.url.pathname.substring(basePath.length) : Astro.url.pathname;
 
@@ -43,7 +43,7 @@ const buttonHref = `${currentPath || '/'}${queryString ? `?${queryString}` : ''}
 
 const showAllId = `show-all-projects-btn`;
 
-// --- Copied from SkillsSection for chip styling ---
+// --- Copiado de SkillsSection para el estilo de chips ---
 const techColorMap: Record<string, { bg: string; text: string }> = {
   HTML: { bg: "#E34F26", text: "text-white" },
   CSS: { bg: "#1572B6", text: "text-white" },
@@ -59,7 +59,7 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   MySQL: { bg: "#4479A1", text: "text-white" },
   Firebase: { bg: "#FFCA28", text: "text-black" },
   Tailwind: { bg: "#06B6D4", text: "text-black" },
-  Tailwindcss: { bg: "#06B6D4", text: "text-black" }, // Added to handle both cases
+  Tailwindcss: { bg: "#06B6D4", text: "text-black" },
   Bootstrap: { bg: "#7952B3", text: "text-white" },
   Astro: { bg: "#FF5D01", text: "text-white" },
   "Next.js": { bg: "#000000", text: "text-white" },
@@ -67,10 +67,10 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   GitHub: { bg: "#181717", text: "text-white" },
   Git: { bg: "#F05032", text: "text-white" },
   Docker: { bg: "#2496ED", text: "text-white" },
-  Vercel: { bg: "#000000", text: "text-white" }, // Added Vercel
-  Mdx: { bg: "#F9A825", text: "text-black" }, // Added Mdx
-  "Clean Code": { bg: "#A4C639", text: "text-black" }, // Added Clean Code
-  "Reactive Forms": { bg: "#DD0031", text: "text-white" }, // Added Reactive Forms (Angular color)
+  Vercel: { bg: "#000000", text: "text-white" },
+  Mdx: { bg: "#F9A825", text: "text-black" },
+  "Clean Code": { bg: "#A4C639", text: "text-black" },
+  "Reactive Forms": { bg: "#DD0031", text: "text-white" },
   default: {
     bg: "bg-light-tag-bg dark:bg-dark-tag-bg",
     text: "text-light-text dark:text-dark-text",
@@ -137,7 +137,6 @@ const getTechChipStyles = (tech: string) => {
           class="text-sm text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors"
           aria-expanded="false"
         >
-          {/* This text will be updated by JS */}
           {t.actions.viewAll} 
         </button>
       )}
@@ -215,7 +214,7 @@ const getTechChipStyles = (tech: string) => {
           let showingAll = false;
           const viewAllText = "{t.actions.viewAll}";
           const viewLessText = "{t.actions.viewLess}";
-          const initialMax = 3; // Valor literal de initialMaxProjects
+          const initialMax = 3;
           btn.addEventListener('click', () => {
             showingAll = !showingAll;
             projects.forEach((el, idx) => {
@@ -225,7 +224,7 @@ const getTechChipStyles = (tech: string) => {
                 el.classList.add('hidden');
               }
             });
-            btn.textContent = showingAll ? "Mostrar menos" : "Ver todos"; // Texto literal corregido
+            btn.textContent = showingAll ? "Mostrar menos" : "Ver todos";
             btn.setAttribute('aria-expanded', showingAll);
           });
         } else {
