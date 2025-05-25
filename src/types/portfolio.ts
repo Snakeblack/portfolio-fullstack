@@ -4,7 +4,7 @@ export interface PortfolioData {
   title: string;
   email: string;
   location: string;
-  about: string;
+  about: About;
   social: SocialProfile[];
   experience: ExperienceEntry[];
   education: EducationEntry[];
@@ -56,4 +56,9 @@ export interface ProjectEntry {
 export interface LanguageEntry {
   language: string;
   fluency: string;
+}
+
+export interface About {
+  paragraph1: string;
+  paragraph2: string;
 }

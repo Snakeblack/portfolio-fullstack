@@ -19,7 +19,6 @@
     localStorage.setItem('color-theme', newTheme);
     applyTheme(newTheme);
     
-    // Call the globally available icon update function
     if (window.updateThemeIcons) {
       window.updateThemeIcons(newTheme === 'dark');
     }
@@ -28,7 +27,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     const savedTheme = localStorage.getItem('color-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let currentTheme = 'light'; // Predeterminado: claro
+    let currentTheme = 'light';
 
     if (savedTheme) {
       currentTheme = savedTheme;
@@ -56,6 +55,7 @@
       });
     });
 
+    const staggeredParents = new Set();
     const observerOptions = {
       root: null,
       rootMargin: '0px',
@@ -63,20 +63,27 @@
     };
 
     const observerCallback = (entries, observer) => {
-      entries.forEach((entry, index) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('in-view');
-          if (entry.target.parentElement && entry.target.parentElement.classList.contains('stagger-children')) {
-            entry.target.style.transitionDelay = `${index * 0.1}s`;
+          if (entry.target.classList.contains('stagger-children') && !staggeredParents.has(entry.target)) {
+            const children = entry.target.children;
+            for (let i = 0; i < children.length; i++) {
+              if (children[i] instanceof HTMLElement) {
+                children[i].style.transitionDelay = `${i * 100}ms`;
+              }
+            }
+            staggeredParents.add(entry.target);
           }
-          observer.unobserve(entry.target);
+        } else {
+          entry.target.classList.remove('in-view');
         }
       });
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    // Observe elements with .scroll-animate or .scroll-animate-fast
+    // Observar elementos con .scroll-animate, .scroll-animate-fast, .stagger-children
     const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children, .title-animate');
     elementsToAnimate.forEach(el => {
       if (el.classList.contains('stagger-children')) {

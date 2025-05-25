@@ -134,7 +134,7 @@ const getTechChipStyles = (tech: string) => {
         <button
           id={showAllId}
           type="button"
-          class="text-sm text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors"
+          class="text-sm text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
           aria-expanded="false"
         >
           {t.actions.viewAll} 
@@ -144,14 +144,14 @@ const getTechChipStyles = (tech: string) => {
 
     <div class="grid gap-12 md:gap-16 stagger-children" id="projects-list">
       {projects.map((project, idx) => (
-        <article class={`group project-card-hover${idx >= initialMaxProjects ? ' hidden' : ''}`} data-project-idx={idx}>
+        <article class={`rounded-lg group project-card-hover${idx >= initialMaxProjects ? ' hidden' : ''}`} data-project-idx={idx}>
           <a
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
             class="block"
           >
-            <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
+            <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-t-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
               {project.screenshot ? (
                 <img
                   src={project.screenshot}
@@ -174,7 +174,7 @@ const getTechChipStyles = (tech: string) => {
                 </svg>
               </div>
             </div>
-            <div>
+            <div class="p-4 rounded-b-lg">
               <header class="flex items-center justify-between mb-2">
                 <h3 class="text-xl font-semibold text-light-text dark:text-dark-text group-hover:text-light-accent dark:group-hover:text-dark-accent transition-colors text-pretty">
                   {project.name}

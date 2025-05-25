@@ -17,7 +17,7 @@
   </svg>
 </button>
 
-<script is:inline>  // Hacer updateThemeIcons accesible globalmente
+<script is:inline>
   window.updateThemeIcons = function(isDark) {
     const lightIcon = document.getElementById('theme-toggle-light-icon');
     const darkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -38,5 +38,4 @@
       }
     }
   }
-  // La configuración inicial de iconos será manejada por CommonScripts.astro
 </script>

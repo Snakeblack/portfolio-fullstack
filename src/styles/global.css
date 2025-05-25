@@ -84,6 +84,17 @@
   .dark .project-card-hover:hover {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
   }
+
+  .experience-item {
+    opacity: 0;
+    transform: translateY(2.5rem); /* 40px */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+
+  .experience-item.opacity-100.translate-y-0 {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 body {

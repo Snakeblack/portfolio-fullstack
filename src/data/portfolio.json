@@ -14,8 +14,14 @@
       "en": "I create websites and web applications for different industries, focusing on a modular design approach to build flexible and scalable interfaces."
     },
     "about": {
-      "es": "Apasionado por la informática y el desarrollo web, actualmente estoy enfocado en Angular para el frontend. Además, tengo habilidades en React y conocimientos en Next.js, que he aplicado en proyectos personales. Soy competente en HTML, CSS y JavaScript. En el backend, tengo experiencia con .NET, Java y Node.js, especialmente utilizando .NET. Mis conocimientos en bases de datos incluyen SQL Server, MongoDB y MySQL. Siempre estoy comprometido con el aprendizaje continuo y al tanto de las últimas tendencias tecnológicas.",
-      "en": "Passionate about computer science and web development, I'm currently focused on Angular for frontend. Additionally, I have skills in React and knowledge in Next.js, which I've applied in personal projects. I'm proficient in HTML, CSS and JavaScript. On the backend, I have experience with .NET, Java and Node.js, especially using .NET. My database knowledge includes SQL Server, MongoDB and MySQL. I'm always committed to continuous learning and staying up to date with the latest technological trends."
+      "es": {
+        "paragraph1": "Profesional Full Stack apasionado por la informática y el desarrollo web, con un enfoque y fortaleza distintivos en el frontend. Soy experto en Angular y cuento con sólidos conocimientos en React y Next.js, aplicados en diversos proyectos. Mi base sólida se asienta en HTML, CSS y JavaScript.",
+        "paragraph2": "En el ámbito del backend, poseo experiencia con .NET. Mis competencias en bases de datos incluyen SQL Server, Oracle SQL y PL/SQL. Además, domino tecnologías como C, Astro, Figma, Tailwind CSS y Angular Material, entre otras. Mi compromiso es la constante actualización y la exploración de las últimas tendencias tecnológicas, asegurando una evolución continua en el desarrollo."
+      },
+      "en": {
+        "paragraph1": "A Full Stack professional passionate about IT and web development, with a distinct focus and strength in the frontend. I am an expert in Angular and possess solid knowledge in React and Next.js, applied across various projects. My strong foundation is built upon HTML, CSS, and JavaScript.",
+        "paragraph2": "On the backend, I have experience with .NET. My database competencies include SQL Server, Oracle SQL, and PL/SQL. Furthermore, I master technologies such as C, Astro, Figma, Tailwind CSS, and Angular Material, among others. My commitment lies in continuous learning and exploring the latest technological trends, ensuring ongoing evolution in development."
+      }
     },
     "sleepingMessage": {
       "es": "😴 Probablemente esté durmiendo ahora, ¡pero responderé tan pronto como pueda!",
@@ -164,18 +170,23 @@
     "JavaScript",
     "TypeScript",
     "Angular",
-    "React",
     ".NET",
-    "Java",
-    "Node.js",
-    "MongoDB",
-    "SQL Server",
-    "MySQL",
-    "Firebase",
-    "Tailwind",
-    "Bootstrap",
-    "Astro",
+    "React",
     "Next.js",
+    "Tailwindcss",
+    "Astro",
+    "Node.js",
+    "SQL Server",
+    "Oracle SQL",
+    "PL/SQL",
+    "C#",
+    "C",
+    "Java",
+    "Figma",
+    "Angular Material",
+    "MongoDB",
+    "Firebase",
+    "Bootstrap",
     "Azure DevOps",
     "GitHub",
     "Git",
