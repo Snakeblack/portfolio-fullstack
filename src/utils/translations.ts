@@ -29,6 +29,9 @@ export const translations = {
       selectedProjects: 'Proyectos Seleccionados',
       getInTouch: 'Ponerse en contacto'
     },
+    project: {
+      screenshotAlt: "Captura de pantalla del proyecto"
+    },
     // UI
     ui: {
       currentPosition: 'actual',
@@ -71,6 +74,9 @@ export const translations = {
       viewLess: 'Show less',
       selectedProjects: 'Selected Projects',
       getInTouch: 'Get in touch'
+    },
+    project: {
+      screenshotAlt: "Project screenshot"
     },
     // UI
     ui: {
