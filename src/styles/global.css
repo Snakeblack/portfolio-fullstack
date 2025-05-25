@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+*, 
+*::before,
+*::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+}
+
 @theme {
   /* Colores para Modo Claro */  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
   --color-light-text: oklch(0.25 0.02 240);      /* Gris oscuro para texto */
