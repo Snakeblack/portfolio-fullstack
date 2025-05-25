@@ -18,27 +18,26 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 <nav class="fixed top-0 left-0 right-0 z-30 bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border md:backdrop-blur-sm">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="flex items-center justify-between h-16">
-      <a href="#" class="font-semibold text-xl text-light-text dark:text-dark-text tracking-tight">
-        {name}
+      <a href="https://mretamozo.com" class="font-semibold text-xl text-light-text dark:text-dark-text tracking-tight mmrg-link">
+        {name.split('').map((char, index) => (
+          <span class="letter-span" style={`--stagger-delay: ${index * 75}ms`}>{char === ' ' ? '\u00A0' : char}</span>
+        ))}
       </a>
       
-      {/* Mobile Menu Toggle Button */}
       <button 
         id="mobile-menu-toggle" 
         class="md:hidden flex items-center justify-center p-2 rounded-md text-light-subtext dark:text-dark-subtext hover:bg-light-card-bg dark:hover:bg-dark-card-bg focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-50 transition-colors duration-150"
         aria-controls="nav-content"
         aria-expanded="false"
       >
-        <span class="sr-only">Open main menu</span>
+        <span class="sr-only">Abrir el menú</span>
         <div class="relative w-6 h-6">
-          {/* Animated Menu Icon Lines - Adjusted top positions for symmetry */}
           <span id="menu-line-1" class="absolute h-0.5 w-full bg-current transform transition-all duration-300 ease-in-out" style="top: 6px; left: 0;"></span>
           <span id="menu-line-2" class="absolute h-0.5 w-full bg-current transform transition-all duration-300 ease-in-out" style="top: 12px; left: 0;"></span>
           <span id="menu-line-3" class="absolute h-0.5 w-full bg-current transform transition-all duration-300 ease-in-out" style="top: 18px; left: 0;"></span>
         </div>
       </button>
       
-      {/* Navigation Content */}
       <div 
         id="nav-content" 
         class="
@@ -93,42 +92,55 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 </nav>
 
 <style>
-  /* Styles for animated menu icon */
   #mobile-menu-toggle[aria-expanded="true"] #menu-line-1 {
-    /* Rotates the top line and moves it down to the center */
-    transform: translateY(0.375rem) rotate(45deg); /* 6px */
+    transform: translateY(0.375rem) rotate(45deg);
   }
   #mobile-menu-toggle[aria-expanded="true"] #menu-line-2 {
     opacity: 0;
-    transform: translateX(-100%); /* Optional: move it out of view while fading */
+    transform: translateX(-100%);
   }
   #mobile-menu-toggle[aria-expanded="true"] #menu-line-3 {
-    /* Rotates the bottom line and moves it up to the center */
-    transform: translateY(-0.375rem) rotate(-45deg); /* -6px */
+    transform: translateY(-0.375rem) rotate(-45deg);
   }
 
-  /* Base style for nav items, visible by default (primarily for desktop) */
   .nav-item {
     opacity: 1;
     transform: translateY(0);
   }
 
-  /* Mobile-specific animation styles */
-  @media (max-width: 767.98px) { /* Targets screens smaller than Tailwind's md (768px) */
-    /* Initial hidden state for nav items when mobile menu is closed/closing */
+  @media (max-width: 767.98px) {
     #nav-content:not(.translate-x-0) .nav-item {
       opacity: 0;
       transform: translateY(10px);
     }
     
-    /* Animated visible state for nav items when mobile menu is open */
     #nav-content.translate-x-0 .nav-item {
-      opacity: 1; /* Explicitly ensure opacity is 1 */
-      transform: translateY(0); /* Explicitly ensure transform is reset */
+      opacity: 1;
+      transform: translateY(0);
       transition-property: opacity, transform;
       transition-duration: 0.3s;
       transition-timing-function: ease-out;
-      /* transition-delay is handled by inline style */
+    }
+  }
+
+  .mmrg-link .letter-span {
+    display: inline-block; /* Allows transform and respects layout */
+    position: relative; 
+  }
+
+  .mmrg-link:hover .letter-span {
+    animation-name: subtleLetterBounce;
+    animation-duration: 0.4s;
+    animation-timing-function: ease-in-out;
+    animation-delay: var(--stagger-delay);
+  }
+
+  @keyframes subtleLetterBounce {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px); /* Adjust for desired "bounce" height */
     }
   }
 </style>
@@ -156,7 +168,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 
     navContent.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        if (navContent.classList.contains('translate-x-0') && window.innerWidth < 768) { // md breakpoint
+        if (navContent.classList.contains('translate-x-0') && window.innerWidth < 768) {
           navContent.classList.remove('translate-x-0');
           navContent.classList.add('-translate-x-full');
           toggleBtn.setAttribute('aria-expanded', 'false');
