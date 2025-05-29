@@ -179,10 +179,8 @@ const getTechChipStyles = (tech: string) => {
         </article>
       );
     })}
-  </div>
-
-  {projects.length > initialMaxProjects && (
-    <div class="mt-12 md:mt-16 text-center scroll-animate-fast" style="transition-delay: 0.2s;">
+  </div>  {projects.length > initialMaxProjects && (
+    <div id="button-container" class="-mt-16 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out" style="transition-delay: 0.2s;">
       <a 
         href={showAll ? Astro.url.pathname.split('?')[0] : `${Astro.url.pathname.split('?')[0]}?show_all=true`} 
         id={showAllId}
@@ -196,11 +194,11 @@ const getTechChipStyles = (tech: string) => {
   )}
 </section>
 
-<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId }}>
-  document.addEventListener('DOMContentLoaded', () => {
+<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId }}>  document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById(buttonId);
     const projectItems = document.querySelectorAll('.project-item');
-    if (!btn || projectItems.length === 0) return;
+    const buttonContainer = document.getElementById('button-container');
+    if (!btn || projectItems.length === 0 || !buttonContainer) return;
 
     let isCurrentlyShowingAll = initialShowAllState;
     
@@ -208,27 +206,47 @@ const getTechChipStyles = (tech: string) => {
       btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
       btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
 
+      // Cambiar clases del contenedor del botón según el estado
+      if (isCurrentlyShowingAll) {
+        // Al mostrar todos: mt-12 md:mt-16
+        buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+      } else {
+        // Al mostrar menos: -mt-16 md:mt-16 (por defecto)
+        buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', '-mt-16 md:mt-16');
+      }
+
       projectItems.forEach((item, index) => {
         if (isCurrentlyShowingAll) {
-          // Show all projects with animation
+          // Show all projects with staggered smooth animation
           item.classList.remove('project-hidden');
-          item.classList.add('project-visible');
-          // Add a small delay for staggered animation
+          
+          // Use a longer delay for more dramatic stagger effect
           setTimeout(() => {
-            item.classList.add('project-animate-in');
-          }, index * 50);
+            item.classList.add('project-visible');
+            setTimeout(() => {
+              item.classList.add('project-animate-in');
+            }, 50);
+          }, index * 80); // Increased delay for smoother stagger
+          
         } else {
-          // Hide projects beyond initial max
+          // Hide projects beyond initial max with reverse animation
           if (index >= initialMaxProjects) {
             item.classList.remove('project-visible', 'project-animate-in');
-            item.classList.add('project-hidden');
+            // Add a small delay before hiding for smoother transition
+            setTimeout(() => {
+              item.classList.add('project-hidden');
+            }, (projectItems.length - index) * 40);
           } else {
             item.classList.remove('project-hidden');
             item.classList.add('project-visible', 'project-animate-in');
           }
         }
-      });
-    };
+      });    };
+
+    // Configurar clases iniciales basadas en el estado de la URL
+    if (initialShowAllState) {
+      buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+    }
 
     // Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
     // updateButtonAndItems(); // Astro handles initial render, so this might be redundant or cause a flash
@@ -250,11 +268,10 @@ const getTechChipStyles = (tech: string) => {
       history.pushState({}, '', currentUrl.toString()); 
 
       updateButtonAndItems(); // Update UI immediately
-      
-      // Re-enable button after animation completes
+        // Re-enable button after animation completes (increased time for new animations)
       setTimeout(() => {
         btn.style.pointerEvents = 'auto';
-      }, 600);
+      }, 1200); // Increased to match new animation duration
     });
   });
 </script>
@@ -267,52 +284,95 @@ const getTechChipStyles = (tech: string) => {
   .project-card-hover:hover .group-hover\:opacity-100 {
     opacity: 1;
   }
-  
-  /* Project animation styles */
+    /* Project animation styles - Ultra smooth and fresh */
   .project-hidden {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(40px) scale(0.88) rotateX(15deg);
     visibility: hidden;
     height: 0;
     margin: 0;
     overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: blur(8px);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .project-visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0deg);
     visibility: visible;
     height: auto;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: blur(0px);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
   .project-animate-in {
-    animation: projectFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: projectFadeInFresh 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   }
   
-  @keyframes projectFadeIn {
-    from {
+  @keyframes projectFadeInFresh {
+    0% {
       opacity: 0;
-      transform: translateY(30px) scale(0.9);
+      transform: translateY(60px) scale(0.8) rotateX(25deg) rotateY(5deg);
+      filter: blur(12px) brightness(0.7);
     }
-    to {
+    25% {
+      opacity: 0.3;
+      transform: translateY(30px) scale(0.9) rotateX(15deg) rotateY(3deg);
+      filter: blur(6px) brightness(0.85);
+    }
+    50% {
+      opacity: 0.7;
+      transform: translateY(10px) scale(0.98) rotateX(5deg) rotateY(1deg);
+      filter: blur(2px) brightness(0.95);
+    }
+    75% {
+      opacity: 0.9;
+      transform: translateY(-5px) scale(1.02) rotateX(-2deg) rotateY(0deg);
+      filter: blur(0px) brightness(1.05);
+    }
+    100% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg);
+      filter: blur(0px) brightness(1);
     }
-  }
-  
-  /* Ensure smooth grid transitions */
+  }  
+  /* Ensure smooth grid transitions with spring effect */
   .grid {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   
-  /* Better hover animations */
+  /* Better hover animations with 3D effect */
   .project-card-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
   }
   
   .project-card-hover:hover {
-    transform: translateY(-8px);
+    transform: translateY(-12px) scale(1.03) rotateX(5deg);
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.15),
+      0 15px 35px rgba(0, 0, 0, 0.1),
+      0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Add a subtle bounce effect on first load */
+  .scroll-animate-fast {
+    animation: bounceInSmooth 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes bounceInSmooth {
+    0% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+    }
+    60% {
+      opacity: 0.8;
+      transform: translateY(-8px) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 </style>
