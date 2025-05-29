@@ -38,18 +38,21 @@ html {
   .scroll-animate,
   .scroll-animate-fast,
   .title-animate {
-    opacity: 0; /* Ensure elements start hidden */
-    /* transform and other properties will be handled by GSAP */
+    opacity: 0;
+    visibility: hidden; /* Ensure complete hiding initially */
   }
 
-  /* GSAP now handles these animations. These classes are still used as selectors in CommonScripts.astro */
-  /* .scroll-animate { } */
-  /* .scroll-animate-fast { } */
-  /* .title-animate { } */
-
   .stagger-children > * {
-    opacity: 0; /* Ensure children start hidden */
-    /* transform and other properties will be handled by GSAP */
+    opacity: 0;
+    visibility: hidden; /* Ensure complete hiding initially */
+  }
+  
+  /* Show elements when animated by GSAP */
+  .scroll-animate[style*="opacity"],
+  .scroll-animate-fast[style*="opacity"],
+  .title-animate[style*="opacity"],
+  .stagger-children > *[style*="opacity"] {
+    visibility: visible;
   }
 }
 
