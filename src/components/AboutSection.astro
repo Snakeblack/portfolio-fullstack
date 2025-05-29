@@ -34,11 +34,6 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
           {content.paragraph2}
         </p>
       </article>
-      <div 
-        id="about-fade-overlay"
-        class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-light-bg via-light-bg/75 to-transparent dark:from-dark-bg dark:via-dark-bg/90 dark:to-transparent md:hidden transition-opacity duration-500 ease-in-out z-10" 
-      >
-      </div>
       <button 
         id="toggle-about-text"
         aria-expanded="false"
@@ -58,10 +53,9 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
     const contentElement = document.getElementById('about-text-content');
     const toggleButton = document.getElementById('toggle-about-text');
     const buttonTextElement = document.getElementById('about-button-text');
-    const fadeOverlay = document.getElementById('about-fade-overlay');
     const toggleIcon = document.getElementById('about-toggle-icon');
 
-    if (!contentElement || !toggleButton || !buttonTextElement || !fadeOverlay || !toggleIcon) {
+    if (!contentElement || !toggleButton || !buttonTextElement || !toggleIcon) {
       console.warn('About section read more/less elements not found.');
       return;
     }
@@ -92,20 +86,19 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
           
           if (isExpanded) {
             contentElement.style.maxHeight = contentElement.scrollHeight + 'px';
-            fadeOverlay.style.opacity = '0';
+            contentElement.classList.remove('apply-text-fade');
           } else { // Collapsed state for overflowing content
             contentElement.style.maxHeight = initialMaxHeight; // e.g., '10rem'
-            // Delay fade-in for smoother collapse. Check state again in timeout.
             setTimeout(() => {
               if (!isExpanded && window.innerWidth < 768 && (contentElement.scrollHeight > initialMaxHeightInPx + 5)) {
-                 fadeOverlay.style.opacity = '1';
+                 contentElement.classList.add('apply-text-fade');
               }
             }, 250); // Slightly shorter delay to ensure fade starts before text animation ends
           }
         } else { // Not overflowing on mobile
           contentElement.style.maxHeight = 'none';
           toggleButton.style.display = 'none';
-          fadeOverlay.style.opacity = '0';
+          contentElement.classList.remove('apply-text-fade');
           // If it was expanded and now not overflowing (e.g. dev tools change content), reset.
           if (isExpanded) {
             isExpanded = false; 
@@ -114,7 +107,7 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
       } else { // Desktop
         contentElement.style.maxHeight = 'none'; // Tailwind's md:max-h-none handles this
         toggleButton.style.display = 'none';    // Corrected: Added dot before style
-        fadeOverlay.style.opacity = '0';        // Tailwind's md:hidden implies this for fade
+        contentElement.classList.remove('apply-text-fade');        // Tailwind's md:hidden implies this for fade
 
         // Reset mobile-specific states if transitioning from mobile to desktop
         if (isExpanded) {
@@ -131,7 +124,7 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
       // If collapsing, hide fade immediately to prevent it from lingering during collapse animation
       // It will be re-shown by updateView after a delay if needed.
       if (!isExpanded) {
-           fadeOverlay.style.opacity = '0'; 
+           contentElement.classList.remove('apply-text-fade');
       }
       
       updateView(); // Apply visual changes (height, fade visibility)
@@ -147,3 +140,10 @@ const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
     });
   });
 </script>
+
+<style>
+  .apply-text-fade {
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 4rem), transparent 100%);
+    mask-image: linear-gradient(to bottom, black calc(100% - 4rem), transparent 100%);
+  }
+</style>

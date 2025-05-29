@@ -53,7 +53,31 @@ html {
   }
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbar if content overflows slightly */
+}
+
 body {
   font-family: 'Geist Variable', sans-serif;
   line-height: 1.7;
+  position: relative; /* Needed for z-index of children to work correctly with fixed background */
+  /* Ensure body itself doesn't create scrollbars that affect canvas sizing if content is larger than viewport */
+}
+
+/* Apply backdrop filter to main content sections if desired */
+main, header, footer {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  /* Add a slight background to make the blur more visible if needed */
+  /* background-color: rgba(255, 255, 255, 0.05); */ 
+}
+
+/* Ensure other direct children of body that should be above the background also have a backdrop filter or appropriate styling */
+.some-other-container {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
