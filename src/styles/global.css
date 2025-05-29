@@ -39,22 +39,22 @@ html {
   .scroll-animate-fast,
   .title-animate {
     opacity: 0;
-    transform: translateY(30px); /* Unified initial Y offset */
+    transform: translateY(30px);
     transition-property: opacity, transform;
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smoother, slightly bouncy easing */
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .scroll-animate {
-    transition-duration: 0.8s; /* Slightly longer for main elements */
+    transition-duration: 0.8s;
   }
 
   .scroll-animate-fast {
-    transition-duration: 0.6s; /* Faster for quicker elements */
+    transition-duration: 0.6s;
   }
 
   .title-animate {
-    transform: translateY(20px); /* Keep titles slightly less offset */
-    transition-duration: 0.7s; /* Specific duration for titles, uses the cubic-bezier from the group */
+    transform: translateY(20px);
+    transition-duration: 0.7s;
   }
 
   .scroll-animate.in-view,
@@ -70,7 +70,7 @@ html {
     opacity: 0;
     transform: translateY(30px);
     transition-property: opacity, transform;
-    transition-duration: 0.7s; /* Unified duration for staggered items */
+    transition-duration: 0.7s;
     transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
@@ -82,5 +82,5 @@ html {
 
 body {
   font-family: 'Geist Variable', sans-serif;
-  line-height: 1.7; /* Added for better readability */
+  line-height: 1.7;
 }
