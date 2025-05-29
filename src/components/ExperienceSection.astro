@@ -1,14 +1,9 @@
 ---
-interface ExperienceJob {
-  company: string;
-  position: { [key: string]: string };
-  period: string;
-  description: { [key: string]: string };
-}
+import type { ExperienceEntry } from '../types/portfolio';
 
 interface Props {
   title: string;
-  experience: ExperienceJob[];
+  experience: ExperienceEntry[];
   currentLocale: string;
 }
 
@@ -16,64 +11,155 @@ const { title, experience, currentLocale } = Astro.props;
 ---
 
 <section id="work" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-  <div>
-    <header class="scroll-animate-fast">
-      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 text-pretty title-animate">
-        {title}
-      </h2>
-    </header>
-    
-    <div class="space-y-12">
-      {experience.map((job) => (
-        <article class="relative pl-8 border-l-2 border-light-border dark:border-dark-border experience-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out">
-          <div class="absolute -left-2 top-0 w-4 h-4 bg-light-accent dark:bg-dark-accent rounded-full"></div>
-          
-          <header class="flex flex-col md:flex-row md:items-center md:justify-between mb-3">
-            <div>
-              <h3 class="text-xl font-semibold text-light-text dark:text-dark-text text-pretty">
-                {job.position[currentLocale]}
-              </h3>
-              <p class="text-light-accent dark:text-dark-accent font-medium text-pretty">
-                {job.company}
+  <header class="scroll-animate-fast">
+    <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-16 text-pretty title-animate">
+      {title}
+    </h2>
+  </header>
+  
+  <div class="relative pl-4 md:pl-8">
+    {/* The actual timeline bar - could be a pseudo-element or a div */}
+    <div class="absolute top-0 bottom-0 left-4 md:left-8 w-0.5 bg-light-border dark:bg-dark-border" aria-hidden="true"></div>
+
+    <div class="space-y-12 md:space-y-16">
+      {experience.map((job, index) => {
+        return (
+          <article class="experience-item relative focus-group scroll-animate" data-index={index}>
+            <div class="timeline-dot absolute -left-[calc(0.5rem-1px)] md:-left-[calc(1rem-1px)] top-1 w-3 h-3 rounded-full border-2 border-light-bg dark:border-dark-bg bg-light-border dark:bg-dark-border transition-all duration-300 ease-in-out"></div>
+            
+            <div class="ml-6 md:ml-10 trigger-area cursor-pointer">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <h3 class="text-lg md:text-xl font-semibold text-light-text dark:text-dark-text transition-opacity duration-300 ease-in-out">
+                  {job.company}
+                </h3>
+                <span class="text-xs md:text-sm text-light-subtext dark:text-dark-subtext mt-0.5 sm:mt-0 transition-opacity duration-300 ease-in-out">
+                  {job.period} {/* Use job.period directly */}
+                </span>
+              </div>
+              <p class="text-md md:text-lg text-light-accent dark:text-dark-accent font-medium mt-1 transition-opacity duration-300 ease-in-out">
+                {job.position[currentLocale as keyof typeof job.position]} {/* Access localized position */}
               </p>
             </div>
-            <span class="text-sm text-light-subtext dark:text-dark-subtext mt-1 md:mt-0">
-              {job.period}
-            </span>
-          </header>
-          
-          <p class="text-light-subtext dark:text-dark-subtext leading-relaxed mb-4 text-balance">
-            {job.description[currentLocale]}
-          </p>
-        </article>
-      ))}
+
+            <div class="details-container ml-6 md:ml-10 mt-3 overflow-hidden max-h-0 opacity-0">
+              <p class="text-light-subtext dark:text-dark-subtext leading-relaxed text-balance">
+                {job.description[currentLocale as keyof typeof job.description]} {/* Access localized description */}
+              </p>
+            </div>
+          </article>
+        )})}
     </div>
   </div>
 </section>
 
 <script>
-  const experienceItems = document.querySelectorAll('.experience-item');
+  document.addEventListener('DOMContentLoaded', () => {
+    const experienceItems = document.querySelectorAll('.experience-item');
 
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
+    experienceItems.forEach(item => {
+      const trigger = item.querySelector('.trigger-area');
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('opacity-100', 'translate-y-0');
-        entry.target.classList.remove('opacity-0', 'translate-y-10');
-      } else {
-        entry.target.classList.add('opacity-0', 'translate-y-10');
-        entry.target.classList.remove('opacity-100', 'translate-y-0');
+      if (trigger) {
+        trigger.setAttribute('role', 'button');
+        trigger.setAttribute('tabindex', '0');
+        trigger.setAttribute('aria-expanded', 'false');
+
+        const toggleItem = () => {
+          const isActive = item.classList.contains('is-active');
+
+          experienceItems.forEach(otherItem => {
+            if (otherItem !== item && otherItem.classList.contains('is-active')) {
+              otherItem.classList.remove('is-active');
+              otherItem.querySelector('.trigger-area')?.setAttribute('aria-expanded', 'false');
+            }
+          });
+
+          if (isActive) {
+            item.classList.remove('is-active');
+            trigger.setAttribute('aria-expanded', 'false');
+          } else {
+            item.classList.add('is-active');
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+
+          const anyItemActive = document.querySelector('.experience-item.is-active');
+          if (anyItemActive) {
+            document.body.classList.add('experience-item-active-global');
+          } else {
+            document.body.classList.remove('experience-item-active-global');
+          }
+        };
+
+        trigger.addEventListener('click', toggleItem);
+        trigger.addEventListener('keydown', (event) => {
+          const keyboardEvent = event as KeyboardEvent;
+          if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') {
+            keyboardEvent.preventDefault();
+            toggleItem();
+          }
+        });
       }
     });
-  }, observerOptions);
-
-  experienceItems.forEach(item => {
-    item.classList.add('opacity-0', 'translate-y-10');
-    observer.observe(item);
   });
 </script>
+
+<style>
+  .focus-group .trigger-area h3,
+  .focus-group .trigger-area span,
+  .focus-group .trigger-area p {
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+  }
+
+  .details-container {
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                margin-top 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Active state for the clicked item */
+  .experience-item.is-active .timeline-dot {
+    background-color: var(--color-light-accent);
+    border-color: var(--color-light-accent);
+    transform: scale(1.25);
+  }
+  .dark .experience-item.is-active .timeline-dot {
+    background-color: var(--color-dark-accent);
+    border-color: var(--color-dark-accent);
+  }
+  .experience-item.is-active .details-container {
+    max-height: 20rem; /* Adjust as needed */
+    opacity: 1;
+    margin-top: 0.75rem; /* Tailwind mt-3 */
+  }
+
+  /* Styling for when ANY experience item is active (focused state for others) */
+  .experience-item-active-global .experience-item:not(.is-active) .focus-group .trigger-area h3,
+  .experience-item-active-global .experience-item:not(.is-active) .focus-group .trigger-area span,
+  .experience-item-active-global .experience-item:not(.is-active) .focus-group .trigger-area p {
+    opacity: 0.5;
+    /* transform: translateX(-5px) scale(0.98); Optional: makes it recede */
+  }
+  
+  .experience-item-active-global .experience-item:not(.is-active) .timeline-dot {
+     opacity: 0.6;
+  }
+
+  /* Subtle hover on trigger area for affordance */
+  .experience-item .trigger-area:hover .timeline-dot {
+    border-color: var(--color-light-accent);
+  }
+  .dark .experience-item .trigger-area:hover .timeline-dot {
+    border-color: var(--color-dark-accent);
+  }
+  body:not(.experience-item-active-global) .experience-item .trigger-area:hover h3,
+  body:not(.experience-item-active-global) .experience-item .trigger-area:hover span,
+  body:not(.experience-item-active-global) .experience-item .trigger-area:hover p {
+    opacity: 0.85;
+  }
+  .experience-item.is-active .trigger-area:hover h3,
+  .experience-item.is-active .trigger-area:hover span,
+  .experience-item.is-active .trigger-area:hover p {
+     opacity: 0.85;
+  }
+
+</style>

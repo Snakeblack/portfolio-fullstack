@@ -16,7 +16,7 @@ const otherLocaleAriaLabel = currentLocale === 'es' ? 'Switch to English version
 const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 ---
 
-<nav class="fixed top-0 left-0 right-0 z-30 bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border md:backdrop-blur-sm">
+<nav class="fixed top-0 left-0 right-0 z-30 bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border md:backdrop-blur-sm shadow-sm">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     <div class="flex items-center justify-between h-16">
       <a href="https://mretamozo.com" class="font-semibold text-xl text-light-text dark:text-dark-text tracking-tight mmrg-link">
@@ -62,7 +62,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
             <li class="text-base font-medium transition-colors nav-item md:opacity-100 md:transform-none" style={{ transitionDelay: `${100 + index * 50}ms`}}>
               <a 
                 href={item.href} 
-                class="block py-3 px-4 text-lg font-semibold text-[#111] dark:text-dark-text hover:bg-light-card-bg dark:hover:bg-dark-card-bg rounded-md transition-all duration-150 ease-in-out hover:scale-105 active:scale-95 md:inline md:py-0 md:px-0 md:text-base md:text-light-subtext md:dark:text-dark-subtext md:hover:text-light-accent md:dark:hover:text-dark-accent md:hover:bg-transparent md:dark:hover:bg-transparent md:rounded-none md:hover:scale-100 md:active:scale-100"
+                class="block py-3 px-4 text-lg font-semibold text-[#111] dark:text-dark-text hover:bg-light-card-bg dark:hover:bg-dark-card-bg rounded-md transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 md:inline md:py-0 md:px-0 md:text-base md:text-light-subtext md:dark:text-dark-subtext md:hover:text-light-accent md:dark:hover:text-dark-accent md:hover:bg-transparent md:dark:hover:bg-transparent md:rounded-none md:hover:scale-100 md:active:scale-100"
               >
                 {item.label}
               </a>
@@ -148,6 +148,31 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
       transform: translateY(-3px); /* Adjust for desired "bounce" height */
     }
   }
+
+  nav a {
+  position: relative;
+  text-decoration: none; /* Ensure no default underline interferes */
+}
+
+/* Animated underline for desktop navigation links */
+@media (min-width: 768px) { /* Corresponds to md: breakpoint */
+  .nav-item a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1.5px; /* Subtle thickness */
+    bottom: -5px; /* Position below the text */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: currentColor; /* Uses the link's current text color (accent on hover) */
+    transition: width 0.3s ease-in-out;
+  }
+
+  .nav-item a:hover::after,
+  .nav-item a:focus::after { /* Apply on hover and focus */
+    width: 100%;
+  }
+}
 </style>
 
 <script>

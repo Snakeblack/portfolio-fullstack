@@ -3,25 +3,31 @@ interface Props {
   builtWithText: string;
   andText: string;
   copyrightName: string;
+  currentLocale: string; // Added currentLocale for potential future use
 }
 
-const { builtWithText, andText, copyrightName } = Astro.props;
+const { builtWithText, andText, copyrightName, currentLocale } = Astro.props;
 const currentYear = new Date().getFullYear();
-const copyrightText = `${copyrightName} © ${currentYear}`;
+const copyrightText = `© ${currentYear} ${copyrightName}.`; // Slightly reordered for a common pattern
+const madeWithText = currentLocale === 'es' ? 'Hecho con' : 'Made with';
 ---
 
-<footer class="border-t border-gray-200 dark:border-gray-700 py-12 mt-16">
+<footer class="border-t border-light-border dark:border-dark-border py-10 md:py-12 mt-20 scroll-animate">
   <div class="max-w-6xl mx-auto px-6">
-    <div class="flex flex-col md:flex-row items-center justify-between">
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 md:mb-0">
-        {builtWithText} 
-        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Astro</a> 
-        {andText} 
-        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" aria-label="Tailwind CSS website" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">Tailwind CSS</a>.
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="text-xs text-light-subtext dark:text-dark-subtext text-center sm:text-left">
+        {madeWithText}
+        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="font-medium text-light-accent dark:text-dark-accent hover:underline hover:opacity-80 transition-opacity">
+          Astro
+        </a>
+        {currentLocale === 'es' ? 'y' : 'and'}
+        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" aria-label="Tailwind CSS website" class="font-medium text-light-accent dark:text-dark-accent hover:underline hover:opacity-80 transition-opacity">
+          Tailwind CSS
+        </a>.
       </p>
       
-      <div class="flex items-center gap-4">
-        <span class="text-sm text-gray-500 dark:text-gray-400">
+      <div class="flex items-center">
+        <span class="text-xs text-light-subtext dark:text-dark-subtext">
           {copyrightText}
         </span>
       </div>

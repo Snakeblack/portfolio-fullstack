@@ -20,11 +20,10 @@ export interface SocialProfile {
 
 export interface ExperienceEntry {
   company: string;
-  position: string;
+  position: TranslatedString; // Changed from string to TranslatedString
   website?: string;
-  startDate: string;
-  endDate?: string;
-  summary: string;
+  period: string; // Added period, removed startDate and endDate
+  description: TranslatedString; // Changed from summary: string to description: TranslatedString
   highlights?: string[];
 }
 

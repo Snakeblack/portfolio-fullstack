@@ -54,43 +54,36 @@
       });
     });
 
-    const staggeredParents = new Set();
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1
-    };
+    // Intersection Observer for scroll animations
+    const animatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate, .stagger-children');
 
-    const observerCallback = (entries, observer) => {
-      entries.forEach((entry) => {
+    const observer = new IntersectionObserver((entries, observerInstance) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('in-view');
-          if (entry.target.classList.contains('stagger-children') && !staggeredParents.has(entry.target)) {
+          if (entry.target.classList.contains('stagger-children')) {
             const children = entry.target.children;
             for (let i = 0; i < children.length; i++) {
-              if (children[i] instanceof HTMLElement) {
-                children[i].style.transitionDelay = `${i * 100}ms`;
-              }
+              children[i].style.transitionDelay = `${i * 100}ms`; // Stagger delay
             }
-            staggeredParents.add(entry.target);
           }
+          // Optional: unobserve after animation to save resources
+          // observerInstance.unobserve(entry.target);
         } else {
-          entry.target.classList.remove('in-view');
+          // Optional: remove 'in-view' to re-animate if element scrolls out and back in
+          // entry.target.classList.remove('in-view');
+          // if (entry.target.classList.contains('stagger-children')) {
+          //   const children = entry.target.children;
+          //   for (let i = 0; i < children.length; i++) {
+          //     children[i].style.transitionDelay = ''; // Reset delay
+          //   }
+          // }
         }
       });
-    };
+    }, { threshold: 0.1 }); // Adjust threshold as needed
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    // Observa los elementos con .scroll-animate, .scroll-animate-fast, .stagger-children
-    const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children, .title-animate');
-    elementsToAnimate.forEach(el => {
-      if (el.classList.contains('stagger-children')) {
-        observer.observe(el);
-      } else {
-        observer.observe(el);
-      }
+    animatedElements.forEach(el => {
+      observer.observe(el);
     });
-
   });
 </script>
