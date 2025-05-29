@@ -36,5 +36,14 @@
         darkIcon.classList.add('block');
       }
     }
-  }
+  };
+
+  // Immediately try to set the initial icon state when this script runs.
+  // This script runs when ThemeToggle.astro is processed.
+  // We need to determine the theme similarly to how CommonScripts does it.
+  const initialTheme = localStorage.getItem('color-theme') || 
+                     (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  window.updateThemeIcons(initialTheme === 'dark');
+  console.log("[ThemeToggle.astro] Initial icon update. Theme:", initialTheme);
+
 </script>

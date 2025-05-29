@@ -38,45 +38,18 @@ html {
   .scroll-animate,
   .scroll-animate-fast,
   .title-animate {
-    opacity: 0;
-    transform: translateY(50px) scale(0.9);
-    transition-property: opacity, transform;
-    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); /* easeOutExpo-like */
+    opacity: 0; /* Ensure elements start hidden */
+    /* transform and other properties will be handled by GSAP */
   }
 
-  .scroll-animate {
-    transition-duration: 1s; /* Adjusted from 0.8s */
-  }
+  /* GSAP now handles these animations. These classes are still used as selectors in CommonScripts.astro */
+  /* .scroll-animate { } */
+  /* .scroll-animate-fast { } */
+  /* .title-animate { } */
 
-  .scroll-animate-fast {
-    transition-duration: 0.8s; /* Adjusted from 0.6s */
-  }
-
-  .title-animate {
-    transform: translateY(40px) scale(0.9); /* Adjusted initial Y and added scale */
-    transition-duration: 0.9s; /* Adjusted from 0.7s */
-  }
-
-  .scroll-animate.in-view,
-  .scroll-animate-fast.in-view,
-  .title-animate.in-view {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  /* Configuración de animación escalonada para elementos hijos */
-  /* Los elementos individuales necesitarán transition-delay aplicado vía JS o estilo en línea */
   .stagger-children > * {
-    opacity: 0;
-    transform: translateY(50px) scale(0.9);
-    transition-property: opacity, transform;
-    transition-duration: 0.9s; /* Adjusted duration */
-    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); /* easeOutExpo-like */
-  }
-
-  .stagger-children.in-view > * {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    opacity: 0; /* Ensure children start hidden */
+    /* transform and other properties will be handled by GSAP */
   }
 }
 
