@@ -150,8 +150,14 @@ const structuredData = {
     <meta name="twitter:creator" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-	</head>	<body class="font-sans bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text antialiased selection:bg-light-accent selection:text-white dark:selection:bg-dark-accent dark:selection:text-dark-bg">
-		<main>
+	</head>	<body
+  class:list={[
+    "flex flex-col min-h-screen bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text",
+    "transition-colors duration-300 ease-in-out",
+    "px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16", // Ajuste de padding horizontal responsivo
+  ]}
+>
+		<main class="max-w-6xl mx-auto">
 			<slot />
 		</main>
 		<script is:inline>

@@ -2,12 +2,12 @@
 interface Props {
   builtWithText: string;
   andText: string;
-  copyrightName: string; // Changed from copyrightText
+  copyrightName: string;
 }
 
-const { builtWithText, andText, copyrightName } = Astro.props; // Changed from copyrightText
+const { builtWithText, andText, copyrightName } = Astro.props;
 const currentYear = new Date().getFullYear();
-const copyrightText = `${copyrightName} © ${currentYear}`; // Construct the full text here
+const copyrightText = `${copyrightName} © ${currentYear}`;
 ---
 
 <footer class="border-t border-gray-200 dark:border-gray-700 py-12 mt-16">

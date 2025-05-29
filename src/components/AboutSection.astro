@@ -10,13 +10,13 @@ const { title, content } = Astro.props;
 ---
 
 <section id="about" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-  <div class="max-w-4xl">
+  <div class="max-w-[60rem]">
     <header class="scroll-animate-fast">
       <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-8 title-animate">
         {title}
       </h2>
     </header>
-    <article class="prose prose-lg dark:prose-invert max-w-none scroll-animate-fast" style="transition-delay: 0.1s;">
+    <article class="prose prose-lg dark:prose-invert scroll-animate-fast" style="transition-delay: 0.1s;">
       <p class="text-light-subtext dark:text-dark-subtext leading-relaxed text-balance mb-4">
         {content.paragraph1}
       </p>

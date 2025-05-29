@@ -1,4 +1,3 @@
-
 export interface PortfolioData {
   name: string;
   title: string;
@@ -39,11 +38,28 @@ export interface EducationEntry {
   courses?: string[];
 }
 
-export interface SkillEntry {
+export type SkillCategory = "frontend" | "backend" | "database" | "design" | "devops" | "other";
+
+export interface TechnicalSkillEntry {
   name: string;
-  level?: string;
-  keywords?: string[];
+  type: "technical";
+  category: SkillCategory;
+  level?: string; 
+  icon?: string; 
 }
+
+export interface TranslatedString {
+  es: string;
+  en: string;
+}
+
+export interface SoftSkillEntry {
+  name: TranslatedString;
+  type: "soft";
+  description?: TranslatedString;
+}
+
+export type SkillEntry = TechnicalSkillEntry | SoftSkillEntry;
 
 export interface ProjectEntry {
   name: string;

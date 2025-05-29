@@ -1,5 +1,4 @@
 ---
-// Script centralizado para funcionalidades comunes
 ---
 
 <script is:inline>
@@ -83,7 +82,7 @@
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    // Observar elementos con .scroll-animate, .scroll-animate-fast, .stagger-children
+    // Observa los elementos con .scroll-animate, .scroll-animate-fast, .stagger-children
     const elementsToAnimate = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .stagger-children, .title-animate');
     elementsToAnimate.forEach(el => {
       if (el.classList.contains('stagger-children')) {

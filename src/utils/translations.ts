@@ -49,6 +49,18 @@ export const translations = {
       languageSwitch: 'EN',
       darkMode: 'Modo oscuro',
       lightMode: 'Modo claro'
+    },
+    skillCategories: {
+      frontend: 'Frontend',
+      backend: 'Backend',
+      database: 'Bases de Datos',
+      devops: 'DevOps',
+      design: 'Diseño',
+      other: 'Otros'
+    },
+    headings: {
+      technicalSkills: 'Habilidades Técnicas',
+      softSkills: 'Habilidades Blandas'
     }
   },  en: {
     // Navegación
@@ -98,6 +110,18 @@ export const translations = {
       languageSwitch: 'ES',
       darkMode: 'Dark mode',
       lightMode: 'Light mode'
+    },
+    skillCategories: {
+      frontend: 'Frontend',
+      backend: 'Backend',
+      database: 'Databases',
+      devops: 'DevOps',
+      design: 'Design',
+      other: 'Others'
+    },
+    headings: {
+      technicalSkills: 'Technical Skills',
+      softSkills: 'Soft Skills'
     }
   }
 } as const;

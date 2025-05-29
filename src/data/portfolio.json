@@ -180,31 +180,71 @@
     }
   ],
   "skills": [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "TypeScript",
-    "Angular",
-    ".NET",
-    "React",
-    "Next.js",
-    "Tailwindcss",
-    "Astro",
-    "Node.js",
-    "SQL Server",
-    "Oracle SQL",
-    "PL/SQL",
-    "C#",
-    "C",
-    "Java",
-    "Figma",
-    "Angular Material",
-    "MongoDB",
-    "Firebase",
-    "Bootstrap",
-    "Azure DevOps",
-    "GitHub",
-    "Git",
-    "Docker"
+    { "name": "HTML", "type": "technical", "category": "frontend" },
+    { "name": "CSS", "type": "technical", "category": "frontend" },
+    { "name": "JavaScript", "type": "technical", "category": "frontend" },
+    { "name": "TypeScript", "type": "technical", "category": "frontend" },
+    { "name": "Angular", "type": "technical", "category": "frontend" },
+    { "name": ".NET", "type": "technical", "category": "backend" },
+    { "name": "React", "type": "technical", "category": "frontend" },
+    { "name": "Next.js", "type": "technical", "category": "frontend" },
+    { "name": "Tailwindcss", "type": "technical", "category": "frontend" },
+    { "name": "Astro", "type": "technical", "category": "frontend" },
+    { "name": "Node.js", "type": "technical", "category": "backend" },
+    { "name": "SQL Server", "type": "technical", "category": "database" },
+    { "name": "Oracle SQL", "type": "technical", "category": "database" },
+    { "name": "PL/SQL", "type": "technical", "category": "database" },
+    { "name": "C#", "type": "technical", "category": "backend" },
+    { "name": "C", "type": "technical", "category": "other" },
+    { "name": "Java", "type": "technical", "category": "backend" },
+    { "name": "Figma", "type": "technical", "category": "design" },
+    { "name": "Angular Material", "type": "technical", "category": "frontend" },
+    { "name": "MongoDB", "type": "technical", "category": "database" },
+    { "name": "Firebase", "type": "technical", "category": "backend" },
+    { "name": "Bootstrap", "type": "technical", "category": "frontend" },
+    { "name": "Azure DevOps", "type": "technical", "category": "devops" },
+    { "name": "GitHub", "type": "technical", "category": "devops" },
+    { "name": "Git", "type": "technical", "category": "devops" },
+    { "name": "Docker", "type": "technical", "category": "devops" },
+    {
+      "name": { "es": "Comunicación Efectiva", "en": "Effective Communication" },
+      "type": "soft",
+      "description": {
+        "es": "Habilidad para transmitir ideas de forma clara y concisa.",
+        "en": "Ability to convey ideas clearly and concisely."
+      }
+    },
+    {
+      "name": { "es": "Trabajo en Equipo", "en": "Teamwork" },
+      "type": "soft",
+      "description": {
+        "es": "Capacidad para colaborar eficazmente con otros para alcanzar objetivos comunes.",
+        "en": "Ability to collaborate effectively with others to achieve common goals."
+      }
+    },
+    {
+      "name": { "es": "Resolución de Problemas", "en": "Problem Solving" },
+      "type": "soft",
+      "description": {
+        "es": "Aptitud para identificar problemas y encontrar soluciones efectivas.",
+        "en": "Aptitude to identify problems and find effective solutions."
+      }
+    },
+    {
+      "name": { "es": "Adaptabilidad", "en": "Adaptability" },
+      "type": "soft",
+      "description": {
+        "es": "Flexibilidad para ajustarse a nuevas situaciones y cambios.",
+        "en": "Flexibility to adjust to new situations and changes."
+      }
+    },
+    {
+      "name": { "es": "Pensamiento Crítico", "en": "Critical Thinking" },
+      "type": "soft",
+      "description": {
+        "es": "Capacidad para analizar información de manera objetiva y tomar decisiones fundamentadas.",
+        "en": "Ability to analyze information objectively and make well-founded decisions."
+      }
+    }
   ]
 }

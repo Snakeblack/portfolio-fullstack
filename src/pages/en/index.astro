@@ -11,11 +11,13 @@ import Footer from "../../components/Footer.astro";
 import CommonScripts from "../../components/CommonScripts.astro";
 import portfolioData from "../../data/portfolio.json";
 import { getTranslations } from "../../utils/translations.ts";
+import type { SkillEntry } from "../../types/portfolio";
 
 const currentLocale = "en";
 const t = getTranslations(currentLocale);
 
-const { personalInfo, social, experience, projects, skills } = portfolioData;
+const { personalInfo, social, experience, projects, skills: rawSkills } = portfolioData;
+const skills = rawSkills as SkillEntry[];
 ---
 
 <Layout 
@@ -23,15 +25,15 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
   description={`Professional portfolio of ${personalInfo.name}, a ${personalInfo.title.en.toLowerCase()} with expertise in Angular and .NET. Explore my projects and technical skills.`}
   lang={currentLocale}
 >
-  <!-- Navigation -->
+  <!-- Navegación -->
   <Navigation 
     name="MMRG"
     currentLocale={currentLocale}
   />
 
-  <!-- Main Content -->
+  <!-- Contenido Principal -->
   <main class="pt-20">
-    <!-- Hero Section -->
+    <!-- Sección Hero -->
     <HeroSection 
       greeting={personalInfo.greeting[currentLocale]}
       name="Manuel M. Retamozo G."
@@ -45,20 +47,20 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
       />
     </HeroSection>
 
-    <!-- About Section -->
+    <!-- Sección Sobre Mí -->
     <AboutSection 
       title={t.sections.about}
       content={personalInfo.about[currentLocale]}
     />
 
-    <!-- Work Experience Section -->
+    <!-- Sección Experiencia Laboral -->
     <ExperienceSection 
       title={t.sections.experience}
       experience={experience}
       currentLocale={currentLocale}
     />
 
-    <!-- Projects Section -->
+    <!-- Sección Proyectos -->
     <ProjectsSection 
       title={t.sections.projects}
       projects={projects}
@@ -67,20 +69,31 @@ const { personalInfo, social, experience, projects, skills } = portfolioData;
       maxProjects={3}
     />
 
-    <!-- Skills Section -->
+    <!-- Sección Habilidades -->
     <SkillsSection 
       title={t.sections.skills}
       skills={skills}
+      categories={[
+        { id: "frontend", name: t.skillCategories.frontend },
+        { id: "backend", name: t.skillCategories.backend },
+        { id: "database", name: t.skillCategories.database },
+        { id: "devops", name: t.skillCategories.devops },
+        { id: "design", name: t.skillCategories.design },
+        { id: "other", name: t.skillCategories.other },
+      ]}
+      technicalSkillsTitle={t.headings.technicalSkills}
+      softSkillsTitle={t.headings.softSkills}
+      currentLocale={currentLocale}
     />
   </main>
 
-  <!-- Footer -->
+  <!-- Pie de Página -->
   <Footer 
     builtWithText={t.ui.builtWith}
     andText={t.ui.and}
     copyrightName="Manuel Michael Retamozo García"
   />
 
-  <!-- Common Scripts -->
+  <!-- Scripts Comunes -->
   <CommonScripts />
 </Layout>

@@ -21,29 +21,11 @@ interface Props {
 const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
 const t = getTranslations(currentLocale as Locale);
 
-// Determina el estado 'showAll' desde el parámetro de URL
 const showAll = Astro.url.searchParams.get('show_all') === 'true';
 
-const currentMaxProjects = showAll ? projects.length : initialMaxProjects;
 const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
-
-// Construye la URL para el botón
-const params = new URLSearchParams(Astro.url.searchParams);
-if (showAll) {
-  params.delete('show_all');
-} else {
-  params.set('show_all', 'true');
-}
-const queryString = params.toString();
-// Asegura que Astro.url.pathname se use correctamente, especialmente si base está configurado
-const basePath = Astro.site ? new URL(Astro.site).pathname.replace(/\/$/, '') : '';
-const currentPath = Astro.url.pathname.startsWith(basePath) ? Astro.url.pathname.substring(basePath.length) : Astro.url.pathname;
-
-const buttonHref = `${currentPath || '/'}${queryString ? `?${queryString}` : ''}#projects`;
-
 const showAllId = `show-all-projects-btn`;
 
-// --- Copiado de SkillsSection para el estilo de chips ---
 const techColorMap: Record<string, { bg: string; text: string }> = {
   HTML: { bg: "#E34F26", text: "text-white" },
   CSS: { bg: "#1572B6", text: "text-white" },
@@ -103,7 +85,6 @@ const getTechChipStyles = (tech: string) => {
     : techColorMap["default"];
 
   const opacityValue = 0.6; // 60% opacity
-  const opacityClassSuffix = "60";
 
   let bgColorStyle = "";
   let bgClass = "";
@@ -111,8 +92,7 @@ const getTechChipStyles = (tech: string) => {
   if (styleInfo.bg.startsWith("#")) {
     bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
   } else {
-    const classes = styleInfo.bg.split(" ");
-    bgClass = classes.map((cls) => `${cls}/${opacityClassSuffix}`).join(" ");
+    bgClass = styleInfo.bg;
   }
 
   return {
@@ -121,43 +101,33 @@ const getTechChipStyles = (tech: string) => {
     textClass: styleInfo.text,
   };
 };
-// --- End of copied code ---
 ---
 
 <section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-  <div class="max-w-4xl">
-    <header class="flex items-center justify-between mb-12 scroll-animate-fast">
+  <div>
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 scroll-animate-fast">
       <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text text-pretty title-animate">
         {title}
       </h2>
-      {projects.length > initialMaxProjects && (
-        <button
-          id={showAllId}
-          type="button"
-          class="text-sm text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors cursor-pointer"
-          aria-expanded="false"
-        >
-          {t.actions.viewAll} 
-        </button>
-      )}
     </header>
 
     <div class="grid gap-12 md:gap-16 stagger-children" id="projects-list">
       {projects.map((project, idx) => (
-        <article class={`rounded-lg group project-card-hover${idx >= initialMaxProjects ? ' hidden' : ''}`} data-project-idx={idx}>
+        <article class={`rounded-lg group project-card-hover ${(!showAll && idx >= initialMaxProjects) ? 'hidden' : ''}`} data-project-idx={idx}>
           <a
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
             class="block relative"
           >
-            {/* Add a "New" badge for the latest project (index 0) */}
-            {idx === 0 && (
-              <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
-                {t.labels.newProject}
-              </span>
-            )}
+            
+            
             <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-t-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
+              {idx === 0 && (
+                <span class="absolute bottom-2 right-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
+                  {t.labels.newProject}
+                </span>
+              )}
               {project.screenshot ? (
                 <img
                   src={project.screenshot}
@@ -212,30 +182,75 @@ const getTechChipStyles = (tech: string) => {
         </article>
       ))}
     </div>
-    <script is:inline>
+
+    {projects.length > initialMaxProjects && (
+      <div class="mt-12 text-center"> 
+        <button
+          id={showAllId}
+          type="button"
+          class="px-6 py-3 border border-light-accent dark:border-dark-accent text-light-accent dark:text-dark-accent rounded-md hover:bg-light-accent hover:text-light-card-bg dark:hover:bg-dark-accent dark:hover:text-dark-card-bg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent cursor-pointer"
+          aria-expanded={showAll ? "true" : "false"} 
+        >
+          {buttonText} 
+        </button>
+      </div>
+    )}
+    <script is:inline define:vars={{
+        initialShowAllState: showAll,
+        initialMaxProjects,
+        viewAllText: t.actions.viewAll,
+        viewLessText: t.actions.viewLess,
+        buttonId: showAllId,
+        projectsListId: 'projects-list'
+    }}>
       document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById("show-all-projects-btn");
-        if (btn) {
-          const projects = document.querySelectorAll('#projects-list [data-project-idx]');
-          let showingAll = false;
-          const viewAllText = "{t.actions.viewAll}";
-          const viewLessText = "{t.actions.viewLess}";
-          const initialMax = 3;
-          btn.addEventListener('click', () => {
-            showingAll = !showingAll;
-            projects.forEach((el, idx) => {
-              if (showingAll || idx < initialMax) {
-                el.classList.remove('hidden');
-              } else {
-                el.classList.add('hidden');
-              }
-            });
-            btn.textContent = showingAll ? "Mostrar menos" : "Ver todos";
-            btn.setAttribute('aria-expanded', showingAll);
-          });
-        } else {
-          console.error('Button not found');
+        const btn = document.getElementById(buttonId);
+        if (!btn) {
+          console.error(`Button with id '${buttonId}' not found`);
+          return;
         }
+
+        const projectsContainer = document.getElementById(projectsListId);
+        if (!projectsContainer) {
+          console.error(`Projects container with id '${projectsListId}' not found`);
+          return;
+        }
+        
+        const allProjectCards = Array.from(projectsContainer.querySelectorAll('article[data-project-idx]'));
+        let isCurrentlyShowingAll = initialShowAllState;
+
+        function updateButtonAppearance() {
+          btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
+          btn.setAttribute('aria-expanded', isCurrentlyShowingAll.toString());
+        }
+
+        function updateProjectsVisibility() {
+          allProjectCards.forEach((card, idx) => {
+            if (isCurrentlyShowingAll || idx < initialMaxProjects) {
+              card.classList.remove('hidden');
+            } else {
+              card.classList.add('hidden');
+            }
+          });
+        }
+
+        btn.addEventListener('click', () => {
+          isCurrentlyShowingAll = !isCurrentlyShowingAll;
+          
+          updateButtonAppearance();
+          updateProjectsVisibility();
+
+          // Update URL
+          const url = new URL(window.location.href);
+          if (isCurrentlyShowingAll) {
+            url.searchParams.set('show_all', 'true');
+          } else {
+            url.searchParams.delete('show_all');
+          }
+          url.hash = '#projects';
+          
+          history.pushState({}, '', url.toString());
+        });
       });
     </script>
   </div>
