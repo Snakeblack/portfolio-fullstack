@@ -11,26 +11,26 @@ interface Props {
 const { greeting, name, description, sleepingMessage, email, getInTouchText } = Astro.props;
 ---
 
-<section id="hero-animation-container" class="max-w-6xl mx-auto px-6 py-8 md:py-16 lg:py-24 scroll-animate">
+<section id="hero" class="max-w-6xl mx-auto px-6 py-16 md:py-20 lg:py-28 scroll-animate scroll-mt-16">
   <header class="scroll-animate-fast">
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-light-text dark:text-dark-text mb-6 leading-tight text-pretty">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-light-text dark:text-dark-text mb-6 leading-tight text-pretty title-animate">
       {greeting} <span class="text-light-accent dark:text-dark-accent">{name}</span>
     </h1>
   </header>
   
-  <p class="text-xl md:text-2xl text-light-subtext dark:text-dark-subtext mb-8 leading-relaxed scroll-animate-fast text-balance" style="transition-delay: 0.1s;">
+  <p class="text-xl md:text-2xl text-light-subtext dark:text-dark-subtext mb-10 leading-relaxed scroll-animate-fast text-balance" style="transition-delay: 0.1s;">
     {description}
   </p>
 
-  <div id="status-container" class="flex flex-col sm:flex-row items-start gap-6 mb-8 scroll-animate-fast" style="transition-delay: 0.2s;">
-    <div id="sleeping-message-container" class="items-center gap-2 text-sm text-light-subtext dark:text-dark-subtext text-pretty" style="display: none;">
+  <div id="status-container" class="flex flex-col sm:flex-row items-start gap-6 mb-10 scroll-animate-fast" style="transition-delay: 0.2s;">
+    <div id="sleeping-message-container" class="flex items-center gap-2 text-sm text-light-subtext dark:text-dark-subtext text-pretty" style="display: none;">
       <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block"></div>
       <span>{sleepingMessage}</span>
     </div>
     
     <a
       href={`mailto:${email}?subject=Project Discussion Opportunity`}
-      class="inline-flex items-center gap-2 text-sm font-medium text-light-accent dark:text-dark-accent px-4 py-2 border border-light-accent/30 dark:border-dark-accent/30 rounded-md hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:border-light-accent dark:hover:border-dark-accent hover:bg-light-accent/10 dark:hover:bg-dark-accent/10 transition-all duration-300 ease-in-out text-pretty"
+      class="inline-flex items-center gap-2 text-sm font-medium text-light-accent dark:text-dark-accent px-5 py-2.5 border border-light-accent/40 dark:border-dark-accent/40 rounded-lg hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:border-light-accent dark:hover:border-dark-accent hover:bg-light-accent/10 dark:hover:bg-dark-accent/10 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent text-pretty shadow-sm hover:shadow-md"
     >
       <span>{getInTouchText}</span>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

@@ -20,7 +20,7 @@ const softSkills = skills.filter(
   (skill) => skill.type === "soft"
 ) as SoftSkillEntry[];
 
-const techColorMap: Record<string, { bg: string; text: string }> = {
+const techColorMap: Record<string, { bg: string; text: string; border?: string }> = {
   HTML: { bg: "#E34F26", text: "text-white" },
   CSS: { bg: "#1572B6", text: "text-white" },
   JavaScript: { bg: "#F7DF1E", text: "text-black" },
@@ -33,7 +33,7 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   MongoDB: { bg: "#47A248", text: "text-white" },
   "SQL Server": { bg: "#CC2927", text: "text-white" },
   Firebase: { bg: "#FFCA28", text: "text-black" },
-  Tailwindcss: { bg: "#06B6D4", text: "text-black" },
+  Tailwindcss: { bg: "#06B6D4", text: "text-black" }, // Matched case from data
   Bootstrap: { bg: "#7952B3", text: "text-white" },
   Astro: { bg: "#FF5D01", text: "text-white" },
   "Next.js": { bg: "#000000", text: "text-white" },
@@ -48,17 +48,15 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   Figma: { bg: "#F24E1E", text: "text-white" },
   "Angular Material": { bg: "#DD0031", text: "text-white" },
   default: {
-    bg: "bg-light-tag-bg dark:bg-dark-tag-bg",
+    bg: "bg-light-card-bg dark:bg-dark-card-bg", // Changed to card-bg for default
     text: "text-light-text dark:text-dark-text",
+    border: "border border-light-border dark:border-dark-border" // Added border for default
   },
 };
 
 const hexToRgba = (hex: string, alpha: number = 1): string => {
-  let r = 0,
-    g = 0,
-    b = 0;
+  let r = 0, g = 0, b = 0;
   const hexValue = hex.startsWith("#") ? hex.slice(1) : hex;
-
   if (hexValue.length === 3) {
     r = parseInt(hexValue[0] + hexValue[0], 16);
     g = parseInt(hexValue[1] + hexValue[1], 16);
@@ -81,206 +79,89 @@ const getSkillStyles = (skillName: string) => {
     ? techColorMap[normalizedSkillKey]
     : techColorMap["default"];
 
-  const opacityValue = 0.6; 
-  const opacityClassSuffix = "60";
+  const solidOpacityForTextContrast = 0.85; 
 
   let bgColorStyle = "";
-  let bgClass = "";
+  let bgClass = ""; 
+  let finalBorderClass = styleInfo.border || "";
 
   if (styleInfo.bg.startsWith("#")) {
-    bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
+    bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, solidOpacityForTextContrast)};`;
   } else {
-    const classes = styleInfo.bg.split(" ");
-    bgClass = classes
-      .map((cls) => `${cls}/${opacityClassSuffix}`)
-      .join(" ");
+    bgClass = styleInfo.bg;
   }
-
+  
   return {
     bgColorStyle: bgColorStyle,
     bgClass: bgClass,
     textClass: styleInfo.text,
+    borderClass: finalBorderClass
   };
 };
+
 ---
 
-<section id="skills-section" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate">
-  <div>
-    <header class="scroll-animate-fast">
-      <h2
-        class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-8 title-animate"
-      >
-        {title}
-      </h2>
-    </header>
+<section id="skills" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
+  <header class="text-center scroll-animate-fast">
+    <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
+      {title}
+    </h2>
+  </header>
 
-    <div class="mb-12">
-      <h3 class="text-2xl font-semibold text-light-text dark:text-dark-text mb-6">
-        {technicalSkillsTitle}
-      </h3>
-      <div class="flex flex-wrap gap-4 mb-8" id="skill-filters">
-        <button
-          data-filter="all"
-          class="filter-button active px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300 bg-light-accent dark:bg-dark-accent text-white"
-        >
-          Todas
-        </button>
-        {categories.map((category) => (
-          <button
-            data-filter={category.id}
-            class="filter-button px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300 bg-light-tag-bg dark:bg-dark-tag-bg text-light-text dark:text-dark-text hover:bg-light-accent hover:dark:bg-dark-accent hover:text-white cursor-pointer"
+  <div class="scroll-animate-fast" style="transition-delay: 0.1s;">
+    <h3 class="text-2xl md:text-3xl font-semibold text-light-text dark:text-dark-text mb-8 text-center md:text-left title-animate">
+      {technicalSkillsTitle}
+    </h3>
+    <div class="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4 mb-12 md:mb-16 stagger-children">
+      {technicalSkills.map((skill, index) => {
+        const { bgColorStyle, bgClass, textClass, borderClass } = getSkillStyles(skill.name);
+        return (
+          <div
+            style={bgColorStyle}
+            class={`skill-item ${bgClass} ${textClass} ${borderClass} px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105`}
+            data-category={skill.category}
           >
-            {category.name}
-          </button>
-        ))}
-      </div>
-      <div class="flex flex-wrap gap-3 skills-container">
-        {technicalSkills.map((skill) => {
-          const { bgColorStyle, bgClass, textClass } = getSkillStyles(skill.name);
-          return (
-            <div
-              class={`skill-item ${bgClass} ${textClass} px-3 py-1 rounded-md text-xs font-medium shadow-md transition-all duration-200 ease-in-out transform hover:scale-105`}
-              style={bgColorStyle}
-              data-category={skill.category}
-            >
-              {skill.name}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-
-    <div>
-      <h3 class="text-2xl font-semibold text-light-text dark:text-dark-text mb-8">
-        {softSkillsTitle}
-      </h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {softSkills.map((skill) => (
-          <div class="bg-light-card dark:bg-dark-card-bg p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col h-full">
-            <h4 class="text-lg font-semibold text-light-heading dark:text-dark-heading mb-2">{skill.name[currentLocale]}</h4>
-            {skill.description && <p class="text-sm text-light-text dark:text-dark-text flex-grow">{skill.description[currentLocale]}</p>}
+            {/* Keep data-category if used for filtering, though not implemented here */}
+            {skill.name}
           </div>
-        ))}
-      </div>
+        );
+      })}
+    </div>
+  </div>
+
+  <div class="scroll-animate-fast" style="transition-delay: 0.2s;">
+    <h3 class="text-2xl md:text-3xl font-semibold text-light-text dark:text-dark-text mb-8 text-center md:text-left title-animate">
+      {softSkillsTitle}
+    </h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 stagger-children">
+      {softSkills.map((skill, index) => {
+        const skillName = typeof skill.name === 'string' ? skill.name : skill.name[currentLocale as keyof TranslatedString];
+        const skillDescription = skill.description 
+          ? (typeof skill.description === 'string' ? skill.description : skill.description[currentLocale as keyof TranslatedString]) 
+          : '';
+        return (
+          <article 
+            class="soft-skill-card bg-light-card-bg dark:bg-dark-card-bg p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1"
+            style={`transition-delay: ${index * 50}ms;`}
+          >
+            <h4 class="text-lg font-semibold text-light-accent dark:text-dark-accent mb-2.5">{skillName}</h4>
+            {skillDescription && (
+              <p class="text-sm text-light-subtext dark:text-dark-subtext text-balance leading-relaxed">
+                {skillDescription}
+              </p>
+            )}
+          </article>
+        );
+      })}
     </div>
   </div>
 </section>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const filterButtons = document.querySelectorAll(".filter-button");
-    const skillItems = document.querySelectorAll(".skill-item") as NodeListOf<HTMLElement>;
-    const skillsContainer = document.querySelector(".skills-container") as HTMLElement | null;
-
-    if (!skillsContainer) return;
-
-    const animateItems = (itemsToShow: HTMLElement[], itemsToHide: HTMLElement[]) => {
-      // Stagger hiding animation
-      itemsToHide.forEach((item, index) => {
-        setTimeout(() => {
-          item.style.transform = 'scale(0.5)';
-          item.style.opacity = '0';
-          setTimeout(() => {
-            item.style.display = 'none';
-          }, 150); // Corresponds to half of the transition duration
-        }, index * 50); // Stagger delay
-      });
-
-      // Stagger showing animation
-      setTimeout(() => {
-        const fragment = document.createDocumentFragment();
-        itemsToShow.forEach(item => {
-            item.style.display = ''; // Reset display before appending
-            fragment.appendChild(item);
-        });
-        skillsContainer.innerHTML = ''; // Clear container
-        skillsContainer.appendChild(fragment); // Append all at once
-
-        itemsToShow.forEach((item, index) => {
-            // Force reflow/repaint before animation for items that were 'display: none'
-            // Accessing offsetHeight is a common trick to trigger reflow
-            void item.offsetHeight;
-            setTimeout(() => {
-                item.style.transform = 'scale(1)';
-                item.style.opacity = '1';
-            }, index * 70 + 50); // Stagger delay for showing
-        });
-      }, itemsToHide.length > 0 ? (itemsToHide.length * 50 + 150 + 50) : 50);
-    };
-
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const filterValue = button.getAttribute("data-filter");
-
-        filterButtons.forEach(btn => btn.classList.remove("active", "bg-light-accent", "dark:bg-dark-accent", "text-white"));
-        filterButtons.forEach(btn => {
-            if (btn !== button) {
-                btn.classList.add("bg-light-tag-bg", "dark:bg-dark-tag-bg", "text-light-text", "dark:text-dark-text", "hover:bg-light-accent", "hover:dark:bg-dark-accent", "hover:text-white");
-                btn.classList.remove("active", "bg-light-accent", "dark:bg-dark-accent", "text-white");
-            } else {
-                btn.classList.add("active", "bg-light-accent", "dark:bg-dark-accent", "text-white");
-                btn.classList.remove("bg-light-tag-bg", "dark:bg-dark-tag-bg", "text-light-text", "dark:text-dark-text");
-            }
-        });
-
-        const itemsToShow: HTMLElement[] = [];
-        const itemsToHide: HTMLElement[] = [];
-
-        skillItems.forEach((item) => {
-          const itemCategory = item.dataset.category;
-          if (filterValue === "all" || itemCategory === filterValue) {
-            itemsToShow.push(item);
-          } else {
-            itemsToHide.push(item);
-          }
-        });
-        
-        animateItems(itemsToShow, itemsToHide);
-      });
-    });
-
-    // Initial animation for all items if "All" is default
-    const initialActiveFilterButton = document.querySelector('.filter-button.active');
-    const initialFilter = initialActiveFilterButton ? initialActiveFilterButton.getAttribute('data-filter') : 'all';
-
-    if (initialFilter === 'all') {
-        const allItemsInitially = Array.from(skillItems);
-        // Temporarily hide all, then animate in
-        allItemsInitially.forEach(item => {
-            item.style.opacity = '0';
-            item.style.transform = 'scale(0.5)';
-            item.style.display = ''; // Ensure display is not none
-        });
-        
-        // Force reflow before starting animation
-        if (skillsContainer) void skillsContainer.offsetHeight;
-
-        allItemsInitially.forEach((item, index) => {
-            setTimeout(() => {
-                item.style.opacity = '1';
-                item.style.transform = 'scale(1)';
-            }, index * 70 + 100); // Stagger delay
-        });
-    } else {
-      // Handle if a different filter is active by default (e.g. from query param)
-      // This part can be expanded if needed.
-       const itemsToShow: HTMLElement[] = [];
-       const itemsToHide: HTMLElement[] = [];
-       skillItems.forEach((item) => {
-          const itemCategory = item.dataset.category;
-          if (itemCategory === initialFilter) {
-            itemsToShow.push(item);
-          } else {
-            itemsToHide.push(item);
-          }
-        });
-        animateItems(itemsToShow, itemsToHide);
-    }
-  });
-</script>
-
 <style>
   .skill-item {
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    line-height: 1.25; /* Ensure consistent line height */
+  }
+  .soft-skill-card {
+    /* Add any specific styles for soft skill cards if needed */
   }
 </style>

@@ -4,7 +4,7 @@ import { getTranslations, type Locale } from '../utils/translations';
 interface ProjectItem {
   name: string;
   description: { [key: string]: string };
-  url: string;
+  url?: string; // Made url optional to match data
   technologies?: string[];
   year: string;
   screenshot?: string;
@@ -14,14 +14,15 @@ interface Props {
   title: string;
   projects: ProjectItem[];
   currentLocale: string;
-  viewAllText: string;
+  viewAllText?: string; // Made optional as it's derived
   maxProjects?: number;
 }
 
 const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
 const t = getTranslations(currentLocale as Locale);
 
-const showAll = Astro.url.searchParams.get('show_all') === 'true';
+const urlParams = new URLSearchParams(Astro.url.search);
+const showAll = urlParams.get('show_all') === 'true';
 
 const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
 const showAllId = `show-all-projects-btn`;
@@ -38,7 +39,7 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   "Node.js": { bg: "#339933", text: "text-white" },
   MongoDB: { bg: "#47A248", text: "text-white" },
   "SQL Server": { bg: "#CC2927", text: "text-white" },
-  MySQL: { bg: "#4479A1", text: "text-white" },
+  MySQL: { bg: "#4479A1", text: "text-white" }, // Added MySQL from project data
   Firebase: { bg: "#FFCA28", text: "text-black" },
   Tailwind: { bg: "#06B6D4", text: "text-black" },
   Tailwindcss: { bg: "#06B6D4", text: "text-black" },
@@ -53,6 +54,7 @@ const techColorMap: Record<string, { bg: string; text: string }> = {
   Mdx: { bg: "#F9A825", text: "text-black" },
   "Clean Code": { bg: "#A4C639", text: "text-black" },
   "Reactive Forms": { bg: "#DD0031", text: "text-white" },
+  "API GEMINI": { bg: "#4285F4", text: "text-white" }, // Added API GEMINI from project data
   default: {
     bg: "bg-light-tag-bg dark:bg-dark-tag-bg",
     text: "text-light-text dark:text-dark-text",
@@ -71,7 +73,7 @@ const hexToRgba = (hex: string, alpha: number = 1): string => {
     g = parseInt(hexValue.slice(2, 4), 16);
     b = parseInt(hexValue.slice(4, 6), 16);
   } else {
-    return `rgba(0,0,0,0)`;
+    return `rgba(0,0,0,0)`; // Should not happen with valid hex
   }
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
@@ -84,7 +86,7 @@ const getTechChipStyles = (tech: string) => {
     ? techColorMap[normalizedTechKey]
     : techColorMap["default"];
 
-  const opacityValue = 0.6; // 60% opacity
+  const opacityValue = 0.7; // Adjusted opacity for better visibility
 
   let bgColorStyle = "";
   let bgClass = "";
@@ -92,7 +94,9 @@ const getTechChipStyles = (tech: string) => {
   if (styleInfo.bg.startsWith("#")) {
     bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
   } else {
-    bgClass = styleInfo.bg;
+    // For class-based backgrounds, Tailwind's opacity utility (e.g., bg-blue-500/70) is preferred.
+    // However, applying it dynamically here is tricky. We'll assume direct classes are fine or adjust if needed.
+    bgClass = styleInfo.bg; 
   }
 
   return {
@@ -104,154 +108,137 @@ const getTechChipStyles = (tech: string) => {
 ---
 
 <section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-  <div>
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 scroll-animate-fast">
-      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text text-pretty title-animate">
-        {title}
-      </h2>
-    </header>
-
-    <div class="grid gap-12 md:gap-16 stagger-children" id="projects-list">
-      {projects.map((project, idx) => (
-        <article class={`rounded-lg group project-card-hover ${(!showAll && idx >= initialMaxProjects) ? 'hidden' : ''}`} data-project-idx={idx}>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="block relative"
-          >
-            
-            
-            <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-t-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
-              {idx === 0 && (
-                <span class="absolute bottom-2 right-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
-                  {t.labels.newProject}
-                </span>
-              )}
-              {project.screenshot ? (
-                <img
-                  src={project.screenshot}
-                  alt={`Screenshot of ${project.name}`}
-                  class="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-110 group-hover:brightness-90"
-                  loading="lazy"
-                />
-              ) : (
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <div class="text-light-subtext dark:text-dark-subtext">
-                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                    </svg>
-                  </div>
-                </div>
-              )}
-              <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <svg class="w-6 h-6 text-light-subtext dark:text-dark-subtext" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-              </div>
+  <header class="text-center scroll-animate-fast">
+    <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
+      {title}
+    </h2>
+  </header>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
+    {(showAll ? projects : projects.slice(0, initialMaxProjects)).map((project, index) => {
+      const projectDescription = project.description[currentLocale as keyof typeof project.description] || project.description["en"];
+      return (
+        <article 
+          class="project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast"
+          style={`transition-delay: ${index * 100}ms;`}
+        >
+          {project.screenshot && (
+            <div class="relative w-full h-48 overflow-hidden">
+              <img 
+                src={project.screenshot}
+                alt={`Screenshot of ${project.name}`}
+                class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 group-hover:brightness-95"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div class="p-4 rounded-b-lg">
-              <header class="flex items-center justify-between mb-2">
-                <h3 class="text-xl font-semibold text-light-text dark:text-dark-text group-hover:text-light-accent dark:group-hover:text-dark-accent transition-colors text-pretty">
-                  {project.name}
-                </h3>
-                <span class="text-sm text-light-subtext dark:text-dark-subtext">
-                  {project.year}
-                </span>
-              </header>
-              <p class="text-light-text dark:text-dark-text leading-relaxed text-balance">
-                {project.description[currentLocale]}
-              </p>
-              {project.technologies && project.technologies.length > 0 && (
-                <div class="flex flex-wrap gap-2 mt-4">
-                  {project.technologies.slice(0, 4).map((tech) => {
-                    const styles = getTechChipStyles(tech);
+          )}
+          <div class="p-6 flex flex-col flex-grow">
+            <h3 class="text-xl font-semibold text-light-text dark:text-dark-text mb-2">{project.name}</h3>
+            <p class="text-sm text-light-subtext dark:text-dark-subtext mb-4 flex-grow text-balance leading-relaxed">
+              {projectDescription}
+            </p>
+            {project.technologies && project.technologies.length > 0 && (
+              <div class="mb-4">
+                <h4 class="text-xs font-semibold uppercase tracking-wider text-light-subtext dark:text-dark-subtext mb-2">
+                  {currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
+                </h4>
+                <div class="flex flex-wrap gap-2">
+                  {project.technologies.map(tech => {
+                    const { bgColorStyle, bgClass, textClass } = getTechChipStyles(tech);
                     return (
-                      <span
-                        class={`px-3 py-1 text-xs font-medium rounded-md shadow-sm transition-transform duration-200 ease-in-out hover:scale-105 ${styles.textClass} ${styles.bgClass}`}
-                        style={styles.bgColorStyle}
+                      <span 
+                        style={bgColorStyle}
+                        class={`tech-chip ${bgClass} ${textClass} px-3 py-1 rounded-full text-[0.7rem] font-medium shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105`}
                       >
                         {tech}
                       </span>
                     );
                   })}
                 </div>
+              </div>
+            )}
+            <div class="mt-auto pt-4 flex items-center justify-between border-t border-light-border/50 dark:border-dark-border/50">
+              <span class="text-xs text-light-subtext dark:text-dark-subtext italic">{project.year}</span>
+              {project.url && (
+                <a 
+                  href={project.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label={`View project ${project.name}`}
+                  class="inline-flex items-center gap-1.5 text-xs font-medium text-light-accent dark:text-dark-accent hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:underline transition-colors duration-300 ease-in-out"
+                >
+                  {currentLocale === 'es' ? 'Ver Proyecto' : 'View Project'}
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                </a>
               )}
             </div>
-          </a>
+          </div>
         </article>
-      ))}
-    </div>
-
-    {projects.length > initialMaxProjects && (
-      <div class="mt-12 text-center"> 
-        <button
-          id={showAllId}
-          type="button"
-          class="px-6 py-3 border border-light-accent dark:border-dark-accent text-light-accent dark:text-dark-accent rounded-md hover:bg-light-accent hover:text-light-card-bg dark:hover:bg-dark-accent dark:hover:text-dark-card-bg transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent cursor-pointer"
-          aria-expanded={showAll ? "true" : "false"} 
-        >
-          {buttonText} 
-        </button>
-      </div>
-    )}
-    <script is:inline define:vars={{
-        initialShowAllState: showAll,
-        initialMaxProjects,
-        viewAllText: t.actions.viewAll,
-        viewLessText: t.actions.viewLess,
-        buttonId: showAllId,
-        projectsListId: 'projects-list'
-    }}>
-      document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById(buttonId);
-        if (!btn) {
-          console.error(`Button with id '${buttonId}' not found`);
-          return;
-        }
-
-        const projectsContainer = document.getElementById(projectsListId);
-        if (!projectsContainer) {
-          console.error(`Projects container with id '${projectsListId}' not found`);
-          return;
-        }
-        
-        const allProjectCards = Array.from(projectsContainer.querySelectorAll('article[data-project-idx]'));
-        let isCurrentlyShowingAll = initialShowAllState;
-
-        function updateButtonAppearance() {
-          btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
-          btn.setAttribute('aria-expanded', isCurrentlyShowingAll.toString());
-        }
-
-        function updateProjectsVisibility() {
-          allProjectCards.forEach((card, idx) => {
-            if (isCurrentlyShowingAll || idx < initialMaxProjects) {
-              card.classList.remove('hidden');
-            } else {
-              card.classList.add('hidden');
-            }
-          });
-        }
-
-        btn.addEventListener('click', () => {
-          isCurrentlyShowingAll = !isCurrentlyShowingAll;
-          
-          updateButtonAppearance();
-          updateProjectsVisibility();
-
-          // Update URL
-          const url = new URL(window.location.href);
-          if (isCurrentlyShowingAll) {
-            url.searchParams.set('show_all', 'true');
-          } else {
-            url.searchParams.delete('show_all');
-          }
-          url.hash = '#projects';
-          
-          history.pushState({}, '', url.toString());
-        });
-      });
-    </script>
+      );
+    })}
   </div>
+
+  {projects.length > initialMaxProjects && (
+    <div class="mt-12 md:mt-16 text-center scroll-animate-fast" style="transition-delay: 0.2s;">
+      <a 
+        href={showAll ? Astro.url.pathname.split('?')[0] : `${Astro.url.pathname.split('?')[0]}?show_all=true`} 
+        id={showAllId}
+        class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-light-accent dark:bg-dark-accent hover:bg-light-accent-hover dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg"
+        role="button"
+        aria-pressed={showAll ? "true" : "false"}
+      >
+        {buttonText}
+      </a>
+    </div>
+  )}
 </section>
+
+<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId, projectsListId: "projects-list" }}>
+  // Script for handling client-side toggle if JS is enabled, for smoother UX without full page reload.
+  // This is an enhancement and the Astro component works without it.
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById(buttonId);
+    if (!btn) return;
+
+    let isCurrentlyShowingAll = initialShowAllState;
+
+    const updateButtonAppearance = () => {
+      btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
+      btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent default link navigation
+      isCurrentlyShowingAll = !isCurrentlyShowingAll;
+      
+      const currentUrl = new URL(window.location.href);
+      if (isCurrentlyShowingAll) {
+        currentUrl.searchParams.set('show_all', 'true');
+      } else {
+        currentUrl.searchParams.delete('show_all');
+      }
+      history.pushState({}, '', currentUrl.toString()); // Update URL without reload
+
+      // This script doesn't directly hide/show items to avoid duplicating Astro's logic.
+      // It relies on a page reload (or a more complex client-side rendering if implemented)
+      // For now, we can force a reload to reflect the state, or simply let Astro handle it on next navigation.
+      // For a smoother SPA-like feel without full client-side rendering of the list, 
+      // one might add classes to hide/show items directly here.
+      // However, to keep it simple and leverage Astro's SSR primarily:
+      window.location.href = currentUrl.toString(); // Force reload to reflect new state
+      // updateButtonAppearance(); // Call this if not reloading
+    });
+  });
+</script>
+
+<style>
+  .tech-chip {
+    /* Base styles for tech chips */
+    line-height: 1.25;
+  }
+  .project-card-hover:hover .group-hover\:opacity-100 {
+    opacity: 1;
+  }
+</style>
