@@ -54,7 +54,7 @@ html {
 
   .title-animate {
     transform: translateY(20px); /* Keep titles slightly less offset */
-    transition-duration: 0.7s; /* Specific duration for titles */
+    transition-duration: 0.7s; /* Specific duration for titles, uses the cubic-bezier from the group */
   }
 
   .scroll-animate.in-view,
@@ -75,54 +75,6 @@ html {
   }
 
   .stagger-children.in-view > * {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Nueva animación para títulos de sección */
-  .title-animate {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-  }
-
-  .title-animate.in-view {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Nuevo efecto hover para tarjetas de proyectos */
-  .project-card-hover {
-    transition-property: transform, box-shadow;
-    transition-duration: 0.3s;
-    transition-timing-function: ease-in-out;
-    /* Ensure original card background is explicitly set if needed, or rely on parent */
-  }
-
-  .project-card-hover:hover {
-    transform: translateY(-5px);
-    /* New shadow for light mode using accent color */
-    box-shadow: 0 8px 25px -5px oklch(0.45 0.15 260 / 0.15), 
-                0 0 0 1px oklch(0.45 0.15 260 / 0.2);
-    /* background-color property removed from here */
-  }
-
-  /* Sombra específica para tarjetas en modo oscuro al pasar el cursor */
-  .dark .project-card-hover:hover {
-    /* transform is inherited if not overridden */
-    /* New shadow for dark mode using accent color */
-    box-shadow: 0 8px 25px -5px oklch(0.7 0.15 260 / 0.2), 
-                0 0 0 1px oklch(0.7 0.15 260 / 0.3);
-    /* background-color property removed from here */
-  }
-
-  .experience-item {
-    opacity: 0;
-    transform: translateY(2.5rem); /* 40px */
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-  }
-
-  .experience-item.opacity-100.translate-y-0 {
     opacity: 1;
     transform: translateY(0);
   }

@@ -114,12 +114,14 @@ const getTechChipStyles = (tech: string) => {
     </h2>
   </header>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
-    {(showAll ? projects : projects.slice(0, initialMaxProjects)).map((project, index) => {
+    {projects.map((project, index) => {
       const projectDescription = project.description[currentLocale as keyof typeof project.description] || project.description["en"];
+      const isVisibleInitially = index < initialMaxProjects;
       return (
         <article 
-          class="project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast"
+          class={`project-item ${!showAll && !isVisibleInitially ? 'hidden' : ''} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast`}
           style={`transition-delay: ${index * 100}ms;`}
+          data-project-index={index}
         >
           {project.screenshot && (
             <div class="relative w-full h-48 overflow-hidden">
@@ -195,22 +197,36 @@ const getTechChipStyles = (tech: string) => {
   )}
 </section>
 
-<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId, projectsListId: "projects-list" }}>
-  // Script for handling client-side toggle if JS is enabled, for smoother UX without full page reload.
-  // This is an enhancement and the Astro component works without it.
+<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId }}>
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById(buttonId);
-    if (!btn) return;
+    const projectItems = document.querySelectorAll('.project-item');
+    if (!btn || projectItems.length === 0) return;
 
     let isCurrentlyShowingAll = initialShowAllState;
 
-    const updateButtonAppearance = () => {
+    const updateButtonAndItems = () => {
       btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
       btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
+
+      projectItems.forEach((item, index) => {
+        if (isCurrentlyShowingAll) {
+          item.classList.remove('hidden');
+        } else {
+          if (index >= initialMaxProjects) {
+            item.classList.add('hidden');
+          } else {
+            item.classList.remove('hidden');
+          }
+        }
+      });
     };
 
+    // Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
+    // updateButtonAndItems(); // Astro handles initial render, so this might be redundant or cause a flash
+
     btn.addEventListener('click', (e) => {
-      e.preventDefault(); // Prevent default link navigation
+      e.preventDefault(); 
       isCurrentlyShowingAll = !isCurrentlyShowingAll;
       
       const currentUrl = new URL(window.location.href);
@@ -219,16 +235,9 @@ const getTechChipStyles = (tech: string) => {
       } else {
         currentUrl.searchParams.delete('show_all');
       }
-      history.pushState({}, '', currentUrl.toString()); // Update URL without reload
+      history.pushState({}, '', currentUrl.toString()); 
 
-      // This script doesn't directly hide/show items to avoid duplicating Astro's logic.
-      // It relies on a page reload (or a more complex client-side rendering if implemented)
-      // For now, we can force a reload to reflect the state, or simply let Astro handle it on next navigation.
-      // For a smoother SPA-like feel without full client-side rendering of the list, 
-      // one might add classes to hide/show items directly here.
-      // However, to keep it simple and leverage Astro's SSR primarily:
-      window.location.href = currentUrl.toString(); // Force reload to reflect new state
-      // updateButtonAppearance(); // Call this if not reloading
+      updateButtonAndItems(); // Update UI immediately
     });
   });
 </script>
