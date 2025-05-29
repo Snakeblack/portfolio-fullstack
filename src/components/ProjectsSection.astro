@@ -149,8 +149,14 @@ const getTechChipStyles = (tech: string) => {
             href={project.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="block"
+            class="block relative"
           >
+            {/* Add a "New" badge for the latest project (index 0) */}
+            {idx === 0 && (
+              <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
+                {t.labels.newProject}
+              </span>
+            )}
             <div class="bg-light-card-bg dark:bg-dark-card-bg rounded-t-lg h-64 md:h-80 mb-6 relative overflow-hidden group-hover:bg-light-border dark:group-hover:bg-dark-border transition-colors">
               {project.screenshot ? (
                 <img

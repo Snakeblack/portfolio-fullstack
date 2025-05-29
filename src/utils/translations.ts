@@ -29,6 +29,9 @@ export const translations = {
       selectedProjects: 'Proyectos Seleccionados',
       getInTouch: 'Ponerse en contacto'
     },
+    labels: {
+      newProject: 'Nuevo'
+    },
     project: {
       screenshotAlt: "Captura de pantalla del proyecto"
     },
@@ -74,6 +77,9 @@ export const translations = {
       viewLess: 'Show less',
       selectedProjects: 'Selected Projects',
       getInTouch: 'Get in touch'
+    },
+    labels: { // Added new labels section
+      newProject: 'New'
     },
     project: {
       screenshotAlt: "Project screenshot"

@@ -89,6 +89,21 @@
   ],
   "projects": [
     {
+      "name": "DevTools MMRG",
+      "description": {
+        "es": "Optimiza tu desarrollo con DevTools MMRG: tu repositorio centralizado de herramientas de desarrollo esenciales. Cada utilidad viene con explicaciones claras generadas por IA, permitiéndote comprender y aplicar soluciones de manera rápida y efectiva, impulsando tu productividad y aprendizaje.",
+        "en": "Optimize your development with DevTools MMRG: your centralized repository of essential development tools. Each utility comes with clear AI-generated explanations, allowing you to quickly understand and apply solutions effectively, boosting your productivity and learning."
+      },
+      "url": "https://devtools.mretamozo.com/",
+      "technologies": [
+        "Astro",
+        "Tailwindcss",
+        "API GEMINI"
+      ],
+      "year": "2025",
+      "screenshot": "/assets/screenshots/devtools.avif"
+    },
+    {
       "name": "Baterias Express",
       "description": {
         "es": "Landing page para una servicio delivery de venta y reparaciones de baterias",
