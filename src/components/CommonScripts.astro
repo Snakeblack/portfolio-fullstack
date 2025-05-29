@@ -40,11 +40,8 @@
       window.updateThemeIcons(newTheme === 'dark');
     }
   }
-
   document.addEventListener('DOMContentLoaded', function() {
-    console.log("[CommonScripts] DOMContentLoaded event fired.");
     // GSAP and ScrollTrigger are already imported and registered statically arriba
-    console.log("[CommonScripts] GSAP and ScrollTrigger should be available.");
 
     // Theme initialization
     const savedTheme = localStorage.getItem('color-theme');
@@ -56,11 +53,8 @@
       currentTheme = 'dark';
     }
     applyTheme(currentTheme); 
-    localStorage.setItem('color-theme', currentTheme);
-
-    setTimeout(() => {
+    localStorage.setItem('color-theme', currentTheme);    setTimeout(() => {
       if (window.updateThemeIcons) {
-        console.log("[CommonScripts] Calling updateThemeIcons with theme:", currentTheme);
         window.updateThemeIcons(currentTheme === 'dark');
       } else {
         console.error("[CommonScripts] updateThemeIcons function not found at initial call time.");
@@ -82,14 +76,10 @@
           }
         }
       });
-    });
-
-    // GSAP ScrollTrigger animations
+    });    // GSAP ScrollTrigger animations
     const animatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
-    console.log(`[CommonScripts] Found ${animatedElements.length} elements for standard animation.`);
 
     animatedElements.forEach((el, index) => {
-      console.log(`[CommonScripts] Setting up GSAP for element ${index + 1}:`, el.id || el.tagName, el.classList.toString());
       gsap.fromTo(el, 
         { 
           opacity: 0,
@@ -100,25 +90,18 @@
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: el.classList.contains('scroll-animate-fast') ? 0.8 : 1,
-          scrollTrigger: {
+          duration: el.classList.contains('scroll-animate-fast') ? 0.8 : 1,          scrollTrigger: {
             trigger: el,
             start: "top bottom-=100px",
             toggleActions: "play none none none",
-            once: true,
-            onEnter: () => console.log(`[CommonScripts] ScrollTrigger onEnter for:`, el.id || el.tagName)
+            once: true
           }
         }
       );
-    });
-
-    const staggerContainers = document.querySelectorAll('.stagger-children');
-    console.log(`[CommonScripts] Found ${staggerContainers.length} stagger containers.`);
+    });    const staggerContainers = document.querySelectorAll('.stagger-children');
 
     staggerContainers.forEach((container, index) => {
-      console.log(`[CommonScripts] Setting up GSAP for stagger container ${index + 1}:`, container.id || container.tagName);
       const children = Array.from(container.children);
-      console.log(`[CommonScripts] Stagger container has ${children.length} children.`);
       gsap.fromTo(children, 
         { 
           opacity: 0, 
@@ -130,17 +113,13 @@
           y: 0,
           scale: 1,
           duration: 0.9,
-          stagger: 0.1,
-          scrollTrigger: {
+          stagger: 0.1,          scrollTrigger: {
             trigger: container,
             start: "top bottom-=100px",
             toggleActions: "play none none none",
-            once: true,
-            onEnter: () => console.log(`[CommonScripts] ScrollTrigger onEnter for stagger container:`, container.id || container.tagName)
+            once: true
           }
-        }
-      );
+        }      );
     });
-    console.log("[CommonScripts] GSAP animations setup complete.");
   });
 </script>

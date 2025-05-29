@@ -117,9 +117,8 @@ const getTechChipStyles = (tech: string) => {
     {projects.map((project, index) => {
       const projectDescription = project.description[currentLocale as keyof typeof project.description] || project.description["en"];
       const isVisibleInitially = index < initialMaxProjects;
-      return (
-        <article 
-          class={`project-item ${!showAll && !isVisibleInitially ? 'hidden' : ''} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast`}
+      return (        <article 
+          class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast`}
           style={`transition-delay: ${index * 100}ms;`}
           data-project-index={index}
         >
@@ -204,19 +203,28 @@ const getTechChipStyles = (tech: string) => {
     if (!btn || projectItems.length === 0) return;
 
     let isCurrentlyShowingAll = initialShowAllState;
-
+    
     const updateButtonAndItems = () => {
       btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
       btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
 
       projectItems.forEach((item, index) => {
         if (isCurrentlyShowingAll) {
-          item.classList.remove('hidden');
+          // Show all projects with animation
+          item.classList.remove('project-hidden');
+          item.classList.add('project-visible');
+          // Add a small delay for staggered animation
+          setTimeout(() => {
+            item.classList.add('project-animate-in');
+          }, index * 50);
         } else {
+          // Hide projects beyond initial max
           if (index >= initialMaxProjects) {
-            item.classList.add('hidden');
+            item.classList.remove('project-visible', 'project-animate-in');
+            item.classList.add('project-hidden');
           } else {
-            item.classList.remove('hidden');
+            item.classList.remove('project-hidden');
+            item.classList.add('project-visible', 'project-animate-in');
           }
         }
       });
@@ -227,6 +235,10 @@ const getTechChipStyles = (tech: string) => {
 
     btn.addEventListener('click', (e) => {
       e.preventDefault(); 
+      
+      // Disable button temporarily to prevent spam clicking
+      btn.style.pointerEvents = 'none';
+      
       isCurrentlyShowingAll = !isCurrentlyShowingAll;
       
       const currentUrl = new URL(window.location.href);
@@ -238,6 +250,11 @@ const getTechChipStyles = (tech: string) => {
       history.pushState({}, '', currentUrl.toString()); 
 
       updateButtonAndItems(); // Update UI immediately
+      
+      // Re-enable button after animation completes
+      setTimeout(() => {
+        btn.style.pointerEvents = 'auto';
+      }, 600);
     });
   });
 </script>
@@ -249,5 +266,53 @@ const getTechChipStyles = (tech: string) => {
   }
   .project-card-hover:hover .group-hover\:opacity-100 {
     opacity: 1;
+  }
+  
+  /* Project animation styles */
+  .project-hidden {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .project-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    height: auto;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .project-animate-in {
+    animation: projectFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  @keyframes projectFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  /* Ensure smooth grid transitions */
+  .grid {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Better hover animations */
+  .project-card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .project-card-hover:hover {
+    transform: translateY(-8px);
   }
 </style>

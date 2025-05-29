@@ -4,7 +4,7 @@
 <button 
   id="theme-toggle"
   onclick="window.toggleThemeAndIcons()" 
-  class="p-2 rounded-lg text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent hover:bg-light-card-bg dark:hover:bg-dark-card-bg transform hover:scale-110 transition-all duration-300 ease-in-out"
+  class="p-2 rounded-lg text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent hover:bg-light-card-bg dark:hover:bg-dark-card-bg transform hover:scale-110 transition-all duration-300 ease-in-out cursor-pointer"
   aria-label="Toggle theme"
 >  <!-- Icono de sol para modo oscuro -->
   <svg id="theme-toggle-light-icon" class="w-5 h-5 text-light-subtext dark:text-dark-subtext hidden" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
@@ -37,13 +37,11 @@
       }
     }
   };
-
   // Immediately try to set the initial icon state when this script runs.
   // This script runs when ThemeToggle.astro is processed.
   // We need to determine the theme similarly to how CommonScripts does it.
   const initialTheme = localStorage.getItem('color-theme') || 
                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   window.updateThemeIcons(initialTheme === 'dark');
-  console.log("[ThemeToggle.astro] Initial icon update. Theme:", initialTheme);
 
 </script>
