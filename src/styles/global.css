@@ -62,9 +62,11 @@ html, body {
 }
 
 body {
-  font-family: 'Geist Variable', sans-serif;
+  @apply bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text;
+  font-family: 'Inter', sans-serif;
   line-height: 1.7;
   position: relative; /* Needed for z-index of children to work correctly with fixed background */
+  transition: background-color 0.3s ease, color 0.3s ease;
   /* Ensure body itself doesn't create scrollbars that affect canvas sizing if content is larger than viewport */
 }
 
@@ -80,4 +82,13 @@ main, header, footer {
 .some-other-container {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold;
+  color: var(--color-light-text); /* Usar la variable para que se actualice */
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: var(--color-dark-text); /* Usar la variable para que se actualice */
 }

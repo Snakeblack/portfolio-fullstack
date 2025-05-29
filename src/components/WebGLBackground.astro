@@ -4,7 +4,13 @@
 <canvas id="webgl-background"></canvas>
 
 <script>
-  // Helper functions defined at the top level of the script tag
+  /**
+   * Crea y compila un shader.
+   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
+   * @param {number} type El tipo de shader (VERTEX_SHADER o FRAGMENT_SHADER).
+   * @param {string} source El código fuente del shader.
+   * @returns {WebGLShader | undefined} El shader creado o undefined si hubo un error.
+   */
   function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | undefined {
     const shader = gl.createShader(type);
     if (shader) {
@@ -14,12 +20,19 @@
       if (success) {
         return shader;
       }
-      console.error("Shader compilation error:", gl.getShaderInfoLog(shader));
+      console.error("Error de compilación del shader:", gl.getShaderInfoLog(shader));
       gl.deleteShader(shader);
     }
     return undefined;
   }
 
+  /**
+   * Crea un programa WebGL a partir de un shader de vértices y un shader de fragmentos.
+   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
+   * @param {WebGLShader} vertexShader El shader de vértices.
+   * @param {WebGLShader} fragmentShader El shader de fragmentos.
+   * @returns {WebGLProgram | undefined} El programa WebGL creado o undefined si hubo un error.
+   */
   function createProgram(gl: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram | undefined {
     const program = gl.createProgram();
     if (program) {
@@ -30,12 +43,17 @@
       if (success) {
         return program;
       }
-      console.error("Program linking error:", gl.getProgramInfoLog(program));
+      console.error("Error de enlace del programa:", gl.getProgramInfoLog(program));
       gl.deleteProgram(program);
     }
     return undefined;
   }
 
+  /**
+   * Redimensiona el canvas para que coincida con el tamaño de visualización.
+   * @param {HTMLCanvasElement} canvas El elemento canvas.
+   * @returns {boolean} True si el canvas fue redimensionado, false en caso contrario.
+   */
   function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement): boolean {
     const displayWidth  = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
@@ -47,7 +65,13 @@
     return false;
   }
 
-  function initWebGL(gl: WebGLRenderingContext, canvas: HTMLCanvasElement) {
+  /**
+   * Inicializa el contexto WebGL, los shaders, el programa y renderiza la escena.
+   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
+   * @param {HTMLCanvasElement} canvas El elemento canvas.
+   * @param {'light' | 'dark'} theme El tema actual ('light' o 'dark').
+   */
+  function initWebGL(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, theme: 'light' | 'dark') {
     const vertexShaderSource = `
       attribute vec2 a_position;
       void main() {
@@ -55,27 +79,28 @@
       }
     `;
 
-    const fragmentShaderSource = `
+    const fragmentShaderSourceDark = `
       precision mediump float;
       uniform vec2 u_resolution;
       uniform float u_time;
 
       void main() {
         vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        st.x *= u_resolution.x / u_resolution.y;
+        st.x *= u_resolution.x / u_resolution.y; // Corrección de aspecto
 
-        vec3 color = vec3(0.05, 0.05, 0.1);
+        vec3 color = vec3(0.05, 0.05, 0.1); // Color base oscuro
 
+        // Centrar las coordenadas normalizadas independientemente de la relación de aspecto
         vec2 centerCorrectedST = st;
-        if (u_resolution.x > u_resolution.y) {
+        if (u_resolution.x > u_resolution.y) { // Si es más ancho que alto
           centerCorrectedST.x -= (u_resolution.x / u_resolution.y - 1.0) / 2.0;
         }
 
-        float d = distance(centerCorrectedST, vec2(0.5 + 0.2 * sin(u_time * 0.3), 0.5 + 0.2 * cos(u_time * 0.2)));
-        color += vec3(0.3 * sin(u_time * 0.5 + d * 5.0) + 0.2, 
-                      0.2 * cos(u_time * 0.4 + d * 4.0) + 0.1, 
-                      0.4 * sin(u_time * 0.6 + d * 6.0) + 0.3
-                     ) * (1.0 - smoothstep(0.1, 0.6, d));
+        float d = distance(centerCorrectedST, vec2(0.5 + 0.2 * sin(u_time * 0.1), 0.5 + 0.2 * cos(u_time * 0.07))); // Reducida la velocidad de movimiento del centro
+        color += vec3(0.3 * sin(u_time * 0.17 + d * 5.0) + 0.2, 
+                      0.2 * cos(u_time * 0.13 + d * 4.0) + 0.1, 
+                      0.4 * sin(u_time * 0.2 + d * 6.0) + 0.3 // Reducida la velocidad de cambio de color
+                     ) * (1.0 - smoothstep(0.1, 0.6, d)); // Efecto de desvanecimiento suave
 
         float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.05;
         color += grain;
@@ -84,78 +109,139 @@
       }
     `;
 
+    const fragmentShaderSourceLight = `
+      precision mediump float;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+
+      void main() {
+        vec2 st = gl_FragCoord.xy / u_resolution.xy;
+        st.x *= u_resolution.x / u_resolution.y; // Corrección de aspecto
+
+        vec3 color = vec3(0.9, 0.9, 0.95); // Color base claro
+
+        vec2 centerCorrectedST = st;
+        if (u_resolution.x > u_resolution.y) { 
+          centerCorrectedST.x -= (u_resolution.x / u_resolution.y - 1.0) / 2.0;
+        }
+
+        float d = distance(centerCorrectedST, vec2(0.5 + 0.15 * sin(u_time * 0.12), 0.5 + 0.15 * cos(u_time * 0.08)));
+        color -= vec3(0.2 * sin(u_time * 0.15 + d * 5.5) + 0.15, 
+                      0.15 * cos(u_time * 0.11 + d * 4.5) + 0.1, 
+                      0.25 * sin(u_time * 0.18 + d * 6.5) + 0.2
+                     ) * (1.0 - smoothstep(0.15, 0.65, d));
+
+        float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.03;
+        color += grain;
+        color = clamp(color, 0.0, 1.0); // Asegurar que los colores no se salgan del rango
+        
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+
+    const fragmentShaderSource = theme === 'light' ? fragmentShaderSourceLight : fragmentShaderSourceDark;
+
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
     if (!vertexShader || !fragmentShader) {
-        console.error("Failed to create WebGL shaders.");
+        console.error("Fallo al crear los shaders WebGL.");
         return;
     }
 
     const program = createProgram(gl, vertexShader, fragmentShader);
     if (!program) {
-        console.error("Failed to create WebGL program.");
+        console.error("Fallo al crear el programa WebGL.");
         return;
     }
 
+    // Obtener ubicaciones de atributos y uniformes
     const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
     const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
     const timeUniformLocation = gl.getUniformLocation(program, "u_time");
 
     if (positionAttributeLocation === -1 || !resolutionUniformLocation || !timeUniformLocation) {
-       console.error("Failed to get shader variable locations.");
+       console.error("Fallo al obtener las ubicaciones de las variables del shader.");
        return;
     }
 
+    // Crear y enlazar el buffer de posición
     const positionBuffer = gl.createBuffer();
     if (!positionBuffer) {
-        console.error("Failed to create position buffer.");
+        console.error("Fallo al crear el buffer de posición.");
         return; 
     }
     
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // Coordenadas para un rectángulo que cubre todo el canvas
     const positions = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     
-    gl.clearColor(0, 0, 0, 0);
+    // Configuración inicial de WebGL
+    gl.clearColor(0, 0, 0, 0); // Limpiar a transparente
     gl.useProgram(program);
     gl.enableVertexAttribArray(positionAttributeLocation);
+    // Indicar a WebGL cómo tomar datos del buffer de posición
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
     let lastTime = 0;
+    let animationFrameId: number | null = null; 
+
     function render(currentTime: number) {
-        currentTime *= 0.001; 
+        currentTime *= 0.001; // Convertir a segundos
         lastTime = currentTime;
 
         if (resizeCanvasToDisplaySize(canvas)) {
+            // Ajustar el viewport si el canvas fue redimensionado
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         }
         
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT); // Limpiar el canvas
+        // Establecer uniformes
         gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
         gl.uniform1f(timeUniformLocation, currentTime);
+        // Dibujar los triángulos
         gl.drawArrays(gl.TRIANGLES, 0, 6);
-        requestAnimationFrame(render);
+        animationFrameId = requestAnimationFrame(render); // Solicitar el siguiente frame
     }
     
+    // Detener animación anterior si existe
+    if (canvasElement && canvasElement._animationFrameId) {
+      cancelAnimationFrame(canvasElement._animationFrameId);
+    }
+
+    // Redimensionar inicialmente y ajustar el viewport
     if (resizeCanvasToDisplaySize(canvas)) {
        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     }
-    requestAnimationFrame(render);
+    animationFrameId = requestAnimationFrame(render);
+    if(canvasElement) canvasElement._animationFrameId = animationFrameId; // Guardar el ID para cancelarlo después
   }
 
-  // Main script execution
-  const canvasElement = document.getElementById('webgl-background') as HTMLCanvasElement | null;
-  if (canvasElement) {
-    const glContext = canvasElement.getContext('webgl');
-    if (glContext) {
-        initWebGL(glContext, canvasElement);
+  // Ejecución principal del script
+  const canvasElement = document.getElementById('webgl-background') as HTMLCanvasElement & { _animationFrameId?: number };
+  
+  function initializeAndRunWebGL() {
+    if (canvasElement) {
+      const glContext = canvasElement.getContext('webgl');
+      if (glContext) {
+          const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          initWebGL(glContext, canvasElement, currentTheme);
+      } else {
+          console.error("WebGL no soportado o fallo al crear el contexto.");
+      }
     } else {
-        console.error("WebGL not supported or context creation failed.");
+      console.error("Elemento canvas #webgl-background no encontrado.");
     }
-  } else {
-    console.error("Canvas element #webgl-background not found.");
   }
+
+  initializeAndRunWebGL(); // Inicializar al cargar la página
+
+  // Escuchar cambios de tema
+  document.addEventListener('themeChanged', () => {
+    initializeAndRunWebGL(); // Reinicializar WebGL con el nuevo tema
+  });
+
 </script>
 
 <style>
