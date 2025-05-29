@@ -48,6 +48,7 @@ const skills = rawSkills as SkillEntry[];
     <AboutSection 
       title={t.sections.about}
       content={personalInfo.about[currentLocale]}
+      currentLocale={currentLocale}
     />    <!-- Sección de Experiencia Laboral -->
     <ExperienceSection 
       title={t.sections.experience}
@@ -86,6 +87,7 @@ const skills = rawSkills as SkillEntry[];
     builtWithText={t.ui.builtWith}
     andText={t.ui.and}
     copyrightName="Manuel Michael Retamozo García"
+    currentLocale={currentLocale}
   />
 
   <!-- Scripts Comunes -->

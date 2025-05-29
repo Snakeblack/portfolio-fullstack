@@ -1,12 +1,17 @@
 ---
 import type { About } from '../types/portfolio';
+import { getTranslations, type Locale } from '../utils/translations';
 
 interface Props {
   title: string;
   content: About;
+  currentLocale: Locale;
 }
 
-const { title, content } = Astro.props;
+const { title, content, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale);
+
+const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
 ---
 
 <section id="about" class="max-w-6xl mx-auto px-6 py-12 md:py-16 lg:py-20 scroll-animate scroll-mt-20">
@@ -16,13 +21,129 @@ const { title, content } = Astro.props;
         {title}
       </h2>
     </header>
-    <article class="prose prose-lg dark:prose-invert scroll-animate-fast text-light-subtext dark:text-dark-subtext" style="transition-delay: 0.1s;">
-      <p class="text-balance mb-6 md:mb-8 text-lg md:text-xl leading-relaxed">
-        {content.paragraph1}
-      </p>
-      <p class="text-balance text-lg md:text-xl leading-relaxed">
-        {content.paragraph2}
-      </p>
-    </article>
+    <div class="relative scroll-animate-fast" style="transition-delay: 0.1s;">
+      <article 
+        id="about-text-content"
+        class="prose prose-lg dark:prose-invert text-light-subtext dark:text-dark-subtext overflow-hidden md:overflow-visible md:max-h-none transition-all duration-700 ease-in-out"
+        style={`max-height: ${initialMaxHeightMobile};`}
+      >
+        <p class="text-balance mb-6 md:mb-8 text-lg md:text-xl leading-relaxed">
+          {content.paragraph1}
+        </p>
+        <p class="text-balance text-lg md:text-xl leading-relaxed">
+          {content.paragraph2}
+        </p>
+      </article>
+      <div 
+        id="about-fade-overlay"
+        class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-light-bg via-light-bg/75 to-transparent dark:from-dark-bg dark:via-dark-bg/90 dark:to-transparent md:hidden transition-opacity duration-500 ease-in-out z-10" 
+      >
+      </div>
+      <button 
+        id="toggle-about-text"
+        aria-expanded="false"
+        class="relative mt-6 md:hidden flex items-center gap-2 text-sm font-medium text-light-accent dark:text-dark-accent px-4 py-2 border border-light-accent/30 dark:border-dark-accent/30 rounded-md hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:border-light-accent dark:hover:border-dark-accent hover:bg-light-accent/10 dark:hover:bg-dark-accent/10 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-20"
+      >
+        <span id="about-button-text">{t.actions.readMore}</span>
+        <svg class="w-4 h-4 transform transition-transform duration-300 ease-in-out" id="about-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+    </div>
   </div>
 </section>
+
+<script define:vars={{ readMoreText: t.actions.readMore, readLessText: t.actions.readLess, initialMaxHeight: initialMaxHeightMobile }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const contentElement = document.getElementById('about-text-content');
+    const toggleButton = document.getElementById('toggle-about-text');
+    const buttonTextElement = document.getElementById('about-button-text');
+    const fadeOverlay = document.getElementById('about-fade-overlay');
+    const toggleIcon = document.getElementById('about-toggle-icon');
+
+    if (!contentElement || !toggleButton || !buttonTextElement || !fadeOverlay || !toggleIcon) {
+      console.warn('About section read more/less elements not found.');
+      return;
+    }
+
+    let isExpanded = false;
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const initialMaxHeightInPx = parseFloat(initialMaxHeight) * rootFontSize; // initialMaxHeight is '10rem'
+
+    function updateButtonAppearance() {
+      if (isExpanded) {
+        buttonTextElement.textContent = readLessText;
+        toggleIcon.style.transform = 'rotate(180deg)';
+      } else {
+        buttonTextElement.textContent = readMoreText;
+        toggleIcon.style.transform = 'rotate(0deg)';
+      }
+      toggleButton.setAttribute('aria-expanded', isExpanded.toString());
+    }
+
+    function updateView() {
+      const isMobile = window.innerWidth < 768; // Tailwind 'md' breakpoint
+
+      if (isMobile) {
+        const isContentActuallyOverflowing = contentElement.scrollHeight > initialMaxHeightInPx + 5; // Add a small buffer
+
+        if (isContentActuallyOverflowing) {
+          toggleButton.style.display = 'flex';
+          
+          if (isExpanded) {
+            contentElement.style.maxHeight = contentElement.scrollHeight + 'px';
+            fadeOverlay.style.opacity = '0';
+          } else { // Collapsed state for overflowing content
+            contentElement.style.maxHeight = initialMaxHeight; // e.g., '10rem'
+            // Delay fade-in for smoother collapse. Check state again in timeout.
+            setTimeout(() => {
+              if (!isExpanded && window.innerWidth < 768 && (contentElement.scrollHeight > initialMaxHeightInPx + 5)) {
+                 fadeOverlay.style.opacity = '1';
+              }
+            }, 250); // Slightly shorter delay to ensure fade starts before text animation ends
+          }
+        } else { // Not overflowing on mobile
+          contentElement.style.maxHeight = 'none';
+          toggleButton.style.display = 'none';
+          fadeOverlay.style.opacity = '0';
+          // If it was expanded and now not overflowing (e.g. dev tools change content), reset.
+          if (isExpanded) {
+            isExpanded = false; 
+          }
+        }
+      } else { // Desktop
+        contentElement.style.maxHeight = 'none'; // Tailwind's md:max-h-none handles this
+        toggleButton.style.display = 'none';    // Corrected: Added dot before style
+        fadeOverlay.style.opacity = '0';        // Tailwind's md:hidden implies this for fade
+
+        // Reset mobile-specific states if transitioning from mobile to desktop
+        if (isExpanded) {
+          isExpanded = false;
+        }
+      }
+      // Update ARIA and button text/icon after state changes
+      updateButtonAppearance();
+    }
+
+    toggleButton.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      
+      // If collapsing, hide fade immediately to prevent it from lingering during collapse animation
+      // It will be re-shown by updateView after a delay if needed.
+      if (!isExpanded) {
+           fadeOverlay.style.opacity = '0'; 
+      }
+      
+      updateView(); // Apply visual changes (height, fade visibility)
+      // updateButtonAppearance is called within updateView, so it's covered.
+    });
+
+    // Initial setup
+    updateView(); // Set initial view based on size and content length
+    // updateButtonAppearance is called by updateView
+
+    window.addEventListener('resize', () => {
+      updateView();
+    });
+  });
+</script>

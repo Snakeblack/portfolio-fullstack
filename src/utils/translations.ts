@@ -27,7 +27,9 @@ export const translations = {
       viewAll: 'Ver todos',
       viewLess: 'Mostrar menos',
       selectedProjects: 'Proyectos Seleccionados',
-      getInTouch: 'Ponerse en contacto'
+      getInTouch: 'Ponerse en contacto',
+      readMore: 'Leer más', // Added
+      readLess: 'Leer menos'  // Added
     },
     labels: {
       newProject: 'Nuevo'
@@ -88,7 +90,9 @@ export const translations = {
       viewAll: 'View all',
       viewLess: 'Show less',
       selectedProjects: 'Selected Projects',
-      getInTouch: 'Get in touch'
+      getInTouch: 'Get in touch',
+      readMore: 'Read more', // Added
+      readLess: 'Read less'  // Added
     },
     labels: { // Added new labels section
       newProject: 'New'

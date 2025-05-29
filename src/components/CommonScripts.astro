@@ -2,6 +2,11 @@
 ---
 
 <script is:inline>
+  // Attempt to prevent scroll jump on refresh
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
   function applyTheme(theme) {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -60,24 +65,27 @@
     const observer = new IntersectionObserver((entries, observerInstance) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          if (entry.target.classList.contains('stagger-children')) {
-            const children = entry.target.children;
-            for (let i = 0; i < children.length; i++) {
-              children[i].style.transitionDelay = `${i * 100}ms`; // Stagger delay
+          if (!entry.target.classList.contains('in-view')) {
+            console.log('Element intersecting, .in-view not yet present:', entry.target.id || entry.target.tagName, entry.target.classList.toString());
+            
+            entry.target.classList.add('in-view');
+            console.log('Added .in-view directly to:', entry.target.id || entry.target.tagName, entry.target.classList.toString());
+
+            if (entry.target.classList.contains('stagger-children')) {
+              const children = entry.target.children;
+              for (let i = 0; i < children.length; i++) {
+                children[i].style.transitionDelay = `${i * 100}ms`; // Stagger delay
+              }
             }
+            // Unobserve the element after the animation has been triggered
+            observerInstance.unobserve(entry.target);
+          } else {
+            // console.log('Element intersecting but already has .in-view:', entry.target.id || entry.target.tagName, entry.target.classList.toString());
           }
-          // Optional: unobserve after animation to save resources
-          // observerInstance.unobserve(entry.target);
         } else {
-          // Optional: remove 'in-view' to re-animate if element scrolls out and back in
+          // If you want elements to re-animate every time they scroll into view,
+          // you would remove .in-view here and not unobserve above.
           // entry.target.classList.remove('in-view');
-          // if (entry.target.classList.contains('stagger-children')) {
-          //   const children = entry.target.children;
-          //   for (let i = 0; i < children.length; i++) {
-          //     children[i].style.transitionDelay = ''; // Reset delay
-          //   }
-          // }
         }
       });
     }, { threshold: 0.1 }); // Adjust threshold as needed

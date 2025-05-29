@@ -39,44 +39,44 @@ html {
   .scroll-animate-fast,
   .title-animate {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(50px) scale(0.9);
     transition-property: opacity, transform;
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); /* easeOutExpo-like */
   }
 
   .scroll-animate {
-    transition-duration: 0.8s;
+    transition-duration: 1s; /* Adjusted from 0.8s */
   }
 
   .scroll-animate-fast {
-    transition-duration: 0.6s;
+    transition-duration: 0.8s; /* Adjusted from 0.6s */
   }
 
   .title-animate {
-    transform: translateY(20px);
-    transition-duration: 0.7s;
+    transform: translateY(40px) scale(0.9); /* Adjusted initial Y and added scale */
+    transition-duration: 0.9s; /* Adjusted from 0.7s */
   }
 
   .scroll-animate.in-view,
   .scroll-animate-fast.in-view,
   .title-animate.in-view {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 
   /* Configuración de animación escalonada para elementos hijos */
   /* Los elementos individuales necesitarán transition-delay aplicado vía JS o estilo en línea */
   .stagger-children > * {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(50px) scale(0.9);
     transition-property: opacity, transform;
-    transition-duration: 0.7s;
-    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition-duration: 0.9s; /* Adjusted duration */
+    transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); /* easeOutExpo-like */
   }
 
   .stagger-children.in-view > * {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
