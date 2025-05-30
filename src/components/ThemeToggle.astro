@@ -19,13 +19,15 @@
   const lightIcon = document.getElementById('theme-toggle-light-icon');
   const darkIcon = document.getElementById('theme-toggle-dark-icon');
   const htmlElement = document.documentElement;
-
   function updateIcons(isDark) {
     if (lightIcon && darkIcon) {
       lightIcon.style.display = isDark ? 'block' : 'none';
       darkIcon.style.display = isDark ? 'none' : 'block';
     }
   }
+
+  // Hacer la función disponible globalmente para CommonScripts
+  window.updateThemeIcons = updateIcons;
 
   // Cargar el tema guardado o el preferido por el sistema y actualizar iconos
   const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');

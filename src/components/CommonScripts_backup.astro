@@ -9,8 +9,7 @@
     lastScrollY?: number;
   }
   
-  declare var window: CustomWindow;
-  import { gsap } from "gsap";
+  declare var window: CustomWindow;  import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
 
   gsap.registerPlugin(ScrollTrigger);
@@ -36,7 +35,6 @@
   let wheelTimeout: ReturnType<typeof setTimeout>;
   let touchTimeout: ReturnType<typeof setTimeout>;
   let consecutiveFastScrolls = 0;
-
   /**
    * Aplica el tema especificado al documento
    * @param {string} theme - El tema a aplicar ('dark' o 'light')
@@ -62,13 +60,10 @@
     if (window.updateThemeIcons) {
       window.updateThemeIcons(newTheme === 'dark');
     }
-  }
-
-  /**
+  }  /**
    * Inicializa las animaciones de ScrollTrigger para todos los elementos animados
    * Configura animaciones de entrada para elementos con clases específicas
-   */
-  function initScrollAnimations() {
+   */  function initScrollAnimations() {
     // Limpiar ScrollTriggers existentes
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     
@@ -78,8 +73,7 @@
       ignoreMobileResize: true,
       syncInterval: 10 // Sincronización más rápida
     });
-    
-    // Animaciones GSAP con soporte mejorado para móviles
+      // Animaciones GSAP con soporte mejorado para móviles
     const animatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
 
     animatedElements.forEach((el, index) => {
@@ -110,8 +104,7 @@
         toggleActions: "play none none none",
         fastScrollEnd: 1000, // Incrementado para mejor detección de scrollbar
         preventOverlaps: true,
-        refreshPriority: 1,
-        onEnter: () => {
+        refreshPriority: 1,        onEnter: () => {
           if (!animatedElementsSet.has(el)) {
             animatedElementsSet.add(el);
             
@@ -124,8 +117,7 @@
               overwrite: "auto"
             });
           }
-        },
-        onUpdate: (self) => {
+        },        onUpdate: (self) => {
           // Forzar animación si el elemento está visible y el usuario hace scroll rápido
           if (self.isActive && (isUserScrolling || isTouchScrolling || isScrollbarDrag)) {
             if (!animatedElementsSet.has(el)) {
@@ -152,6 +144,8 @@
       const children = Array.from(container.children);
       
       if (children.length > 0) {
+        console.log(`Contenedor escalonado ${index}: ${children.length} hijos encontrados`);
+        
         // Limpiar transiciones CSS para los hijos
         children.forEach(child => {
           const htmlChild = child as HTMLElement;
@@ -176,6 +170,7 @@
           fastScrollEnd: 1000,
           preventOverlaps: true,
           onEnter: () => {
+            console.log(`Contenedor escalonado en vista - animando ${children.length} hijos`);
             gsap.to(children, {
               opacity: 1,
               y: 0,
@@ -189,6 +184,7 @@
           onUpdate: (self) => {
             // Forzar animación si el contenedor está visible y el usuario hace scroll rápido
             if (self.isActive && (isUserScrolling || isTouchScrolling || isScrollbarDrag)) {
+              console.log(`Forzando animación de hijos escalonados por scroll rápido`);
               gsap.to(children, {
                 opacity: 1,
                 y: 0,
@@ -206,13 +202,16 @@
 
     // Actualizar ScrollTrigger después de la configuración
     ScrollTrigger.refresh();
-  }
-
+    
+    console.log('ScrollTrigger inicializado y actualizado');
+  }  
   /**
    * Maneja la inicialización del DOM cuando se carga el contenido
    * Configura el tema, animaciones y comportamientos de scroll suave
    */
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado - Inicializando scripts...');
+    
     // Inicialización del tema
     const savedTheme = localStorage.getItem('color-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -228,6 +227,8 @@
     setTimeout(() => {
       if (window.updateThemeIcons) {
         window.updateThemeIcons(currentTheme === 'dark');
+      } else {
+        console.error("[CommonScripts] Función updateThemeIcons no encontrada en la llamada inicial.");
       }
     }, 0);
 
@@ -243,8 +244,7 @@
               behavior: 'smooth',
               block: 'start'
             });
-          }
-        }
+          }        }
       });
     });
 
@@ -268,6 +268,8 @@
         const intersectionObserver = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
             if (entry.isIntersecting && !animatedElementsSet.has(entry.target)) {
+              console.log('IntersectionObserver: Elemento en vista:', entry.target.className);
+              
               const el = entry.target;
               const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
               
@@ -305,6 +307,8 @@
               intersectionObserver.observe(child);
             });
           });
+          
+          console.log('IntersectionObserver: Observando', elementsToObserve.length, 'elementos y', staggerContainers.length, 'contenedores escalonados');
         }, 500);
       }
     }, 100);
@@ -335,8 +339,7 @@
     touchTimeout = setTimeout(() => {
       isTouchScrolling = false;
       isUserScrolling = false;
-    }, 200);
-  }, { passive: true });
+    }, 200);  }, { passive: true });
 
   window.addEventListener('touchend', () => {
     clearTimeout(touchTimeout);
@@ -369,6 +372,10 @@
       
       // Mostrar elemento si está en viewport y está oculto
       if (isInViewport && currentOpacity < 0.1) {
+        console.log('Verificación manual - mostrando elemento:', el.className || el.tagName, {
+          scrollType: isTouchScrolling ? 'touch' : isScrollbarDrag ? 'scrollbar' : 'wheel',
+          isMobile: isMobile
+        });
         animatedElementsSet.add(el); // Marcar como animado
         shownCount++;
         
@@ -382,7 +389,10 @@
           duration: isTouchScrolling || isScrollbarDrag ? 0.6 : 0.8,
           ease: "power1.out",
           overwrite: "auto",
-          force3D: true
+          force3D: true,
+          onComplete: () => {
+            console.log('Animación manual completada para:', el.className || el.tagName);
+          }
         });
       }
     });
@@ -398,6 +408,7 @@
         children.forEach(child => {
           const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
           if (childOpacity < 0.1) {
+            console.log('Verificación manual - mostrando hijo escalonado:', child.className || child.tagName);
             shownCount++;
             
             gsap.killTweensOf(child);
@@ -414,6 +425,10 @@
         });
       }
     });
+    
+    if (shownCount > 0) {
+      console.log(`CheckVisibleElements: Mostró ${shownCount} elementos`);
+    }
   }
 
   /**
@@ -430,10 +445,9 @@
       const rect = el.getBoundingClientRect();
       // Verificación muy generosa del viewport para arrastre de scrollbar
       const isInViewport = rect.top < windowHeight * 1.2 && rect.bottom > -windowHeight * 0.5;
-      const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
-      
-      // Forzar mostrar cualquier elemento en viewport que no esté completamente visible
+      const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);      // Forzar mostrar cualquier elemento en viewport que no esté completamente visible
       if (isInViewport && currentOpacity < 0.95) {
+        console.log('Forzando mostrar elemento por scrollbar/enFondo:', htmlEl.className, htmlEl.id || htmlEl.tagName);
         animatedElementsSet.add(el);
         forcedCount++;
 
@@ -447,7 +461,10 @@
           duration: 0.6,
           ease: "power1.out",
           overwrite: "auto",
-          force3D: true
+          force3D: true,
+          onComplete: () => {
+            console.log('Animación forzada completada para:', htmlEl.className, htmlEl.id || htmlEl.tagName);
+          }
         });
       }
     });
@@ -463,6 +480,7 @@
         children.forEach((child, index) => {
           const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
           if (childOpacity < 0.95) {
+            console.log('Forzando mostrar hijo escalonado:', child.className || child.tagName);
             forcedCount++;
             
             gsap.killTweensOf(child);
@@ -480,6 +498,8 @@
         });
       }
     });
+    
+    console.log(`ForceShowVisibleElements completado. Forzó ${forcedCount} elementos.`);
   }
 
   /**
@@ -502,6 +522,7 @@
         
         if (currentOpacity < 0.95) {
           const htmlEl = el as HTMLElement;
+          console.log('Forzando mostrar elemento del fondo:', htmlEl.className, htmlEl.id || htmlEl.tagName);
           animatedElementsSet.add(el);
           bottomForcedCount++;
           
@@ -516,7 +537,8 @@
             force3D: true
           });
         }
-      });
+      });      
+      console.log(`ForceShowBottomElements completado. Forzó ${bottomForcedCount} elementos.`);
     }
   }
 
@@ -528,11 +550,14 @@
     const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
     let remainingForcedCount = 0;
     
+    console.log('FORZANDO MOSTRAR TODOS LOS ELEMENTOS RESTANTES');
+    
     allAnimatedElements.forEach(el => {
       const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
       
       if (currentOpacity < 0.9) {
         const htmlEl = el as HTMLElement;
+        console.log('Forzando mostrar elemento restante:', htmlEl.className, htmlEl.id || htmlEl.tagName);
         animatedElementsSet.add(el);
         remainingForcedCount++;
         
@@ -544,10 +569,15 @@
           duration: 1.0,
           ease: "power2.out",
           overwrite: "auto",
-          force3D: true
+          force3D: true,
+          onComplete: () => {
+            console.log('Animación forzada completada para:', htmlEl.className);
+          }
         });
       }
     });
+    
+    console.log(`ForceShowAllRemainingElements completado. Forzó ${remainingForcedCount} elementos.`);
   }
 
   /**
@@ -565,6 +595,7 @@
       
       // Si el elemento está en viewport pero tiene opacidad parcial (animación atascada)
       if (isInViewport && currentOpacity > 0 && currentOpacity < 0.9) {
+        console.log('Limpiando animación incompleta para:', el);
         animatedElementsSet.add(el);
         
         gsap.killTweensOf(el);
@@ -585,9 +616,12 @@
    * Se enfoca en elementos técnicos y habilidades blandas
    */
   function forceShowSkillsSection() {
+    console.log('Forzando mostrar elementos de la sección de habilidades...');
+    
     // Dirigirse específicamente a la sección de habilidades
     const skillsSection = document.querySelector('#skills');
     if (!skillsSection) {
+      console.log('Sección de habilidades no encontrada');
       return;
     }
     
@@ -596,6 +630,7 @@
     const isSkillsInView = skillsRect.top < windowHeight && skillsRect.bottom > 0;
     
     if (!isSkillsInView) {
+      console.log('Sección de habilidades no está en viewport');
       return;
     }
     
@@ -604,6 +639,7 @@
     skillItems.forEach((item, index) => {
       const opacity = parseFloat(window.getComputedStyle(item).opacity);
       if (opacity < 0.9) {
+        console.log('Forzando mostrar elemento de habilidad:', item.textContent);
         gsap.killTweensOf(item);
         gsap.to(item, {
           opacity: 1,
@@ -623,6 +659,7 @@
     softSkillCards.forEach((card, index) => {
       const opacity = parseFloat(window.getComputedStyle(card).opacity);
       if (opacity < 0.9) {
+        console.log('Forzando mostrar tarjeta de habilidad blanda:', card.querySelector('h4')?.textContent);
         gsap.killTweensOf(card);
         gsap.to(card, {
           opacity: 1,
@@ -636,6 +673,8 @@
         });
       }
     });
+    
+    console.log(`Forzó mostrar ${skillItems.length} elementos de habilidades y ${softSkillCards.length} tarjetas de habilidades blandas`);
   }
 
   /**
@@ -670,6 +709,17 @@
       isUserScrolling = true;
       consecutiveFastScrolls++;
       
+      console.log('Scroll rápido detectado:', {
+        method: isLargeJump && isNotWheelScroll ? 'large+nowheel' : 
+                isVeryLargeJump ? 'very-large' : 
+                isMobileTouch ? 'mobile-touch' : 'high-velocity',
+        delta: scrollDelta, 
+        time: timeDelta, 
+        velocity: velocity.toFixed(2),
+        isMobile: isMobile,
+        isTouchScrolling: isTouchScrolling
+      });
+      
       // Verificar inmediatamente y mostrar elementos visibles durante scroll rápido
       checkVisibleElements();
     } else {
@@ -693,9 +743,7 @@
       // Calcular velocidad promedio del historial
       const averageVelocity = scrollVelocityHistory.length > 0 
         ? scrollVelocityHistory.reduce((sum, v) => sum + v, 0) / scrollVelocityHistory.length 
-        : 0;
-      
-      // Múltiples condiciones para activar forzar mostrar
+        : 0;      // Múltiples condiciones para activar forzar mostrar
       const atBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 150;
       const nearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 300;
       const veryNearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 50;
@@ -708,6 +756,16 @@
       
       // Activar forzar mostrar en múltiples escenarios
       if (isAnyFastScroll || atBottom || nearBottom) {
+        console.log(`Timeout de scroll activado:`, {
+          isScrollbarDrag,
+          isTouchScrolling,
+          isMobile,
+          atBottom,
+          nearBottom,
+          hasHighVelocity,
+          averageVelocity: averageVelocity.toFixed(2)
+        });
+        
         forceShowVisibleElements();
         if (nearBottom) {
           forceShowBottomElements();
@@ -719,6 +777,7 @@
       
       // Verificación súper agresiva cuando está muy cerca del fondo
       if (veryNearBottom) {
+        console.log('Muy cerca del fondo - mostrando TODOS los elementos restantes');
         forceShowAllRemainingElements();
       }
 
@@ -730,6 +789,7 @@
 
       // Verificación agresiva específica para footer y secciones del fondo
       if (currentY + window.innerHeight >= document.documentElement.scrollHeight - 200) {
+        console.log('Cerca del fondo del documento - activando mostrar elementos agresivo');
         forceShowBottomElements();
       }
 
@@ -739,6 +799,7 @@
         if (footer && !animatedElementsSet.has(footer)) {
           const footerOpacity = parseFloat(window.getComputedStyle(footer).opacity);
           if (footerOpacity < 0.5) {
+            console.log('Cerca del fondo - mostrando footer');
             animatedElementsSet.add(footer);
             gsap.to(footer, {
               opacity: 1,
@@ -759,6 +820,7 @@
     clearTimeout(scrollEndTimeout);
     scrollEndTimeout = setTimeout(() => {
       // Cuando el scroll definitivamente termina, asegurar que todos los elementos visibles se muestren
+      console.log('El scroll definitivamente terminó - verificación final');
       checkVisibleElements();
       forceShowBottomElements();
       
@@ -766,6 +828,7 @@
       const currentY = window.pageYOffset;
       const distanceFromBottom = document.documentElement.scrollHeight - currentY - window.innerHeight;
       if (distanceFromBottom < 100) {
+        console.log('Scroll terminó muy cerca del fondo - forzando todos los elementos restantes');
         forceShowAllRemainingElements();
       }
     }, 200);
@@ -773,10 +836,10 @@
 
   // Evento de carga de ventana
   window.addEventListener('load', () => {
+    console.log('Ventana cargada - refrescando ScrollTrigger...');
     setTimeout(() => {
       ScrollTrigger.refresh();
-      checkVisibleElements(); // Verificación inicial después de la carga
-      
+      checkVisibleElements(); // Verificación inicial después de la carga      
       // Limpiar animaciones incompletas después de un breve retraso
       setTimeout(() => {
         cleanupIncompleteAnimations();
@@ -808,6 +871,7 @@
           
           if (isInViewport && currentOpacity < 0.1) {
             foundMissedElements = true;
+            console.log('Verificación periódica - elemento perdido encontrado:', el.className || el.tagName, 'esMóvil:', isMobile);
             animatedElementsSet.add(el);
             
             gsap.killTweensOf(el);
@@ -836,6 +900,7 @@
             const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
             if (childOpacity < 0.1) {
               foundMissedElements = true;
+              console.log('Verificación periódica - hijo escalonado perdido encontrado:', child.className || child.tagName);
               
               gsap.killTweensOf(child);
               gsap.to(child, {
@@ -854,6 +919,7 @@
       });
       
       if (foundMissedElements) {
+        console.log('Verificación periódica encontró elementos perdidos');
         ScrollTrigger.refresh();
       }
     }
@@ -884,6 +950,7 @@
     
     // Verificación inicial móvil después de un retraso
     setTimeout(() => {
+      console.log('Móvil: Verificación inicial de elementos');
       checkVisibleElements();
       forceShowVisibleElements();
     }, 1000);
