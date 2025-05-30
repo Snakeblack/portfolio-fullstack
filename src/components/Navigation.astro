@@ -18,7 +18,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 
 <nav class="fixed top-0 left-0 right-0 z-30">
   {/* Este div es para el fondo a lo ancho completo, blur, borde y sombra */}
-  <div class="w-full bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border md:backdrop-blur-sm shadow-md">
+  <div id="navbar-background" class="w-full bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border backdrop-blur-sm shadow-md">
     {/* Este div es para restringir y centrar el contenido */}
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -100,7 +100,18 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
   </div>
 </nav>
 
-<style>
+<style>  /* Control de backdrop-filter para navbar y menú móvil */
+  @media (max-width: 767.98px) {
+    #navbar-background {
+      backdrop-filter: blur(12px);
+    }
+    
+    /* Cuando el menú está abierto, quitar blur del navbar */
+    #navbar-background.menu-open {
+      backdrop-filter: none;
+    }
+  }
+
   #mobile-menu-toggle[aria-expanded="true"] #menu-line-1 {
     transform: translateY(0.375rem) rotate(45deg);
   }
@@ -182,8 +193,9 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 <script>
   const toggleBtn = document.getElementById('mobile-menu-toggle');
   const navContent = document.getElementById('nav-content');
+  const navbarBackground = document.getElementById('navbar-background');
 
-  if (toggleBtn && navContent) {
+  if (toggleBtn && navContent && navbarBackground) {
     toggleBtn.addEventListener('click', () => {
       const isOpen = navContent.classList.contains('translate-x-0');
       
@@ -192,11 +204,15 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
         navContent.classList.add('-translate-x-full');
         toggleBtn.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
+        // Restaurar backdrop-blur en navbar cuando se cierra el menú
+        navbarBackground.classList.remove('menu-open');
       } else {
         navContent.classList.remove('-translate-x-full');
         navContent.classList.add('translate-x-0');
         toggleBtn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
+        // Quitar backdrop-blur del navbar cuando se abre el menú
+        navbarBackground.classList.add('menu-open');
       }
     });
 
@@ -207,6 +223,8 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
           navContent.classList.add('-translate-x-full');
           toggleBtn.setAttribute('aria-expanded', 'false');
           document.body.style.overflow = '';
+          // Restaurar backdrop-blur en navbar cuando se cierra el menú
+          navbarBackground.classList.remove('menu-open');
         }
       });
     });
