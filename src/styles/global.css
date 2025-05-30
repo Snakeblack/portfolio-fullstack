@@ -58,7 +58,8 @@ html {
 
 html, body {
   width: 100%;
-  height: 100%;
+  height: 100dvh; /* Dynamic viewport height - se ajusta a las barras del navegador móvil */
+  min-height: 100vh; /* Fallback para navegadores que no soporten dvh */
   margin: 0;
   padding: 0;
   overflow-x: hidden; /* Prevent horizontal scrollbar if content overflows slightly */
@@ -71,6 +72,9 @@ body {
   position: relative; /* Needed for z-index of children to work correctly with fixed background */
   transition: background-color 0.3s ease, color 0.3s ease;
   /* Ensure body itself doesn't create scrollbars that affect canvas sizing if content is larger than viewport */
+  /* Soporte para dispositivos móviles con barras dinámicas */
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Apply backdrop filter to main content sections if desired */

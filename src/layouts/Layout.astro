@@ -116,7 +116,10 @@ const structuredData = {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} especializado en ${personalInfo.title[typedLang]} con experiencia en Angular y .NET.`} />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
@@ -154,7 +157,7 @@ const structuredData = {
 	</head>
   <body
     class:list={[
-      "flex flex-col min-h-screen bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text",
+      "flex flex-col min-h-dvh bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text",
       "transition-colors duration-300 ease-in-out",
       "px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16", // Ajuste de padding horizontal responsivo
     ]}
