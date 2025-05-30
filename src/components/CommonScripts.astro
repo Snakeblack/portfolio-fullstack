@@ -1,38 +1,48 @@
 ---
 ---
 
-<script>  // Define a more specific Window type for this script's context
+<script>
+  // Interfaz extendida para el objeto window con propiedades personalizadas
   interface CustomWindow extends Window {
     toggleThemeAndIcons?: () => void;
     updateThemeIcons?: (isDark: boolean) => void;
     lastScrollY?: number;
   }
-  // Tell TypeScript to use this custom type for 'window' in this module
+  
   declare var window: CustomWindow;
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
 
   gsap.registerPlugin(ScrollTrigger);
 
-  console.log('GSAP loaded:', typeof gsap);
-  console.log('ScrollTrigger loaded:', typeof ScrollTrigger);
+  console.log('GSAP cargado:', typeof gsap);
+  console.log('ScrollTrigger cargado:', typeof ScrollTrigger);
 
-  // Attempt to prevent scroll jump on refresh
+  // Prevenir salto de scroll al recargar la página
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
-  }  // Mobile detection
+  }
+
+  // Detección de dispositivos móviles
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-  // Enhanced scroll detection variables - declared globally for access in all functions
+  
+  // Variables globales para detección avanzada de scroll
   let scrollTimeout: ReturnType<typeof setTimeout>;
   let isScrollbarDrag = false;
+  let isTouchScrolling = false;
+  let isUserScrolling = false;
   let lastScrollTime = 0;
   let lastScrollPosition = 0;
-  let animatedElementsSet = new Set(); // Track which elements have been animated
-  let scrollVelocityHistory: number[] = []; // Track scroll velocity pattern
+  let animatedElementsSet = new Set(); // Elementos ya animados
+  let scrollVelocityHistory: number[] = []; // Historial de velocidad de scroll
   let isWheelScrolling = false;
   let wheelTimeout: ReturnType<typeof setTimeout>;
+  let touchTimeout: ReturnType<typeof setTimeout>;
   let consecutiveFastScrolls = 0;
-
+  /**
+   * Aplica el tema especificado al documento
+   * @param {string} theme - El tema a aplicar ('dark' o 'light')
+   */
   function applyTheme(theme: string) {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -41,7 +51,9 @@
     }
   }
 
-  // Función para alternar el tema y actualizar iconos
+  /**
+   * Alterna entre tema oscuro y claro, actualizando los iconos correspondientes
+   */
   window.toggleThemeAndIcons = function() {
     const currentTheme = localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -52,22 +64,26 @@
     if (window.updateThemeIcons) {
       window.updateThemeIcons(newTheme === 'dark');
     }
-  }  // Function to initialize ScrollTrigger animations
+  }  /**
+   * Inicializa las animaciones de ScrollTrigger para todos los elementos animados
+   * Configura animaciones de entrada para elementos con clases específicas
+   */
   function initScrollAnimations() {
-    console.log('Initializing scroll animations...');
+    console.log('Inicializando animaciones de scroll...');
     
-    // Clear any existing ScrollTriggers first
+    // Limpiar ScrollTriggers existentes
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     
-    // Configure ScrollTrigger for better scrollbar compatibility
+    // Configurar ScrollTrigger para mejor compatibilidad móvil
     ScrollTrigger.config({
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize",
-      ignoreMobileResize: true
+      ignoreMobileResize: true,
+      syncInterval: 10 // Sincronización más rápida
     });
     
-    // GSAP ScrollTrigger animations with proper fade-up effect
+    // Animaciones GSAP con soporte mejorado para móviles
     const animatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
-    console.log('Found animated elements:', animatedElements.length);
+    console.log('Elementos animados encontrados:', animatedElements.length);
 
     animatedElements.forEach((el, index) => {
       const htmlEl = el as HTMLElement;
@@ -75,88 +91,140 @@
       const isTitle = el.classList.contains('title-animate');
       const isFooter = el.tagName.toLowerCase() === 'footer' || el.closest('footer');
       
-      // Clear any CSS transitions that might interfere
+      // Limpiar transiciones CSS que puedan interferir
       htmlEl.style.transition = 'none';
       htmlEl.style.transitionDelay = '0s';
-      htmlEl.style.willChange = 'transform, opacity'; // Optimize for animations
+      htmlEl.style.willChange = 'transform, opacity'; // Optimizar para animaciones
       
-      // Set initial state with GSAP - more conservative values
+      // Estado inicial con GSAP - valores conservadores
       gsap.set(el, {
         opacity: 0,
-        y: isFast ? 15 : isTitle ? 10 : 20, // Reduced distances for smoother animations
-        scale: 0.99, // More subtle scale
+        y: isFast ? 15 : isTitle ? 10 : 20, // Distancias reducidas para animaciones suaves
+        scale: 0.99, // Escala más sutil
         visibility: 'visible',
         clearProps: 'transition,transition-delay'
       });
 
-      // Create the animation with simpler, more reliable settings
-      gsap.to(el, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: isFast ? 0.5 : isTitle ? 0.7 : 0.9, // Slightly faster
-        ease: "power1.out", // Gentler easing
-        scrollTrigger: {
-          trigger: el,
-          start: isFooter ? "top 88%" : "top 80%", // Adjusted footer trigger point
-          toggleActions: "play none none none", // No reverse to prevent flickering
-          once: true, // Animate only once
-          markers: false,
-          fastScrollEnd: true,
-          onEnter: () => {
+      // Crear animación con detección mejorada para móviles y scrollbar
+      const scrollTriggerInstance = ScrollTrigger.create({
+        trigger: el,
+        start: isFooter ? "top 88%" : "top 80%",
+        end: "bottom 20%",
+        toggleActions: "play none none none",
+        fastScrollEnd: 1000, // Incrementado para mejor detección de scrollbar
+        preventOverlaps: true,
+        refreshPriority: 1,
+        onEnter: () => {
+          if (!animatedElementsSet.has(el)) {
             animatedElementsSet.add(el);
-            console.log('Element animated:', el.className);
+            console.log('ScrollTrigger: Elemento animado:', el.className);
+            
+            gsap.to(el, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: isFast ? 0.5 : isTitle ? 0.7 : 0.9,
+              ease: "power1.out",
+              overwrite: "auto"
+            });
+          }
+        },
+        onUpdate: (self) => {
+          // Forzar animación si el elemento está visible y el usuario hace scroll rápido
+          if (self.isActive && (isUserScrolling || isTouchScrolling || isScrollbarDrag)) {
+            if (!animatedElementsSet.has(el)) {
+              animatedElementsSet.add(el);
+              console.log('ScrollTrigger onUpdate: Forzando mostrar elemento:', el.className);
+              
+              gsap.to(el, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: "power1.out",
+                overwrite: "auto"
+              });
+            }
           }
         }
       });
-    });    // Stagger animations for containers - simplified
+    });    // Animaciones escalonadas para contenedores - mejorado para móviles
     const staggerContainers = document.querySelectorAll('.stagger-children');
-    console.log('Found stagger containers:', staggerContainers.length);
+    console.log('Contenedores escalonados encontrados:', staggerContainers.length);
 
     staggerContainers.forEach((container, index) => {
       const children = Array.from(container.children);
       
       if (children.length > 0) {
-        // Clear CSS transitions for children
+        console.log(`Contenedor escalonado ${index}: ${children.length} hijos encontrados`);
+        
+        // Limpiar transiciones CSS para los hijos
         children.forEach(child => {
           const htmlChild = child as HTMLElement;
           htmlChild.style.transition = 'none';
           htmlChild.style.transitionDelay = '0s';
+          htmlChild.style.willChange = 'transform, opacity';
         });
         
-        // Set initial state for children
+        // Estado inicial para los hijos - asegurar que empiecen ocultos
         gsap.set(children, {
           opacity: 0,
-          y: 15, // Reduced movement
+          y: 15, // Movimiento reducido
           scale: 0.99,
           visibility: 'visible',
           clearProps: 'transition,transition-delay'
         });
         
-        gsap.to(children, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.6, // Faster duration
-          stagger: 0.05, // Reduced stagger
-          ease: "power1.out", // Simpler easing
-          scrollTrigger: {
-            trigger: container,
-            start: "top 85%",
-            toggleActions: "play none none none", // No reverse
-            once: true // Only animate once
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top 85%",
+          end: "bottom 20%",
+          fastScrollEnd: 1000,
+          preventOverlaps: true,
+          onEnter: () => {
+            console.log(`Contenedor escalonado en vista - animando ${children.length} hijos`);
+            gsap.to(children, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              stagger: 0.05,
+              ease: "power1.out",
+              overwrite: "auto"
+            });
+          },
+          onUpdate: (self) => {
+            // Forzar animación si el contenedor está visible y el usuario hace scroll rápido
+            if (self.isActive && (isUserScrolling || isTouchScrolling || isScrollbarDrag)) {
+              console.log(`Forzando animación de hijos escalonados por scroll rápido`);
+              gsap.to(children, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.4,
+                stagger: 0.03,
+                ease: "power1.out",
+                overwrite: "auto"
+              });
+            }
           }
         });
       }
-    });    // Refresh ScrollTrigger after setup
+    });
+
+    // Actualizar ScrollTrigger después de la configuración
     ScrollTrigger.refresh();
     
-    console.log('ScrollTrigger initialized and refreshed');
-  }
+    console.log('ScrollTrigger inicializado y actualizado');
+  }  
+  /**
+   * Maneja la inicialización del DOM cuando se carga el contenido
+   * Configura el tema, animaciones y comportamientos de scroll suave
+   */
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded - Initializing scripts...');
+    console.log('DOM cargado - Inicializando scripts...');
     
-    // Theme initialization
+    // Inicialización del tema
     const savedTheme = localStorage.getItem('color-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     let currentTheme = 'light';
@@ -172,9 +240,11 @@
       if (window.updateThemeIcons) {
         window.updateThemeIcons(currentTheme === 'dark');
       } else {
-        console.error("[CommonScripts] updateThemeIcons function not found at initial call time.");
+        console.error("[CommonScripts] Función updateThemeIcons no encontrada en la llamada inicial.");
       }
-    }, 0);    // Desplazamiento suave para enlaces internos
+    }, 0);
+
+    // Scroll suave para enlaces internos
     document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor: HTMLAnchorElement) => {
       anchor.addEventListener('click', function (this: HTMLAnchorElement, e: MouseEvent) { 
         e.preventDefault();
@@ -186,59 +256,197 @@
               behavior: 'smooth',
               block: 'start'
             });
-          }
-        }
+          }        }
       });
-    });    // Initialize animations directly without test animation
+    });
+
+    // Inicializar animaciones directamente sin animación de prueba
     setTimeout(() => {
       initScrollAnimations();
+      
+      // Verificación inicial para la sección de habilidades después de configurar animaciones
+      setTimeout(() => {
+        forceShowSkillsSection();
+      }, 200);
+      
+      // Agregar Intersection Observer como respaldo adicional
+      if ('IntersectionObserver' in window) {
+        const observerOptions = {
+          root: null,
+          rootMargin: isMobile ? '20px' : '50px',
+          threshold: isMobile ? 0.1 : 0.2
+        };
+        
+        const intersectionObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !animatedElementsSet.has(entry.target)) {
+              console.log('IntersectionObserver: Elemento en vista:', entry.target.className);
+              
+              const el = entry.target;
+              const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
+              
+              if (currentOpacity < 0.5) {
+                animatedElementsSet.add(el);
+                gsap.killTweensOf(el);
+                gsap.to(el, {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.8,
+                  ease: "power1.out",
+                  overwrite: "auto",
+                  force3D: true
+                });
+              }
+            }
+          });
+        }, observerOptions);
+
+        // Observar todos los elementos animados
+        setTimeout(() => {
+          const elementsToObserve = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
+          elementsToObserve.forEach(el => {
+            intersectionObserver.observe(el);
+          });
+          
+          // También observar contenedores stagger-children
+          const staggerContainers = document.querySelectorAll('.stagger-children');
+          staggerContainers.forEach(container => {
+            intersectionObserver.observe(container);
+            // También observar hijos individuales para mayor confiabilidad
+            const children = Array.from(container.children);
+            children.forEach(child => {
+              intersectionObserver.observe(child);
+            });
+          });
+          
+          console.log('IntersectionObserver: Observando', elementsToObserve.length, 'elementos y', staggerContainers.length, 'contenedores escalonados');
+        }, 500);
+      }
     }, 100);
   });
 
-  // Detect wheel scrolling to differentiate from scrollbar dragging
+  // Detectar scroll con rueda del mouse para diferenciarlo del arrastre de scrollbar
   window.addEventListener('wheel', () => {
     isWheelScrolling = true;
+    isUserScrolling = true;
     clearTimeout(wheelTimeout);
     wheelTimeout = setTimeout(() => {
       isWheelScrolling = false;
+      isUserScrolling = false;
     }, 150);
-  }, { passive: true });  // Function to check and show visible elements
+  }, { passive: true });
+
+  // Detectar scroll táctil para dispositivos móviles
+  window.addEventListener('touchstart', () => {
+    isTouchScrolling = true;
+    isUserScrolling = true;
+    clearTimeout(touchTimeout);
+  }, { passive: true });
+
+  window.addEventListener('touchmove', () => {
+    isTouchScrolling = true;
+    isUserScrolling = true;
+    clearTimeout(touchTimeout);
+    touchTimeout = setTimeout(() => {
+      isTouchScrolling = false;
+      isUserScrolling = false;
+    }, 200);  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    clearTimeout(touchTimeout);
+    touchTimeout = setTimeout(() => {
+      isTouchScrolling = false;
+      isUserScrolling = false;
+    }, 300);
+  }, { passive: true });
+
+  /**
+   * Verifica y muestra elementos visibles - mejorado para todos los tipos de scroll
+   * Anima elementos que están en el viewport pero aún no han sido animados
+   */
   function checkVisibleElements() {
     const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
     const windowHeight = window.innerHeight;
+    let shownCount = 0;
     
     allAnimatedElements.forEach(el => {
-      // Skip if element was already animated
+      // Saltar si el elemento ya fue animado
       if (animatedElementsSet.has(el)) {
         return;
       }
       
       const rect = el.getBoundingClientRect();
-      const isInViewport = rect.top < windowHeight * 0.9 && rect.bottom > -50;
+      // Verificación más generosa del viewport para móviles y arrastre de scrollbar
+      const triggerPoint = isMobile || isTouchScrolling ? 0.95 : 0.85;
+      const isInViewport = rect.top < windowHeight * triggerPoint && rect.bottom > -50;
       const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
       
-      // Only animate if element is clearly hidden (opacity < 0.1) and in viewport
+      // Mostrar elemento si está en viewport y está oculto
       if (isInViewport && currentOpacity < 0.1) {
-        console.log('Manual check - showing element:', el);
-        animatedElementsSet.add(el); // Mark as animated
+        console.log('Verificación manual - mostrando elemento:', el.className || el.tagName, {
+          scrollType: isTouchScrolling ? 'touch' : isScrollbarDrag ? 'scrollbar' : 'wheel',
+          isMobile: isMobile
+        });
+        animatedElementsSet.add(el); // Marcar como animado
+        shownCount++;
         
-        // Kill any existing animations on this element to prevent conflicts
+        // Eliminar animaciones existentes en este elemento para prevenir conflictos
         gsap.killTweensOf(el);
         
         gsap.to(el, {
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.8,
+          duration: isTouchScrolling || isScrollbarDrag ? 0.6 : 0.8,
           ease: "power1.out",
-          overwrite: "auto", // Prevent conflicting animations
+          overwrite: "auto",
+          force3D: true,
           onComplete: () => {
-            console.log('Manual animation completed for:', el);
+            console.log('Animación manual completada para:', el.className || el.tagName);
           }
         });
       }
     });
-  }  // Function to force show all visible elements (for scrollbar usage)
+    
+    // También verificar contenedores stagger-children específicamente
+    const staggerContainers = document.querySelectorAll('.stagger-children');
+    staggerContainers.forEach(container => {
+      const rect = container.getBoundingClientRect();
+      const isContainerInViewport = rect.top < windowHeight * 0.9 && rect.bottom > -50;
+      
+      if (isContainerInViewport) {
+        const children = Array.from(container.children);
+        children.forEach(child => {
+          const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
+          if (childOpacity < 0.1) {
+            console.log('Verificación manual - mostrando hijo escalonado:', child.className || child.tagName);
+            shownCount++;
+            
+            gsap.killTweensOf(child);
+            gsap.to(child, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              ease: "power1.out",
+              overwrite: "auto",
+              force3D: true
+            });
+          }
+        });
+      }
+    });
+    
+    if (shownCount > 0) {
+      console.log(`CheckVisibleElements: Mostró ${shownCount} elementos`);
+    }
+  }
+
+  /**
+   * Fuerza la visualización de todos los elementos visibles (para uso de scrollbar)
+   * Aplica verificación muy generosa del viewport para arrastre de scrollbar
+   */
   function forceShowVisibleElements() {
     const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
     const windowHeight = window.innerHeight;
@@ -247,17 +455,15 @@
     allAnimatedElements.forEach(el => {
       const htmlEl = el as HTMLElement;
       const rect = el.getBoundingClientRect();
-      // Very generous viewport check for scrollbar dragging
+      // Verificación muy generosa del viewport para arrastre de scrollbar
       const isInViewport = rect.top < windowHeight * 1.2 && rect.bottom > -windowHeight * 0.5;
-      const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
-
-      // Force show any element in viewport that isn't fully visible
+      const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);      // Forzar mostrar cualquier elemento en viewport que no esté completamente visible
       if (isInViewport && currentOpacity < 0.95) {
-        console.log('Force showing element due to scrollbar/atBottom:', htmlEl.className, htmlEl.id || htmlEl.tagName);
+        console.log('Forzando mostrar elemento por scrollbar/enFondo:', htmlEl.className, htmlEl.id || htmlEl.tagName);
         animatedElementsSet.add(el);
         forcedCount++;
 
-        // Kill any existing animations to prevent conflicts
+        // Eliminar animaciones existentes para prevenir conflictos
         gsap.killTweensOf(el);
 
         gsap.to(el, {
@@ -269,22 +475,56 @@
           overwrite: "auto",
           force3D: true,
           onComplete: () => {
-            console.log('Forced animation completed for:', htmlEl.className, htmlEl.id || htmlEl.tagName);
+            console.log('Animación forzada completada para:', htmlEl.className, htmlEl.id || htmlEl.tagName);
           }
         });
       }
     });
     
-    console.log(`ForceShowVisibleElements completed. Forced ${forcedCount} elements.`);
+    // También forzar mostrar contenedores stagger-children y sus hijos
+    const staggerContainers = document.querySelectorAll('.stagger-children');
+    staggerContainers.forEach(container => {
+      const containerRect = container.getBoundingClientRect();
+      const isContainerInViewport = containerRect.top < windowHeight * 1.2 && containerRect.bottom > -windowHeight * 0.5;
+      
+      if (isContainerInViewport) {
+        const children = Array.from(container.children);
+        children.forEach((child, index) => {
+          const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
+          if (childOpacity < 0.95) {
+            console.log('Forzando mostrar hijo escalonado:', child.className || child.tagName);
+            forcedCount++;
+            
+            gsap.killTweensOf(child);
+            gsap.to(child, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              delay: index * 0.05, // Pequeño retraso escalonado
+              ease: "power1.out",
+              overwrite: "auto",
+              force3D: true
+            });
+          }
+        });
+      }
+    });
+    
+    console.log(`ForceShowVisibleElements completado. Forzó ${forcedCount} elementos.`);
   }
-  // Aggressive function specifically for bottom elements
+
+  /**
+   * Función agresiva específicamente para elementos del fondo de la página
+   * Muestra todos los elementos ocultos restantes cuando se está cerca del final
+   */
   function forceShowBottomElements() {
     const currentY = window.pageYOffset;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const distanceFromBottom = documentHeight - currentY - windowHeight;
     
-    // If we're within 400px of the bottom, force show ALL remaining hidden elements
+    // Si estamos a menos de 400px del fondo, forzar mostrar TODOS los elementos ocultos restantes
     if (distanceFromBottom < 400) {
       const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
       let bottomForcedCount = 0;
@@ -294,7 +534,7 @@
         
         if (currentOpacity < 0.95) {
           const htmlEl = el as HTMLElement;
-          console.log('Force showing bottom element:', htmlEl.className, htmlEl.id || htmlEl.tagName);
+          console.log('Forzando mostrar elemento del fondo:', htmlEl.className, htmlEl.id || htmlEl.tagName);
           animatedElementsSet.add(el);
           bottomForcedCount++;
           
@@ -309,25 +549,27 @@
             force3D: true
           });
         }
-      });
-      
-      console.log(`ForceShowBottomElements completed. Forced ${bottomForcedCount} elements.`);
+      });      
+      console.log(`ForceShowBottomElements completado. Forzó ${bottomForcedCount} elementos.`);
     }
   }
 
-  // Super aggressive function for end of page - shows ALL hidden elements regardless of position
+  /**
+   * Función súper agresiva para el final de la página - muestra TODOS los elementos ocultos independientemente de la posición
+   * Se ejecuta cuando se está muy cerca del final de la página
+   */
   function forceShowAllRemainingElements() {
     const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
     let remainingForcedCount = 0;
     
-    console.log('FORCE SHOWING ALL REMAINING ELEMENTS');
+    console.log('FORZANDO MOSTRAR TODOS LOS ELEMENTOS RESTANTES');
     
     allAnimatedElements.forEach(el => {
       const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
       
       if (currentOpacity < 0.9) {
         const htmlEl = el as HTMLElement;
-        console.log('Force showing remaining element:', htmlEl.className, htmlEl.id || htmlEl.tagName);
+        console.log('Forzando mostrar elemento restante:', htmlEl.className, htmlEl.id || htmlEl.tagName);
         animatedElementsSet.add(el);
         remainingForcedCount++;
         
@@ -341,16 +583,19 @@
           overwrite: "auto",
           force3D: true,
           onComplete: () => {
-            console.log('Completed forced animation for:', htmlEl.className);
+            console.log('Animación forzada completada para:', htmlEl.className);
           }
         });
       }
     });
     
-    console.log(`ForceShowAllRemainingElements completed. Forced ${remainingForcedCount} elements.`);
+    console.log(`ForceShowAllRemainingElements completado. Forzó ${remainingForcedCount} elementos.`);
   }
 
-  // Function to clean up incomplete animations
+  /**
+   * Limpia animaciones incompletas que pueden haber quedado "atascadas"
+   * Detecta elementos en viewport con opacidad parcial y los completa
+   */
   function cleanupIncompleteAnimations() {
     const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
     const windowHeight = window.innerHeight;
@@ -360,9 +605,9 @@
       const isInViewport = rect.top < windowHeight && rect.bottom > 0;
       const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
       
-      // If element is in viewport but has partial opacity (stuck animation)
+      // Si el elemento está en viewport pero tiene opacidad parcial (animación atascada)
       if (isInViewport && currentOpacity > 0 && currentOpacity < 0.9) {
-        console.log('Cleaning up incomplete animation for:', el);
+        console.log('Limpiando animación incompleta para:', el);
         animatedElementsSet.add(el);
         
         gsap.killTweensOf(el);
@@ -376,89 +621,197 @@
         });
       }
     });
-  }// Enhanced scroll handling with improved scrollbar detection
+  }
+
+  /**
+   * Fuerza la visualización específica de la sección de habilidades
+   * Se enfoca en elementos técnicos y habilidades blandas
+   */
+  function forceShowSkillsSection() {
+    console.log('Forzando mostrar elementos de la sección de habilidades...');
+    
+    // Dirigirse específicamente a la sección de habilidades
+    const skillsSection = document.querySelector('#skills');
+    if (!skillsSection) {
+      console.log('Sección de habilidades no encontrada');
+      return;
+    }
+    
+    const windowHeight = window.innerHeight;
+    const skillsRect = skillsSection.getBoundingClientRect();
+    const isSkillsInView = skillsRect.top < windowHeight && skillsRect.bottom > 0;
+    
+    if (!isSkillsInView) {
+      console.log('Sección de habilidades no está en viewport');
+      return;
+    }
+    
+    // Forzar mostrar elementos de habilidades técnicas
+    const skillItems = skillsSection.querySelectorAll('.skill-item');
+    skillItems.forEach((item, index) => {
+      const opacity = parseFloat(window.getComputedStyle(item).opacity);
+      if (opacity < 0.9) {
+        console.log('Forzando mostrar elemento de habilidad:', item.textContent);
+        gsap.killTweensOf(item);
+        gsap.to(item, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.5,
+          delay: index * 0.05,
+          ease: "power1.out",
+          overwrite: "auto",
+          force3D: true
+        });
+      }
+    });
+    
+    // Forzar mostrar tarjetas de habilidades blandas
+    const softSkillCards = skillsSection.querySelectorAll('.soft-skill-card');
+    softSkillCards.forEach((card, index) => {
+      const opacity = parseFloat(window.getComputedStyle(card).opacity);
+      if (opacity < 0.9) {
+        console.log('Forzando mostrar tarjeta de habilidad blanda:', card.querySelector('h4')?.textContent);
+        gsap.killTweensOf(card);
+        gsap.to(card, {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          delay: index * 0.1,
+          ease: "power1.out",
+          overwrite: "auto",
+          force3D: true
+        });
+      }
+    });
+    
+    console.log(`Forzó mostrar ${skillItems.length} elementos de habilidades y ${softSkillCards.length} tarjetas de habilidades blandas`);
+  }
+
+  /**
+   * Manejo mejorado de scroll con detección avanzada para móviles y scrollbar
+   * Detecta diferentes tipos de scroll y aplica animaciones apropiadas
+   */
   window.addEventListener('scroll', () => {
     const currentTime = Date.now();
     const currentScrollY = window.pageYOffset;
     const scrollDelta = Math.abs(currentScrollY - lastScrollPosition);
     const timeDelta = currentTime - lastScrollTime;
     
-    // Calculate scroll velocity
+    // Calcular velocidad de scroll
     const velocity = timeDelta > 0 ? scrollDelta / timeDelta : 0;
     
-    // Add to velocity history (keep last 5 measurements)
+    // Agregar al historial de velocidad (mantener últimas 5 mediciones)
     scrollVelocityHistory.push(velocity);
     if (scrollVelocityHistory.length > 5) {
       scrollVelocityHistory.shift();
     }
     
-    // Multiple detection methods for scrollbar dragging
-    const isLargeJump = scrollDelta > 100 && timeDelta < 50; // Original method
-    const isVeryLargeJump = scrollDelta > 200; // Very large movement
-    const isHighVelocity = velocity > 3; // High velocity scroll
-    const isNotWheelScroll = !isWheelScrolling; // Not using mouse wheel
+    // Métodos de detección mejorados para diferentes tipos de scroll
+    const isLargeJump = scrollDelta > 80 && timeDelta < 100; // Umbral reducido
+    const isVeryLargeJump = scrollDelta > 150; // Umbral reducido
+    const isHighVelocity = velocity > 2; // Umbral reducido
+    const isNotWheelScroll = !isWheelScrolling;
+    const isMobileTouch = isMobile && isTouchScrolling;
     
-    // Enhanced detection: large movement without wheel OR very large movement OR high velocity pattern
-    if ((isLargeJump && isNotWheelScroll) || isVeryLargeJump || (isHighVelocity && isNotWheelScroll)) {
+    // Detección mejorada para arrastre de scrollbar o scroll rápido móvil
+    if ((isLargeJump && isNotWheelScroll) || isVeryLargeJump || (isHighVelocity && isNotWheelScroll) || isMobileTouch) {
       isScrollbarDrag = true;
+      isUserScrolling = true;
       consecutiveFastScrolls++;
-      console.log('Scrollbar drag detected - method:', 
-        isLargeJump && isNotWheelScroll ? 'large+nowheel' : 
-        isVeryLargeJump ? 'very-large' : 'high-velocity',
-        'delta:', scrollDelta, 'time:', timeDelta, 'velocity:', velocity.toFixed(2));
+      
+      console.log('Scroll rápido detectado:', {
+        method: isLargeJump && isNotWheelScroll ? 'large+nowheel' : 
+                isVeryLargeJump ? 'very-large' : 
+                isMobileTouch ? 'mobile-touch' : 'high-velocity',
+        delta: scrollDelta, 
+        time: timeDelta, 
+        velocity: velocity.toFixed(2),
+        isMobile: isMobile,
+        isTouchScrolling: isTouchScrolling
+      });
+      
+      // Verificar inmediatamente y mostrar elementos visibles durante scroll rápido
+      checkVisibleElements();
     } else {
-      // Reset consecutive count if scrolling normally
+      // Resetear contador consecutivo si el scroll es normal
       if (velocity < 1) {
         consecutiveFastScrolls = 0;
+        if (!isTouchScrolling && !isWheelScrolling) {
+          isScrollbarDrag = false;
+          isUserScrolling = false;
+        }
       }
     }
     
     lastScrollPosition = currentScrollY;
     lastScrollTime = currentTime;
-      clearTimeout(scrollTimeout);
+    
+    clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       const currentY = window.pageYOffset;
       
-      // Calculate average velocity from history
+      // Calcular velocidad promedio del historial
       const averageVelocity = scrollVelocityHistory.length > 0 
         ? scrollVelocityHistory.reduce((sum, v) => sum + v, 0) / scrollVelocityHistory.length 
-        : 0;      // Multiple conditions for triggering force show
-      const atBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 150; // Increased threshold
-      const nearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 300; // Even more generous
-      const veryNearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 50; // Very close
+        : 0;      // Múltiples condiciones para activar forzar mostrar
+      const atBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 150;
+      const nearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 300;
+      const veryNearBottom = (document.documentElement.scrollHeight - currentY - window.innerHeight) < 50;
       
-      // Enhanced scrollbar detection
+      // Detección mejorada para diferentes tipos de scroll
       const hadScrollbarActivity = isScrollbarDrag || consecutiveFastScrolls >= 2;
-      const hasHighVelocity = averageVelocity > 2.0;
+      const hasHighVelocity = averageVelocity > 1.5; // Umbral reducido
+      const isMobileTouchActive = isMobile && isTouchScrolling;
+      const isAnyFastScroll = hadScrollbarActivity || hasHighVelocity || isMobileTouchActive;
       
-      // Trigger force show in multiple scenarios
-      if (isScrollbarDrag || atBottom || nearBottom || (hasHighVelocity && !isWheelScrolling)) {
-        console.log(`Scroll timeout triggered: isScrollbarDrag=${isScrollbarDrag}, atBottom=${atBottom}, nearBottom=${nearBottom}, hasHighVelocity=${hasHighVelocity}`);
+      // Activar forzar mostrar en múltiples escenarios
+      if (isAnyFastScroll || atBottom || nearBottom) {
+        console.log(`Timeout de scroll activado:`, {
+          isScrollbarDrag,
+          isTouchScrolling,
+          isMobile,
+          atBottom,
+          nearBottom,
+          hasHighVelocity,
+          averageVelocity: averageVelocity.toFixed(2)
+        });
+        
         forceShowVisibleElements();
-        forceShowBottomElements(); // Additional aggressive check for bottom elements
-        ScrollTrigger.refresh(true);
+        if (nearBottom) {
+          forceShowBottomElements();
+        }
+        
+        // Refrescar ScrollTrigger para capturar triggers perdidos
+        ScrollTrigger.refresh();
       }
       
-      // Super aggressive check when very close to bottom
+      // Verificación súper agresiva cuando está muy cerca del fondo
       if (veryNearBottom) {
-        console.log('Very close to bottom - showing ALL remaining elements');
+        console.log('Muy cerca del fondo - mostrando TODOS los elementos restantes');
         forceShowAllRemainingElements();
       }
-      
-      // Always check visible elements periodically
+
+      // Siempre verificar elementos visibles después de que termina el scroll
       checkVisibleElements();
 
-      // Specific aggressive check for footer and bottom sections
+      // Verificación específica para la sección de habilidades
+      forceShowSkillsSection();
+
+      // Verificación agresiva específica para footer y secciones del fondo
       if (currentY + window.innerHeight >= document.documentElement.scrollHeight - 200) {
-        console.log('Very close to bottom - triggering aggressive element show');
+        console.log('Cerca del fondo del documento - activando mostrar elementos agresivo');
         forceShowBottomElements();
-      }      // Specific logic for footer if needed (example, could be part of forceShowVisibleElements
+      }
+
+      // Lógica específica del footer
       if (currentY + window.innerHeight >= document.documentElement.scrollHeight - 100) {
         const footer = document.querySelector('footer');
         if (footer && !animatedElementsSet.has(footer)) {
           const footerOpacity = parseFloat(window.getComputedStyle(footer).opacity);
           if (footerOpacity < 0.5) {
-            console.log('Near bottom - showing footer');
+            console.log('Cerca del fondo - mostrando footer');
             animatedElementsSet.add(footer);
             gsap.to(footer, {
               opacity: 1,
@@ -469,85 +822,149 @@
             });
           }
         }
-      }    }, 30); // Reduced timeout for maximum responsiveness
+      }
+    }, isTouchScrolling ? 50 : 30); // Respuesta más rápida para touch
   }, { passive: true });
-  // Additional scroll end detection for maximum reliability
+
+  // Detección adicional de final de scroll para máxima confiabilidad
   let scrollEndTimeout: ReturnType<typeof setTimeout>;
   window.addEventListener('scroll', () => {
     clearTimeout(scrollEndTimeout);
     scrollEndTimeout = setTimeout(() => {
-      // When scroll definitely ends, ensure all visible elements are shown
-      console.log('Scroll definitely ended - final check');
+      // Cuando el scroll definitivamente termina, asegurar que todos los elementos visibles se muestren
+      console.log('El scroll definitivamente terminó - verificación final');
       checkVisibleElements();
       forceShowBottomElements();
       
-      // Extra aggressive check for bottom of page
+      // Verificación extra agresiva para el fondo de la página
       const currentY = window.pageYOffset;
       const distanceFromBottom = document.documentElement.scrollHeight - currentY - window.innerHeight;
       if (distanceFromBottom < 100) {
-        console.log('Scroll ended very close to bottom - forcing all remaining elements');
+        console.log('Scroll terminó muy cerca del fondo - forzando todos los elementos restantes');
         forceShowAllRemainingElements();
       }
     }, 200);
-  }, { passive: true });// Window load event
+  }, { passive: true });
+
+  // Evento de carga de ventana
   window.addEventListener('load', () => {
-    console.log('Window loaded - refreshing ScrollTrigger...');
+    console.log('Ventana cargada - refrescando ScrollTrigger...');
     setTimeout(() => {
       ScrollTrigger.refresh();
-      checkVisibleElements(); // Initial check after load
-      
-      // Clean up any incomplete animations after a short delay
+      checkVisibleElements(); // Verificación inicial después de la carga      
+      // Limpiar animaciones incompletas después de un breve retraso
       setTimeout(() => {
         cleanupIncompleteAnimations();
       }, 1000);
     }, 200);
   });
-  // Fallback check every 3 seconds to catch any missed elements (less frequent)
+
+  /**
+   * Verificación de respaldo con soporte mejorado para móviles y scrollbar
+   * Se ejecuta periódicamente para capturar elementos perdidos
+   */
   setInterval(() => {
-    // Only run if not currently scrolling and after significant time has passed
-    if (!isScrollbarDrag && !isWheelScrolling) {
-      const currentScrollY = window.pageYOffset;
-      const timeSinceLastScroll = Date.now() - lastScrollTime;
+    // Solo ejecutar si no está actualmente en scroll activo
+    const timeSinceLastScroll = Date.now() - lastScrollTime;
+    const isQuiet = timeSinceLastScroll > 1000; // Reducido de 2000
+    
+    if (isQuiet || isMobile) { // Siempre ejecutar en móvil
+      const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
+      const windowHeight = window.innerHeight;
+      let foundMissedElements = false;
       
-      // If it's been at least 2 seconds since last scroll, check for missed elements
-      if (timeSinceLastScroll > 2000) {
-        const allAnimatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate');
-        const windowHeight = window.innerHeight;
-        let foundMissedElements = false;
-        
-        allAnimatedElements.forEach(el => {
-          if (!animatedElementsSet.has(el)) {
-            const rect = el.getBoundingClientRect();
-            const isInViewport = rect.top < windowHeight * 0.8 && rect.bottom > 0;
-            const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
+      allAnimatedElements.forEach(el => {
+        if (!animatedElementsSet.has(el)) {
+          const rect = el.getBoundingClientRect();
+          // Verificación más generosa del viewport para móviles
+          const viewportThreshold = isMobile ? 0.9 : 0.8;
+          const isInViewport = rect.top < windowHeight * viewportThreshold && rect.bottom > 0;
+          const currentOpacity = parseFloat(window.getComputedStyle(el).opacity);
+          
+          if (isInViewport && currentOpacity < 0.1) {
+            foundMissedElements = true;
+            console.log('Verificación periódica - elemento perdido encontrado:', el.className || el.tagName, 'esMóvil:', isMobile);
+            animatedElementsSet.add(el);
             
-            if (isInViewport && currentOpacity < 0.1) {
+            gsap.killTweensOf(el);
+            gsap.to(el, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: isMobile ? 0.6 : 1.0,
+              ease: "power1.out",
+              overwrite: "auto",
+              force3D: true
+            });
+          }
+        }
+      });
+      
+      // También verificar contenedores stagger-children
+      const staggerContainers = document.querySelectorAll('.stagger-children');
+      staggerContainers.forEach(container => {
+        const rect = container.getBoundingClientRect();
+        const isContainerInViewport = rect.top < windowHeight * 0.9 && rect.bottom > 0;
+        
+        if (isContainerInViewport) {
+          const children = Array.from(container.children);
+          children.forEach((child, index) => {
+            const childOpacity = parseFloat(window.getComputedStyle(child).opacity);
+            if (childOpacity < 0.1) {
               foundMissedElements = true;
-              console.log('Periodic check - found missed element:', el);
-              animatedElementsSet.add(el);
+              console.log('Verificación periódica - hijo escalonado perdido encontrado:', child.className || child.tagName);
               
-              gsap.killTweensOf(el);
-              gsap.to(el, {
+              gsap.killTweensOf(child);
+              gsap.to(child, {
                 opacity: 1,
                 y: 0,
                 scale: 1,
-                duration: 1.0,
+                duration: isMobile ? 0.6 : 1.0,
+                delay: index * 0.05,
                 ease: "power1.out",
-                overwrite: "auto"
+                overwrite: "auto",
+                force3D: true
               });
             }
-          }
-        });
-        
-        if (foundMissedElements) {
-          console.log('Periodic check found missed elements - refreshing ScrollTrigger');
+          });
         }
+      });
+      
+      if (foundMissedElements) {
+        console.log('Verificación periódica encontró elementos perdidos');
+        ScrollTrigger.refresh();
       }
     }
-  }, 3000); // Increased from 2000 to 3000// Mobile fallback - reduced frequency
+  }, isMobile ? 1500 : 2500); // Verificaciones más frecuentes en móvil
+
+  // Mejoras específicas para móviles
   if (isMobile) {
+    // Manejo adicional de eventos táctiles para iOS Safari
+    let touchStartY = 0;
+    let touchEndY = 0;
+    
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    window.addEventListener('touchend', (e) => {
+      touchEndY = e.changedTouches[0].clientY;
+      const touchDistance = Math.abs(touchEndY - touchStartY);
+      
+      // Si ocurrió un scroll táctil significativo, verificar elementos perdidos
+      if (touchDistance > 50) {
+        setTimeout(() => {
+          checkVisibleElements();
+          forceShowVisibleElements();
+        }, 100);
+      }
+    }, { passive: true });
+    
+    // Verificación inicial móvil después de un retraso
     setTimeout(() => {
+      console.log('Móvil: Verificación inicial de elementos');
       checkVisibleElements();
-    }, 2000); // Reduced from 3000 to 2000, and will only run once
+      forceShowVisibleElements();
+    }, 1000);
   }
 </script>
