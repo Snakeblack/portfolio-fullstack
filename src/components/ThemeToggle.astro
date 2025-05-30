@@ -28,9 +28,8 @@
 
   // Hacer la función disponible globalmente para CommonScripts
   window.updateThemeIcons = updateIcons;
-
   // Cargar el tema guardado o el preferido por el sistema y actualizar iconos
-  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const savedTheme = localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   htmlElement.classList.toggle('dark', savedTheme === 'dark');
   updateIcons(savedTheme === 'dark');
   // Asegurarse de que el evento themeChanged se dispare al cargar para que WebGLBackground lo coja
@@ -40,7 +39,7 @@
   themeToggle?.addEventListener('click', () => {
     htmlElement.classList.toggle('dark');
     const isDark = htmlElement.classList.contains('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
     updateIcons(isDark);
     // Disparar evento personalizado para notificar el cambio de tema
     document.dispatchEvent(new CustomEvent('themeChanged'));
@@ -49,7 +48,7 @@
   // Escuchar cambios en las preferencias del sistema
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     // Solo aplicar si no hay un tema guardado explícitamente por el usuario
-    if (localStorage.getItem('theme') === null) { 
+    if (localStorage.getItem('color-theme') === null) {
       const isDark = e.matches;
       htmlElement.classList.toggle('dark', isDark);
       updateIcons(isDark);
