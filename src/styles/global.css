@@ -77,12 +77,12 @@ body {
 }
 
 /* Apply backdrop filter to main content sections if desired */
-main, header, footer {
+/* main, header, footer { */
   /* backdrop-filter: blur(10px); */
    /* -webkit-backdrop-filter: blur(10px);For Safari */
   /* Add a slight background to make the blur more visible if needed */
   /* background-color: rgba(255, 255, 255, 0.05); */ 
-}
+/* } */
 
 /* Ensure other direct children of body that should be above the background also have a backdrop filter or appropriate styling */
 .some-other-container {
