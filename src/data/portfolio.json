@@ -39,12 +39,24 @@
   },
   "experience": [
     {
+      "company": "Hiberus",
+      "position": {
+        "es": "Desarrollador Full Stack",
+        "en": "Full Stack Developer"
+      },
+      "period": "2025 - Actual",
+      "description": {
+        "es": "Como Desarrollador Fullstack en Ibercaja, implemento funcionalidades clave en un proyecto Fintech para el sector asegurador. Mi contribución se extiende a lo largo de todo el ciclo de desarrollo, construyendo sobre una arquitectura definida de microservicios con .NET 8 y microfrontends con Angular (v19+). Mi rol requiere la aplicación de tecnologías avanzadas para la comunicación en tiempo real y asíncrona (RabbitMQ), la orquestación de módulos con Module Federation y el uso de un sistema de diseño corporativo para proporcionar una solución escalable y de alto impacto para el negocio.",
+        "en": "As a Full Stack Developer at Ibercaja, I implement key functionalities in a Fintech project for the insurance sector. My contribution spans the entire development cycle, building on a defined microservices architecture with .NET 8 and microfrontends with Angular (v19+). My role requires the application of advanced technologies for real-time and asynchronous communication (RabbitMQ), module orchestration with Module Federation, and the use of a corporate design system to provide a scalable and high-impact solution for the business."
+      }
+    },
+    {
       "company": "Exis-TI (Indra - DGC)",
       "position": {
         "es": "Ingeniero de Software",
         "en": "Software Engineer"
       },
-      "period": "2024 - Actual",
+      "period": "2024 - 2025",
       "description": {
         "es": "En Indra, desarrollo aplicaciones Fullstack para el proyecto de Valoraciones Catastrales del Gobierno de España, utilizando .NET, Angular, y PL/SQL. Aseguro rendimiento, seguridad y colaboro con equipos multidisciplinarios siguiendo metodologías ágiles para modernizar procesos catastrales.",
         "en": "At Indra, I develop Fullstack applications for the Spanish Government's Cadastral Valuations project, using .NET, Angular, and PL/SQL. I ensure performance, security and collaborate with multidisciplinary teams following agile methodologies to modernize cadastral processes."
