@@ -1,0 +1,29 @@
+<script>
+  // Simple Intersection Observer for scroll animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target); // Only animate once
+        }
+      });
+    }, observerOptions);
+
+    const animatedElements = document.querySelectorAll('.scroll-animate, .scroll-animate-fast, .title-animate, .stagger-children');
+    animatedElements.forEach(el => observer.observe(el));
+    
+    // Handle staggered children manually if needed, or let CSS transition-delay handle it
+    // For .stagger-children, we might want to add is-visible to children with delays
+    const staggerContainers = document.querySelectorAll('.stagger-children');
+    staggerContainers.forEach(container => {
+        // logic handled by CSS selector .stagger-children.is-visible > *
+    });
+  });
+</script>

@@ -3,6 +3,7 @@ import "@fontsource-variable/geist/wght.css";
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
 import WebGLBackground from "../components/WebGLBackground.astro";
+import ScrollReveal from "../components/ScrollReveal.astro";
 
 const navLinks = [
   { name: "About", url: "#about-header", id: "about-header" }, 
@@ -163,6 +164,7 @@ const structuredData = {
     ]}
   >
   <WebGLBackground /> {/* Movido aquí para que ocupe toda la pantalla */}
+  <ScrollReveal />
   <main class="w-screen mx-auto relative z-10">
     <slot />
   </main>

@@ -14,7 +14,7 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
 <section id="hero" class="max-w-6xl mx-auto px-6 py-16 md:py-20 lg:py-28 scroll-animate scroll-mt-16">
   <header class="scroll-animate-fast">
     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-light-text dark:text-dark-text mb-6 leading-tight text-balance title-animate">
-      {greeting} <span class="text-light-accent dark:text-dark-accent">{name}</span>
+      {greeting} <span id="typing-name" class="text-light-accent dark:text-dark-accent relative inline-block min-w-[1ch]">{name}</span><span class="animate-pulse text-light-accent dark:text-dark-accent">|</span>
     </h1>
   </header>
   
@@ -55,6 +55,30 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
       if (hour >= 22 || hour < 7) {
         sleepingMessageContainer.style.display = 'flex';
       }
+    }
+
+    // Typing effect
+    const nameElement = document.getElementById('typing-name');
+    if (nameElement) {
+      const text = nameElement.textContent || '';
+      nameElement.textContent = '';
+      let i = 0;
+      
+      // Delay start slightly to wait for fade-in
+      setTimeout(() => {
+        const typeWriter = () => {
+          if (i < text.length) {
+            nameElement.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 100); // Typing speed
+          } else {
+             // Optional: remove cursor after typing
+             const cursor = nameElement.nextElementSibling as HTMLElement | null;
+             if(cursor) cursor.style.display = 'none';
+          }
+        };
+        typeWriter();
+      }, 1000); // Start after 1s
     }
   });
 </script>
