@@ -6,21 +6,21 @@
       "en": "Full Stack Developer"
     },
     "greeting": {
-      "es": "Hola, soy ",
-      "en": "Hello, I'm "
+      "es": "¡Hola! Soy ",
+      "en": "Hi there! I'm "
     },
     "description": {
-      "es": "Creo sitios web y aplicaciones web para diferentes industrias, enfocándome en un enfoque de diseño modular para construir interfaces flexibles y escalables.",
-      "en": "I create websites and web applications for different industries, focusing on a modular design approach to build flexible and scalable interfaces."
+      "es": "Desarrollador Full Stack que disfruta construyendo cosas que viven en internet. Me especializo en crear experiencias digitales sólidas y escalables, poniendo el foco en la calidad del código y en que el usuario final disfrute navegando.",
+      "en": "Full Stack Developer who enjoys building things that live on the internet. I specialize in creating solid and scalable digital experiences, focusing on code quality and ensuring the end user enjoys the journey."
     },
     "about": {
       "es": {
-        "paragraph1": "Profesional Full Stack apasionado por la informática y el desarrollo web, con un enfoque y fortaleza distintivos en el frontend. Soy experto en Angular y cuento con sólidos conocimientos en React y Next.js, aplicados en diversos proyectos. Mi base sólida se asienta en HTML, CSS y JavaScript.",
-        "paragraph2": "En el ámbito del backend, poseo experiencia con .NET. Mis competencias en bases de datos incluyen SQL Server, Oracle SQL y PL/SQL. Además, domino tecnologías como C, Astro, Figma, Tailwind CSS y Angular Material, entre otras. Mi compromiso es la constante actualización y la exploración de las últimas tendencias tecnológicas, asegurando una evolución continua en el desarrollo."
+        "paragraph1": "Más allá del código, soy una persona curiosa por naturaleza. Me encanta el desafío de convertir una idea abstracta en una solución funcional. Mi fuerte es el frontend (¡donde ocurre la magia visual!), pero me muevo con soltura en el backend porque entender todo el puzzle es clave.",
+        "paragraph2": "He trabajado con tecnologías como Angular, React, .NET y bases de datos SQL, pero las herramientas son solo eso: herramientas. Lo que realmente me motiva es aprender constantemente y aplicar ese conocimiento para resolver problemas reales. Si no estoy programando, probablemente me encuentres explorando nuevas tecnologías o desconectando en la naturaleza."
       },
       "en": {
-        "paragraph1": "A Full Stack professional passionate about IT and web development, with a distinct focus and strength in the frontend. I am an expert in Angular and possess solid knowledge in React and Next.js, applied across various projects. My strong foundation is built upon HTML, CSS, and JavaScript.",
-        "paragraph2": "On the backend, I have experience with .NET. My database competencies include SQL Server, Oracle SQL, and PL/SQL. Furthermore, I master technologies such as C, Astro, Figma, Tailwind CSS, and Angular Material, among others. My commitment lies in continuous learning and exploring the latest technological trends, ensuring ongoing evolution in development."
+        "paragraph1": "Beyond code, I'm naturally curious. I love the challenge of turning an abstract idea into a functional solution. My strength lies in the frontend (where the visual magic happens!), but I navigate the backend with ease because understanding the whole puzzle is key.",
+        "paragraph2": "I've worked with technologies like Angular, React, .NET, and SQL databases, but tools are just that: tools. What really drives me is constant learning and applying that knowledge to solve real problems. If I'm not coding, you'll probably find me exploring new tech or unplugging in nature."
       }
     },
     "sleepingMessage": {
@@ -46,8 +46,8 @@
       },
       "period": "2025 - Actual",
       "description": {
-        "es": "Como Desarrollador Fullstack en Ibercaja, implemento funcionalidades clave en un proyecto Fintech para el sector asegurador. Mi contribución se extiende a lo largo de todo el ciclo de desarrollo, construyendo sobre una arquitectura definida de microservicios con .NET 8 y microfrontends con Angular (v19+). Mi rol requiere la aplicación de tecnologías avanzadas para la comunicación en tiempo real y asíncrona (RabbitMQ), la orquestación de módulos con Module Federation y el uso de un sistema de diseño corporativo para proporcionar una solución escalable y de alto impacto para el negocio.",
-        "en": "As a Full Stack Developer at Ibercaja, I implement key functionalities in a Fintech project for the insurance sector. My contribution spans the entire development cycle, building on a defined microservices architecture with .NET 8 and microfrontends with Angular (v19+). My role requires the application of advanced technologies for real-time and asynchronous communication (RabbitMQ), module orchestration with Module Federation, and the use of a corporate design system to provide a scalable and high-impact solution for the business."
+        "es": "Actualmente en Ibercaja, estoy inmerso en el sector Fintech construyendo el futuro de los seguros digitales. Trabajo en una arquitectura compleja de microservicios (.NET 8) y microfrontends (Angular v19+), donde cada pieza cuenta. Mi día a día implica orquestar módulos con Module Federation y asegurar que la comunicación en tiempo real (RabbitMQ) fluya sin problemas. Es un reto constante de escalabilidad e impacto directo en el negocio.",
+        "en": "Currently at Ibercaja, I'm immersed in the Fintech sector building the future of digital insurance. I work on a complex architecture of microservices (.NET 8) and microfrontends (Angular v19+), where every piece counts. My day-to-day involves orchestrating modules with Module Federation and ensuring real-time communication (RabbitMQ) flows smoothly. It's a constant challenge of scalability and direct business impact."
       }
     },
     {
@@ -58,8 +58,8 @@
       },
       "period": "2024 - 2025",
       "description": {
-        "es": "En Indra, desarrollo aplicaciones Fullstack para el proyecto de Valoraciones Catastrales del Gobierno de España, utilizando .NET, Angular, y PL/SQL. Aseguro rendimiento, seguridad y colaboro con equipos multidisciplinarios siguiendo metodologías ágiles para modernizar procesos catastrales.",
-        "en": "At Indra, I develop Fullstack applications for the Spanish Government's Cadastral Valuations project, using .NET, Angular, and PL/SQL. I ensure performance, security and collaborate with multidisciplinary teams following agile methodologies to modernize cadastral processes."
+        "es": "Formé parte del equipo encargado de modernizar las Valoraciones Catastrales del Gobierno de España. Un proyecto de gran envergadura donde la precisión y la seguridad eran innegociables. Desarrollé soluciones Fullstack (.NET, Angular, PL/SQL) colaborando estrechamente con equipos multidisciplinares para traer procesos críticos a la era digital.",
+        "en": "I was part of the team in charge of modernizing the Cadastral Valuations of the Government of Spain. A large-scale project where precision and security were non-negotiable. I developed Fullstack solutions (.NET, Angular, PL/SQL) collaborating closely with multidisciplinary teams to bring critical processes into the digital age."
       }
     },
     {
@@ -70,8 +70,8 @@
       },
       "period": "2022 - 2024",
       "description": {
-        "es": "Desarrollo aplicaciones web desde cero usando Angular y .NET, con un fuerte enfoque en el frontend. Tengo amplia experiencia creando soluciones completas, desde el diseño inicial hasta la implementación y el lanzamiento.",
-        "en": "Develop web applications from scratch using Angular and .NET, with a strong focus on frontend. I have extensive experience creating complete solutions, from initial design to implementation and launch."
+        "es": "Aquí es donde realmente pulí mis habilidades Fullstack. Tuve la oportunidad de liderar el desarrollo de aplicaciones web desde la hoja en blanco hasta el despliegue. Usando Angular y .NET, creé soluciones completas, tomando decisiones de diseño y arquitectura que impactaron directamente en la experiencia del usuario final.",
+        "en": "This is where I really polished my Fullstack skills. I had the opportunity to lead the development of web applications from a blank sheet to deployment. Using Angular and .NET, I created complete solutions, making design and architecture decisions that directly impacted the end-user experience."
       }
     },
     {
@@ -82,8 +82,8 @@
       },
       "period": "2021 - 2023",
       "description": {
-        "es": "Experiencia en la instalación y configuración de software y hardware, ofreciendo soporte técnico tanto presencial como remoto a usuarios.",
-        "en": "Experience in software and hardware installation and configuration, providing both on-site and remote technical support to users."
+        "es": "Mis inicios resolviendo problemas en la trinchera. Instalación, configuración y soporte técnico. Aprendí a entender las frustraciones de los usuarios y a resolver incidencias bajo presión, una base fundamental para cualquier desarrollador.",
+        "en": "My beginnings solving problems in the trenches. Installation, configuration, and technical support. I learned to understand user frustrations and resolve incidents under pressure, a fundamental foundation for any developer."
       }
     },
     {
@@ -94,8 +94,8 @@
       },
       "period": "2019 - 2020",
       "description": {
-        "es": "Experiencia en el desarrollo de aplicaciones de escritorio utilizando VB.NET y C#, incluyendo la creación de nuevas soluciones y el mantenimiento de las ya existentes.",
-        "en": "Experience in developing desktop applications using VB.NET and C#, including creating new solutions and maintaining existing ones."
+        "es": "Primera toma de contacto profesional con el código. Desarrollo y mantenimiento de aplicaciones de escritorio (VB.NET, C#). Aquí aprendí la importancia de escribir código mantenible y de entender el legado.",
+        "en": "First professional contact with code. Development and maintenance of desktop applications (VB.NET, C#). Here I learned the importance of writing maintainable code and understanding legacy systems."
       }
     }
   ],
@@ -103,8 +103,8 @@
     {
       "name": "DevTools MMRG",
       "description": {
-        "es": "Optimiza tu desarrollo con DevTools MMRG: tu repositorio centralizado de herramientas de desarrollo esenciales. Cada utilidad viene con explicaciones claras generadas por IA, permitiéndote comprender y aplicar soluciones de manera rápida y efectiva, impulsando tu productividad y aprendizaje.",
-        "en": "Optimize your development with DevTools MMRG: your centralized repository of essential development tools. Each utility comes with clear AI-generated explanations, allowing you to quickly understand and apply solutions effectively, boosting your productivity and learning."
+        "es": "Tu navaja suiza para el desarrollo. Herramientas esenciales explicadas por IA para que no pierdas tiempo buscando y te centres en crear. Un repositorio centralizado para impulsar tu productividad.",
+        "en": "Your Swiss Army knife for development. Essential tools explained by AI so you don't waste time searching and can focus on creating. A centralized repository to boost your productivity."
       },
       "url": "https://devtools.mretamozo.com/",
       "technologies": [
@@ -118,8 +118,8 @@
     {
       "name": "Baterias Express",
       "description": {
-        "es": "Landing page para una servicio delivery de venta y reparaciones de baterias",
-        "en": "Landing page for a delivery service for battery sales and repairs"
+        "es": "Landing page diseñada para convertir. Servicio de delivery y reparación de baterías rápido y eficaz. Una interfaz directa para una necesidad urgente.",
+        "en": "Landing page designed to convert. Fast and effective battery delivery and repair service. A direct interface for an urgent need."
       },
       "url": "https://www.bateriascoches24horas.es/",
       "technologies": [
@@ -133,8 +133,8 @@
     {
       "name": "Recambios las Margaritas",
       "description": {
-        "es": "Landing page para una tienda de recambios de coches",
-        "en": "Landing page for a car parts store"
+        "es": "Presencia digital para el comercio local. Landing page optimizada para una tienda de recambios, facilitando el contacto y la localización.",
+        "en": "Digital presence for local business. Optimized landing page for a parts store, facilitating contact and location."
       },
       "url": "https://recambioslasmargaritas.es/",
       "technologies": [
@@ -148,8 +148,8 @@
     {
       "name": "Blog",
       "description": {
-        "es": "Blog de desarrollo web y tecnología",
-        "en": "Web development and technology blog"
+        "es": "Mi rincón digital donde comparto lo que aprendo. Artículos sobre desarrollo web, tecnología y mis experiencias programando.",
+        "en": "My digital corner where I share what I learn. Articles about web development, technology, and my coding experiences."
       },
       "url": "https://blog.mretamozo.com/",
       "technologies": [
@@ -163,8 +163,8 @@
     {
       "name": "Prueba Tecnica: Reactive Forms",
       "description": {
-        "es": "Prueba técnica para una oferta de trabajo, consiste en un formulario reactivo con Angular",
-        "en": "Technical test for a job offer, consists of a reactive form with Angular"
+        "es": "Demostración técnica de manejo avanzado de formularios en Angular. Clean Code y buenas prácticas aplicadas a un caso de uso real.",
+        "en": "Technical demonstration of advanced form handling in Angular. Clean Code and best practices applied to a real use case."
       },
       "url": "https://prueba-tecnica-alicunde.mretamozo.com/login",
       "technologies": [
@@ -178,8 +178,8 @@
     {
       "name": "Device Manager",
       "description": {
-        "es": "Aplicación para gestionar dispositivos electrónicos, inventariado y demás.",
-        "en": "Application to manage electronic devices, inventory and more."
+        "es": "Solución completa para la gestión de inventario tecnológico. Control de dispositivos, asignaciones y estado en tiempo real.",
+        "en": "Complete solution for technological inventory management. Device control, assignments, and real-time status."
       },
       "url": "https://github.com/Snakeblack/device-manager",
       "technologies": [
@@ -192,34 +192,141 @@
     }
   ],
   "skills": [
-    { "name": "HTML", "type": "technical", "category": "frontend" },
-    { "name": "CSS", "type": "technical", "category": "frontend" },
-    { "name": "JavaScript", "type": "technical", "category": "frontend" },
-    { "name": "TypeScript", "type": "technical", "category": "frontend" },
-    { "name": "Angular", "type": "technical", "category": "frontend" },
-    { "name": ".NET", "type": "technical", "category": "backend" },
-    { "name": "React", "type": "technical", "category": "frontend" },
-    { "name": "Next.js", "type": "technical", "category": "frontend" },
-    { "name": "Tailwindcss", "type": "technical", "category": "frontend" },
-    { "name": "Astro", "type": "technical", "category": "frontend" },
-    { "name": "Node.js", "type": "technical", "category": "backend" },
-    { "name": "SQL Server", "type": "technical", "category": "database" },
-    { "name": "Oracle SQL", "type": "technical", "category": "database" },
-    { "name": "PL/SQL", "type": "technical", "category": "database" },
-    { "name": "C#", "type": "technical", "category": "backend" },
-    { "name": "C", "type": "technical", "category": "other" },
-    { "name": "Java", "type": "technical", "category": "backend" },
-    { "name": "Figma", "type": "technical", "category": "design" },
-    { "name": "Angular Material", "type": "technical", "category": "frontend" },
-    { "name": "MongoDB", "type": "technical", "category": "database" },
-    { "name": "Firebase", "type": "technical", "category": "backend" },
-    { "name": "Bootstrap", "type": "technical", "category": "frontend" },
-    { "name": "Azure DevOps", "type": "technical", "category": "devops" },
-    { "name": "GitHub", "type": "technical", "category": "devops" },
-    { "name": "Git", "type": "technical", "category": "devops" },
-    { "name": "Docker", "type": "technical", "category": "devops" },
     {
-      "name": { "es": "Comunicación Efectiva", "en": "Effective Communication" },
+      "name": "HTML",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "CSS",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "JavaScript",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "TypeScript",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Angular",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": ".NET",
+      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": "React",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Next.js",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Tailwindcss",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Astro",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Node.js",
+      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": "SQL Server",
+      "type": "technical",
+      "category": "database"
+    },
+    {
+      "name": "Oracle SQL",
+      "type": "technical",
+      "category": "database"
+    },
+    {
+      "name": "PL/SQL",
+      "type": "technical",
+      "category": "database"
+    },
+    {
+      "name": "C#",
+      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": "C",
+      "type": "technical",
+      "category": "other"
+    },
+    {
+      "name": "Java",
+      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": "Figma",
+      "type": "technical",
+      "category": "design"
+    },
+    {
+      "name": "Angular Material",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "MongoDB",
+      "type": "technical",
+      "category": "database"
+    },
+    {
+      "name": "Firebase",
+      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": "Bootstrap",
+      "type": "technical",
+      "category": "frontend"
+    },
+    {
+      "name": "Azure DevOps",
+      "type": "technical",
+      "category": "devops"
+    },
+    {
+      "name": "GitHub",
+      "type": "technical",
+      "category": "devops"
+    },
+    {
+      "name": "Git",
+      "type": "technical",
+      "category": "devops"
+    },
+    {
+      "name": "Docker",
+      "type": "technical",
+      "category": "devops"
+    },
+    {
+      "name": {
+        "es": "Comunicación Efectiva",
+        "en": "Effective Communication"
+      },
       "type": "soft",
       "description": {
         "es": "Habilidad para transmitir ideas de forma clara y concisa.",
@@ -227,7 +334,10 @@
       }
     },
     {
-      "name": { "es": "Trabajo en Equipo", "en": "Teamwork" },
+      "name": {
+        "es": "Trabajo en Equipo",
+        "en": "Teamwork"
+      },
       "type": "soft",
       "description": {
         "es": "Capacidad para colaborar eficazmente con otros para alcanzar objetivos comunes.",
@@ -235,7 +345,10 @@
       }
     },
     {
-      "name": { "es": "Resolución de Problemas", "en": "Problem Solving" },
+      "name": {
+        "es": "Resolución de Problemas",
+        "en": "Problem Solving"
+      },
       "type": "soft",
       "description": {
         "es": "Aptitud para identificar problemas y encontrar soluciones efectivas.",
@@ -243,7 +356,10 @@
       }
     },
     {
-      "name": { "es": "Adaptabilidad", "en": "Adaptability" },
+      "name": {
+        "es": "Adaptabilidad",
+        "en": "Adaptability"
+      },
       "type": "soft",
       "description": {
         "es": "Flexibilidad para ajustarse a nuevas situaciones y cambios.",
@@ -251,7 +367,10 @@
       }
     },
     {
-      "name": { "es": "Pensamiento Crítico", "en": "Critical Thinking" },
+      "name": {
+        "es": "Pensamiento Crítico",
+        "en": "Critical Thinking"
+      },
       "type": "soft",
       "description": {
         "es": "Capacidad para analizar información de manera objetiva y tomar decisiones fundamentadas.",
