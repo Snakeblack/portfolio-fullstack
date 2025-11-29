@@ -10,10 +10,45 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-light-subtext) transparent;
+}
+
+html.dark {
+  scrollbar-color: var(--color-dark-subtext) transparent;
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-light-subtext);
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: var(--color-dark-subtext);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-light-text);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-dark-text);
 }
 
 @theme {
-  /* Colores para Modo Claro */  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
+  /* Colores para Modo Claro */
+  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
   --color-light-text: oklch(0.25 0.02 240);      /* Gris oscuro para texto */
   --color-light-subtext: oklch(0.40 0.02 240);   /* Gris medio-oscuro para texto secundario */
   --color-light-card-bg: oklch(0.95 0.01 240);  /* Gris claro para fondos de tarjetas */
@@ -39,20 +74,43 @@ html {
   .scroll-animate-fast,
   .title-animate {
     opacity: 0;
-    visibility: hidden; /* Ensure complete hiding initially */
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    will-change: opacity, transform;
+  }
+
+  .scroll-animate.is-visible,
+  .scroll-animate-fast.is-visible,
+  .title-animate.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .scroll-animate-fast {
+    transition-duration: 0.4s;
   }
 
   .stagger-children > * {
     opacity: 0;
-    visibility: hidden; /* Ensure complete hiding initially */
+    transform: translateY(10px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
   }
   
-  /* Show elements when animated by GSAP */
-  .scroll-animate[style*="opacity"],
-  .scroll-animate-fast[style*="opacity"],
-  .title-animate[style*="opacity"],
-  .stagger-children > *[style*="opacity"] {
-    visibility: visible;
+  .stagger-children.is-visible > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Helper to ensure visibility if JS fails or for SEO bots if needed (though JS is usually fine) */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-animate,
+    .scroll-animate-fast,
+    .title-animate,
+    .stagger-children > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 }
 
@@ -70,30 +128,6 @@ body {
   line-height: 1.7;
   position: relative; /* Needed for z-index of children to work correctly with fixed background */
   transition: background-color 0.3s ease, color 0.3s ease;
-  /* Ensure body itself doesn't create scrollbars that affect canvas sizing if content is larger than viewport */
-  /* Soporte para dispositivos móviles con barras dinámicas */
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/* Apply backdrop filter to main content sections if desired */
-/* main, header, footer { */
-  /* backdrop-filter: blur(10px); */
-   /* -webkit-backdrop-filter: blur(10px);For Safari */
-  /* Add a slight background to make the blur more visible if needed */
-  /* background-color: rgba(255, 255, 255, 0.05); */ 
-/* } */
-
-/* Ensure other direct children of body that should be above the background also have a backdrop filter or appropriate styling */
-.some-other-container {
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  @apply font-bold;
-  color: var(--color-light-text); /* Usar la variable para que se actualice */
-}
 
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: var(--color-dark-text); /* Usar la variable para que se actualice */

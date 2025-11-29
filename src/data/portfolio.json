@@ -101,6 +101,35 @@
   ],
   "projects": [
     {
+      "name": "WebGL Backgrounds Generator",
+      "description": {
+        "es": "Herramienta para generar código e implementación para backgrounds con animación con WebGL. Personaliza y exporta tus fondos animados fácilmente.",
+        "en": "Tool to generate code and implementation for animated WebGL backgrounds. Customize and export your animated backgrounds easily."
+      },
+      "url": "https://background.mretamozo.com/",
+      "technologies": [
+        "Astro",
+        "TailwindCSS",
+        "Three.js"
+      ],
+      "year": "2025"
+    },
+    {
+      "name": "Barreto Construcciones",
+      "description": {
+        "es": "Landing page corporativa para empresa de construcción. Integración de formulario de contacto con Resend, campañas de Google Ads y seguimiento con Analytics.",
+        "en": "Corporate landing page for a construction company. Contact form integration with Resend, Google Ads campaigns, and Analytics tracking."
+      },
+      "url": "https://www.barretoconstrucciones.es/",
+      "technologies": [
+        "Astro",
+        "Resend",
+        "Google Ads",
+        "Google Analytics"
+      ],
+      "year": "2025"
+    },
+    {
       "name": "DevTools MMRG",
       "description": {
         "es": "Tu navaja suiza para el desarrollo. Herramientas esenciales explicadas por IA para que no pierdas tiempo buscando y te centres en crear. Un repositorio centralizado para impulsar tu productividad.",

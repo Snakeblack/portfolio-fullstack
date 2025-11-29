@@ -18,7 +18,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 
 <nav class="fixed top-0 left-0 right-0 z-30">
   {/* Este div es para el fondo a lo ancho completo, blur, borde y sombra */}
-  <div id="navbar-background" class="w-full bg-light-bg/80 dark:bg-dark-bg/80 border-b border-light-border dark:border-dark-border backdrop-blur-sm shadow-md">
+  <div id="navbar-background" class="w-full bg-light-bg/70 dark:bg-dark-bg/70 border-b border-light-border/50 dark:border-dark-border/50 backdrop-blur-md shadow-sm transition-all duration-300">
     {/* Este div es para restringir y centrar el contenido */}
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -46,26 +46,24 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
           id="nav-content" 
           class="
             fixed inset-0 z-40 h-dvh 
-            bg-light-bg/75 dark:bg-dark-bg/75 backdrop-blur-lg
-            pt-20 pb-10 px-6 
-            flex flex-col items-center justify-start 
-            overflow-y-auto 
-            transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] 
-            transform -translate-x-full 
-            md:static md:h-auto md:flex-row md:items-center md:justify-end md:pt-0 md:pb-0 md:px-0 md:bg-transparent md:dark:bg-transparent
-            md:backdrop-blur-none md:translate-x-0 md:gap-8 lg:gap-10 md:z-auto md:overflow-y-visible
+            bg-light-bg/95 dark:bg-dark-bg/95 backdrop-blur-xl
+            flex flex-col items-center justify-center
+            transition-all duration-500 ease-in-out
+            opacity-0 pointer-events-none
+            md:static md:h-auto md:flex-row md:items-center md:justify-end md:bg-transparent md:dark:bg-transparent
+            md:backdrop-blur-none md:opacity-100 md:pointer-events-auto md:gap-8 lg:gap-10 md:z-auto
           "
         >
-          <ul class="mt-auto md:mt-0 pt-8 md:pt-0 flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-10">
+          <ul class="flex flex-col md:flex-row items-center gap-8 md:gap-8 lg:gap-10 text-center">
             {[ 
               { href: "#about", label: t.nav.about },
               { href: "#work", label: t.nav.work },
               { href: "#projects", label: t.nav.projects },
             ].map((item, index) => (
-              <li class="text-base font-medium transition-colors nav-item md:opacity-100 md:transform-none" style={{ transitionDelay: `${100 + index * 50}ms`}}>
+              <li class="nav-item opacity-0 md:opacity-100 transform translate-y-4 md:translate-y-0 transition-all duration-500 ease-out" style={`--delay: ${index * 100}ms`}>
                 <a 
                   href={item.href} 
-                  class="block py-3 px-4 text-lg font-semibold text-light-text dark:text-dark-text hover:bg-light-card-bg dark:hover:bg-dark-card-bg rounded-md transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 md:inline md:py-0 md:px-0 md:text-base md:font-medium md:text-light-subtext md:dark:text-dark-subtext md:hover:text-light-accent md:dark:hover:text-dark-accent md:hover:bg-transparent md:dark:hover:bg-transparent md:rounded-none md:hover:scale-100 md:active:scale-100"
+                  class="block py-2 text-4xl md:text-base font-bold md:font-medium text-light-text dark:text-dark-text hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-300 md:hover:bg-transparent"
                 >
                   {item.label}
                 </a>
@@ -73,26 +71,17 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
             ))}
           </ul>
 
-          <div class="mt-auto md:mt-0 pt-8 md:pt-0 flex flex-col md:flex-row items-center gap-6 md:gap-8 lg:gap-10">
+          <div class="mt-12 md:mt-0 flex flex-col md:flex-row items-center gap-8 md:gap-8 lg:gap-10 nav-item opacity-0 md:opacity-100 transform translate-y-4 md:translate-y-0 transition-all duration-500 ease-out" style="--delay: 300ms">
             <a 
               href={otherLocaleUrl} 
               aria-label={otherLocaleAriaLabel}
-              class="p-2 rounded-lg text-base font-medium text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent hover:bg-light-border dark:hover:bg-dark-border transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95"
+              class="text-xl md:text-base font-medium text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-200"
             >
               {otherLocaleName}
             </a>
-            <ThemeToggle />
-            <!-- <a 
-              href={projectGithubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="p-2 rounded-lg text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent hover:bg-light-border dark:hover:bg-dark-border transition-all duration-200 ease-in-out transform hover:scale-110 active:scale-95"
-              aria-label="Project GitHub"
-            >
-              <svg class="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-            </a> -->
+            <div class="scale-125 md:scale-100">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>
@@ -100,15 +89,18 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
   </div>
 </nav>
 
-<style>  /* Control de backdrop-filter para navbar y menú móvil */
+<style>
+  /* Control de backdrop-filter para navbar y menú móvil */
   @media (max-width: 767.98px) {
     #navbar-background {
       backdrop-filter: blur(12px);
     }
     
-    /* Cuando el menú está abierto, quitar blur del navbar */
+    /* Cuando el menú está abierto, quitar blur del navbar para que no se superponga raro */
     #navbar-background.menu-open {
       backdrop-filter: none;
+      background-color: transparent; /* Make navbar transparent when menu is open */
+      border-bottom-color: transparent;
     }
   }
 
@@ -123,24 +115,16 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
     transform: translateY(-0.375rem) rotate(-45deg);
   }
 
-  .nav-item {
+  /* Mobile Menu Animation States */
+  #nav-content.menu-open {
     opacity: 1;
-    transform: translateY(0);
+    pointer-events: auto;
   }
 
-  @media (max-width: 767.98px) {
-    #nav-content:not(.translate-x-0) .nav-item {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    
-    #nav-content.translate-x-0 .nav-item {
-      opacity: 1;
-      transform: translateY(0);
-      transition-property: opacity, transform;
-      transition-duration: 0.3s;
-      transition-timing-function: ease-out;
-    }
+  #nav-content.menu-open .nav-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--delay);
   }
 
   .mmrg-link .letter-span {
@@ -197,33 +181,27 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 
   if (toggleBtn && navContent && navbarBackground) {
     toggleBtn.addEventListener('click', () => {
-      const isOpen = navContent.classList.contains('translate-x-0');
+      const isOpen = navContent.classList.contains('menu-open');
       
       if (isOpen) {
-        navContent.classList.remove('translate-x-0');
-        navContent.classList.add('-translate-x-full');
+        navContent.classList.remove('menu-open');
         toggleBtn.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
-        // Restaurar backdrop-blur en navbar cuando se cierra el menú
         navbarBackground.classList.remove('menu-open');
       } else {
-        navContent.classList.remove('-translate-x-full');
-        navContent.classList.add('translate-x-0');
+        navContent.classList.add('menu-open');
         toggleBtn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
-        // Quitar backdrop-blur del navbar cuando se abre el menú
         navbarBackground.classList.add('menu-open');
       }
     });
 
     navContent.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        if (navContent.classList.contains('translate-x-0') && window.innerWidth < 768) {
-          navContent.classList.remove('translate-x-0');
-          navContent.classList.add('-translate-x-full');
+        if (navContent.classList.contains('menu-open') && window.innerWidth < 768) {
+          navContent.classList.remove('menu-open');
           toggleBtn.setAttribute('aria-expanded', 'false');
           document.body.style.overflow = '';
-          // Restaurar backdrop-blur en navbar cuando se cierra el menú
           navbarBackground.classList.remove('menu-open');
         }
       });
