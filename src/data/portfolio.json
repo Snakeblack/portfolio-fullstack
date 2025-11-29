@@ -103,8 +103,8 @@
     {
       "name": "WebGL Backgrounds Generator",
       "description": {
-        "es": "Herramienta para generar código e implementación para backgrounds con animación con WebGL. Personaliza y exporta tus fondos animados fácilmente.",
-        "en": "Tool to generate code and implementation for animated WebGL backgrounds. Customize and export your animated backgrounds easily."
+        "es": "Da vida a tu web con fondos animados en WebGL. Genera, personaliza y exporta efectos visuales hipnóticos en segundos, sin tocar una sola línea de shader. Potencia el 'wow factor' de tus proyectos.",
+        "en": "Bring your website to life with animated WebGL backgrounds. Generate, customize, and export hypnotic visual effects in seconds, without touching a single line of shader code. Boost the 'wow factor' of your projects."
       },
       "url": "https://background.mretamozo.com/",
       "technologies": [
@@ -112,22 +112,23 @@
         "TailwindCSS",
         "Three.js"
       ],
-      "year": "2025"
+      "year": "2025",
+      "screenshot": "/assets/screenshots/background-generator.webp"
     },
     {
       "name": "Barreto Construcciones",
       "description": {
-        "es": "Landing page corporativa para empresa de construcción. Integración de formulario de contacto con Resend, campañas de Google Ads y seguimiento con Analytics.",
-        "en": "Corporate landing page for a construction company. Contact form integration with Resend, Google Ads campaigns, and Analytics tracking."
+        "es": "Transformando la presencia digital del sector construcción. Una landing page de alto rendimiento diseñada para convertir visitas en clientes, integrando campañas de Google Ads y analítica avanzada para maximizar el ROI.",
+        "en": "Transforming the digital presence of the construction sector. A high-performance landing page designed to convert visits into clients, integrating Google Ads campaigns and advanced analytics to maximize ROI."
       },
       "url": "https://www.barretoconstrucciones.es/",
       "technologies": [
         "Astro",
         "Resend",
-        "Google Ads",
-        "Google Analytics"
+        "Google Ads"
       ],
-      "year": "2025"
+      "year": "2025",
+      "screenshot": "/assets/screenshots/barreto-construcciones.webp"
     },
     {
       "name": "DevTools MMRG",
@@ -139,7 +140,7 @@
       "technologies": [
         "Astro",
         "Tailwindcss",
-        "API GEMINI"
+        "API Gemini"
       ],
       "year": "2025",
       "screenshot": "/assets/screenshots/devtools.avif"
