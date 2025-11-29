@@ -72,6 +72,10 @@
    * @param {'light' | 'dark'} theme El tema actual ('light' o 'dark').
    */
   function initWebGL(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, theme: 'light' | 'dark') {
+    // Detener animación anterior si existe
+    if (canvasElement && canvasElement._animationFrameId) {
+      cancelAnimationFrame(canvasElement._animationFrameId);
+    }
     const vertexShaderSource = `
       attribute vec2 a_position;
       void main() {
@@ -203,12 +207,10 @@
         // Dibujar los triángulos
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         animationFrameId = requestAnimationFrame(render); // Solicitar el siguiente frame
+        if(canvasElement) canvasElement._animationFrameId = animationFrameId;
     }
     
-    // Detener animación anterior si existe
-    if (canvasElement && canvasElement._animationFrameId) {
-      cancelAnimationFrame(canvasElement._animationFrameId);
-    }
+
 
     // Redimensionar inicialmente y ajustar el viewport
     if (resizeCanvasToDisplaySize(canvas)) {
