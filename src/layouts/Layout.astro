@@ -3,8 +3,6 @@ import "@fontsource-variable/geist/wght.css";
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
 import WebGLBackground from "../components/WebGLBackground.astro";
-import ScrollReveal from "../components/ScrollReveal.astro";
-
 const navLinks = [
   { name: "About", url: "#about-header", id: "about-header" }, 
   { name: "Experience", url: "#experience", id: "experience" },
@@ -164,7 +162,6 @@ const structuredData = {
     ]}
   >
   <WebGLBackground /> {/* Movido aquí para que ocupe toda la pantalla */}
-  <ScrollReveal />
   <main class="w-screen mx-auto relative z-10">
     <slot />
   </main>
@@ -176,6 +173,8 @@ const structuredData = {
       } else {
         document.documentElement.classList.remove('dark');
       }
+      // Notify components that theme is initialized
+      document.dispatchEvent(new CustomEvent('themeChanged'));
     </script>
 	</body>
 </html>

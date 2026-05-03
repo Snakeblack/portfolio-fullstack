@@ -4,7 +4,6 @@
 <script>
   // Interfaz extendida para el objeto window con propiedades personalizadas
   interface CustomWindow extends Window {
-    toggleThemeAndIcons?: () => void;
     updateThemeIcons?: (isDark: boolean) => void;
     lastScrollY?: number;
   }
@@ -36,33 +35,6 @@
   let wheelTimeout: ReturnType<typeof setTimeout>;
   let touchTimeout: ReturnType<typeof setTimeout>;
   let consecutiveFastScrolls = 0;
-
-  /**
-   * Aplica el tema especificado al documento
-   * @param {string} theme - El tema a aplicar ('dark' o 'light')
-   */
-  function applyTheme(theme: string) {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }
-
-  /**
-   * Alterna entre tema oscuro y claro, actualizando los iconos correspondientes
-   */
-  window.toggleThemeAndIcons = function() {
-    const currentTheme = localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    localStorage.setItem('color-theme', newTheme);
-    applyTheme(newTheme);
-    
-    if (window.updateThemeIcons) {
-      window.updateThemeIcons(newTheme === 'dark');
-    }
-  }
 
   /**
    * Inicializa las animaciones de ScrollTrigger para todos los elementos animados
@@ -213,24 +185,6 @@
    * Configura el tema, animaciones y comportamientos de scroll suave
    */
   document.addEventListener('DOMContentLoaded', function() {
-    // Inicialización del tema
-    const savedTheme = localStorage.getItem('color-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let currentTheme = 'light';
-    if (savedTheme) {
-      currentTheme = savedTheme;
-    } else if (prefersDark) {
-      currentTheme = 'dark';
-    }
-    applyTheme(currentTheme); 
-    localStorage.setItem('color-theme', currentTheme);
-
-    setTimeout(() => {
-      if (window.updateThemeIcons) {
-        window.updateThemeIcons(currentTheme === 'dark');
-      }
-    }, 0);
-
     // Scroll suave para enlaces internos
     document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor: HTMLAnchorElement) => {
       anchor.addEventListener('click', function (this: HTMLAnchorElement, e: MouseEvent) { 
@@ -487,7 +441,7 @@
    * Muestra todos los elementos ocultos restantes cuando se está cerca del final
    */
   function forceShowBottomElements() {
-    const currentY = window.pageYOffset;
+    const currentY = window.scrollY;
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const distanceFromBottom = documentHeight - currentY - windowHeight;
@@ -644,7 +598,7 @@
    */
   window.addEventListener('scroll', () => {
     const currentTime = Date.now();
-    const currentScrollY = window.pageYOffset;
+    const currentScrollY = window.scrollY;
     const scrollDelta = Math.abs(currentScrollY - lastScrollPosition);
     const timeDelta = currentTime - lastScrollTime;
     
@@ -688,7 +642,7 @@
     
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
-      const currentY = window.pageYOffset;
+      const currentY = window.scrollY;
       
       // Calcular velocidad promedio del historial
       const averageVelocity = scrollVelocityHistory.length > 0 
@@ -763,7 +717,7 @@
       forceShowBottomElements();
       
       // Verificación extra agresiva para el fondo de la página
-      const currentY = window.pageYOffset;
+      const currentY = window.scrollY;
       const distanceFromBottom = document.documentElement.scrollHeight - currentY - window.innerHeight;
       if (distanceFromBottom < 100) {
         forceShowAllRemainingElements();
