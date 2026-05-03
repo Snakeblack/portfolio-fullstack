@@ -33,8 +33,10 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
           class="md:hidden flex items-center justify-center p-2 rounded-md text-light-subtext dark:text-dark-subtext hover:bg-light-card-bg dark:hover:bg-dark-card-bg focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-50 transition-colors duration-150"
           aria-controls="nav-content"
           aria-expanded="false"
+          data-menu-open={t.nav.menuOpen}
+          data-menu-close={t.nav.menuClose}
         >
-          <span class="sr-only">Abrir el menú</span>
+          <span class="sr-only">{t.nav.menuOpen}</span>
           <div class="relative w-6 h-6">
             <span id="menu-line-1" class="absolute h-0.5 w-full bg-current transform transition-all duration-300 ease-in-out" style="top: 6px; left: 0;"></span>
             <span id="menu-line-2" class="absolute h-0.5 w-full bg-current transform transition-all duration-300 ease-in-out" style="top: 12px; left: 0;"></span>
@@ -180,6 +182,10 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
   const navbarBackground = document.getElementById('navbar-background');
 
   if (toggleBtn && navContent && navbarBackground) {
+    const srOnlyText = toggleBtn.querySelector('.sr-only');
+    const openLabel = toggleBtn.getAttribute('data-menu-open') || 'Open menu';
+    const closeLabel = toggleBtn.getAttribute('data-menu-close') || 'Close menu';
+
     toggleBtn.addEventListener('click', () => {
       const isOpen = navContent.classList.contains('menu-open');
       
@@ -188,11 +194,13 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
         toggleBtn.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
         navbarBackground.classList.remove('menu-open');
+        if (srOnlyText) srOnlyText.textContent = openLabel;
       } else {
         navContent.classList.add('menu-open');
         toggleBtn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
         navbarBackground.classList.add('menu-open');
+        if (srOnlyText) srOnlyText.textContent = closeLabel;
       }
     });
 
@@ -203,6 +211,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
           toggleBtn.setAttribute('aria-expanded', 'false');
           document.body.style.overflow = '';
           navbarBackground.classList.remove('menu-open');
+          if (srOnlyText) srOnlyText.textContent = openLabel;
         }
       });
     });
