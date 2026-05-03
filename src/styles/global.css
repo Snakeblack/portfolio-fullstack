@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-*, 
-*::before,
-*::after {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-duration: 300ms;
-  transition-timing-function: ease-in-out;
-}
-
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
@@ -79,13 +71,6 @@ html.dark {
     will-change: opacity, transform;
   }
 
-  .scroll-animate.is-visible,
-  .scroll-animate-fast.is-visible,
-  .title-animate.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
   .scroll-animate-fast {
     transition-duration: 0.4s;
   }
@@ -96,9 +81,16 @@ html.dark {
     transition: opacity 0.5s ease-out, transform 0.5s ease-out;
   }
   
-  .stagger-children.is-visible > * {
-    opacity: 1;
-    transform: translateY(0);
+  /* Noscript fallback: ensure content is visible when JavaScript is disabled */
+  @media (scripting: none) {
+    .scroll-animate,
+    .scroll-animate-fast,
+    .title-animate,
+    .stagger-children > * {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
   
   /* Helper to ensure visibility if JS fails or for SEO bots if needed (though JS is usually fine) */
@@ -124,7 +116,7 @@ html, body {
 
 body {
   @apply bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist Variable', sans-serif;
   line-height: 1.7;
   position: relative; /* Needed for z-index of children to work correctly with fixed background */
   transition: background-color 0.3s ease, color 0.3s ease;
