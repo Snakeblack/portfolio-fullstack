@@ -22,3 +22,14 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# AI tooling
+.agents/
+.atl/
+.claude/
+.playwright-mcp/
+skills-lock.json
+
+# test artifacts
+coverage/
+test-results/
