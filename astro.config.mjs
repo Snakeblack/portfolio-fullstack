@@ -5,6 +5,9 @@ import sitemap from "@astrojs/sitemap";
 // Configuración de Astro
 export default defineConfig({
   site: "https://mretamozo.com",
+  devToolbar: {
+    enabled: false,
+  },
   vite: {
     plugins: [tailwindcss()],
   },

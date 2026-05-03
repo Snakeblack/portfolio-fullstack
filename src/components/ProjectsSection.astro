@@ -3,20 +3,20 @@ import { getTranslations, type Locale } from '../utils/translations';
 import { techColorMap, hexToRgba, type TechColorEntry } from '../utils/techColors';
 
 interface ProjectItem {
-  name: string;
-  description: { [key: string]: string };
-  url?: string; // Made url optional to match data
-  technologies?: string[];
-  year: string;
-  screenshot?: string;
+	name: string;
+	description: { [key: string]: string };
+	url?: string; // Made url optional to match data
+	technologies?: string[];
+	year: string;
+	screenshot?: string;
 }
 
 interface Props {
-  title: string;
-  projects: ProjectItem[];
-  currentLocale: string;
-  viewAllText?: string; // Made optional as it's derived
-  maxProjects?: number;
+	title: string;
+	projects: ProjectItem[];
+	currentLocale: string;
+	viewAllText?: string; // Made optional as it's derived
+	maxProjects?: number;
 }
 
 const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
@@ -29,298 +29,263 @@ const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
 const showAllId = `show-all-projects-btn`;
 
 const getTechChipStyles = (tech: string) => {
-  const normalizedTechKey = Object.keys(techColorMap).find(
-    (key) => key.toLowerCase() === tech.toLowerCase() && key !== "default"
-  );
-  const styleInfo = normalizedTechKey
-    ? techColorMap[normalizedTechKey]
-    : techColorMap["default"];
+	const normalizedTechKey = Object.keys(techColorMap).find(
+		(key) => key.toLowerCase() === tech.toLowerCase() && key !== 'default'
+	);
+	const styleInfo = normalizedTechKey ? techColorMap[normalizedTechKey] : techColorMap['default'];
 
-  const opacityValue = 0.7; // Adjusted opacity for better visibility
+	const opacityValue = 0.7; // Adjusted opacity for better visibility
 
-  let bgColorStyle = "";
-  let bgClass = "";
+	let bgColorStyle = '';
+	let bgClass = '';
 
-  if (styleInfo.bg.startsWith("#")) {
-    bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
-  } else {
-    bgClass = styleInfo.bg; 
-  }
+	if (styleInfo.bg.startsWith('#')) {
+		bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
+	} else {
+		bgClass = styleInfo.bg;
+	}
 
-  return {
-    bgColorStyle: bgColorStyle,
-    bgClass: bgClass,
-    textClass: styleInfo.text,
-  };
+	return {
+		bgColorStyle: bgColorStyle,
+		bgClass: bgClass,
+		textClass: styleInfo.text
+	};
 };
 ---
 
 <section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-  <header class="text-center scroll-animate-fast">
-    <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
-      {title}
-    </h2>
-  </header>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
-    {projects.map((project, index) => {
-      const projectDescription = project.description[currentLocale as keyof typeof project.description] || project.description["en"];
-      const isVisibleInitially = index < initialMaxProjects;
-      return (        <article 
-          class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative scroll-animate-fast`}
-          style={`transition-delay: ${index * 100}ms;`}
-          data-project-index={index}
-        >
-          {project.screenshot && (
-            <div class="relative w-full h-48 overflow-hidden">
-              <img 
-                src={project.screenshot}
-                alt={`Screenshot of ${project.name}`}
-                class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 group-hover:brightness-95"
-                loading="lazy"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-          )}
-          <div class="p-6 flex flex-col flex-grow">
-            <h3 class="text-xl font-semibold text-light-text dark:text-dark-text mb-2">{project.name}</h3>
-            <p class="text-sm text-light-subtext dark:text-dark-subtext mb-4 flex-grow text-balance leading-relaxed">
-              {projectDescription}
-            </p>
-            {project.technologies && project.technologies.length > 0 && (
-              <div class="mb-4">
-                <h4 class="text-xs font-semibold uppercase tracking-wider text-light-subtext dark:text-dark-subtext mb-2">
-                  {currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
-                </h4>
-                <div class="flex flex-wrap gap-2">
-                  {project.technologies.map(tech => {
-                    const { bgColorStyle, bgClass, textClass } = getTechChipStyles(tech);
-                    return (
-                      <span 
-                        style={bgColorStyle}
-                        class={`tech-chip ${bgClass} ${textClass} px-3 py-1 rounded-full text-[0.7rem] font-medium shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105`}
-                      >
-                        {tech}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            <div class="mt-auto pt-4 flex items-center justify-between border-t border-light-border/50 dark:border-dark-border/50">
-              <span class="text-xs text-light-subtext dark:text-dark-subtext italic">{project.year}</span>
-              {project.url && (
-                <a 
-                  href={project.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  aria-label={`View project ${project.name}`}
-                  class="inline-flex items-center gap-1.5 text-xs font-medium text-light-accent dark:text-dark-accent hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:underline transition-colors duration-300 ease-in-out"
-                >
-                  {currentLocale === 'es' ? 'Ver Proyecto' : 'View Project'}
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                  </svg>
-                </a>
-              )}
-            </div>
-          </div>
-        </article>
-      );
-    })}
-  </div>  {projects.length > initialMaxProjects && (
-    <div id="button-container" class="-mt-16 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out" style="transition-delay: 0.2s;">
-      <a 
-        href={showAll ? Astro.url.pathname.split('?')[0] : `${Astro.url.pathname.split('?')[0]}?show_all=true`} 
-        id={showAllId}
-        class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-light-accent dark:bg-dark-accent hover:bg-light-accent-hover dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg"
-        role="button"
-        aria-pressed={showAll ? "true" : "false"}
-      >
-        {buttonText}
-      </a>
-    </div>
-  )}
+	<header class="text-center scroll-animate-fast">
+		<h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
+			{title}
+		</h2>
+	</header>
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
+		{
+			projects.map((project, index) => {
+				const projectDescription =
+					project.description[currentLocale as keyof typeof project.description] || project.description['en'];
+				const isVisibleInitially = index < initialMaxProjects;
+				return (
+					<article
+						class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative`}
+						style={`transition-delay: ${index * 100}ms;`}
+						data-project-index={index}
+					>
+						{project.screenshot && (
+							<div class="relative w-full h-48 overflow-hidden">
+								<img
+									src={project.screenshot}
+									alt={`Screenshot of ${project.name}`}
+									class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 group-hover:brightness-95"
+									loading="lazy"
+								/>
+								<div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+							</div>
+						)}
+						<div class="p-6 flex flex-col grow">
+							<h3 class="text-xl font-semibold text-light-text dark:text-dark-text mb-2">{project.name}</h3>
+							<p class="text-sm text-light-subtext dark:text-dark-subtext mb-4 grow text-balance leading-relaxed">
+								{projectDescription}
+							</p>
+							{project.technologies && project.technologies.length > 0 && (
+								<div class="mb-4">
+									<h4 class="text-xs font-semibold uppercase tracking-wider text-light-subtext dark:text-dark-subtext mb-2">
+										{currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
+									</h4>
+									<div class="flex flex-wrap gap-2">
+										{project.technologies.map((tech) => {
+											const { bgColorStyle, bgClass, textClass } = getTechChipStyles(tech);
+											return (
+												<span
+													style={bgColorStyle}
+													class={`tech-chip ${bgClass} ${textClass} px-3 py-1 rounded-full text-[0.7rem] font-medium shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105`}
+												>
+													{tech}
+												</span>
+											);
+										})}
+									</div>
+								</div>
+							)}
+							<div class="mt-auto pt-4 flex items-center justify-between border-t border-light-border/50 dark:border-dark-border/50">
+								<span class="text-xs text-light-subtext dark:text-dark-subtext italic">{project.year}</span>
+								{project.url && (
+									<a
+										href={project.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										aria-label={`View project ${project.name}`}
+										class="inline-flex items-center gap-1.5 text-xs font-medium text-light-accent dark:text-dark-accent hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:underline transition-colors duration-300 ease-in-out"
+									>
+										{currentLocale === 'es' ? 'Ver Proyecto' : 'View Project'}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											class="h-3.5 w-3.5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+											stroke-width="2.5"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+											/>
+										</svg>
+									</a>
+								)}
+							</div>
+						</div>
+					</article>
+				);
+			})
+		}
+	</div>
+	{
+		projects.length > initialMaxProjects && (
+			<div
+				id="button-container"
+				class="-mt-16 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out"
+				style="transition-delay: 0.2s;"
+			>
+				<a
+					href={showAll ? Astro.url.pathname.split('?')[0] : `${Astro.url.pathname.split('?')[0]}?show_all=true`}
+					id={showAllId}
+					class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-light-accent dark:bg-dark-accent hover:bg-light-accent-hover dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg"
+					role="button"
+					aria-pressed={showAll ? 'true' : 'false'}
+				>
+					{buttonText}
+				</a>
+			</div>
+		)
+	}
 </section>
 
-<script define:vars={{ initialShowAllState: showAll, initialMaxProjects, viewAllText: t.actions.viewAll, viewLessText: t.actions.viewLess, buttonId: showAllId }}>  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById(buttonId);
-    const projectItems = document.querySelectorAll('.project-item');
-    const buttonContainer = document.getElementById('button-container');
-    if (!btn || projectItems.length === 0 || !buttonContainer) return;
+<script
+	define:vars={{
+		initialShowAllState: showAll,
+		initialMaxProjects,
+		viewAllText: t.actions.viewAll,
+		viewLessText: t.actions.viewLess,
+		buttonId: showAllId
+	}}
+>
+	document.addEventListener('DOMContentLoaded', () => {
+		const btn = document.getElementById(buttonId);
+		const projectItems = document.querySelectorAll('.project-item');
+		const buttonContainer = document.getElementById('button-container');
+		if (!btn || projectItems.length === 0 || !buttonContainer) return;
 
-    let isCurrentlyShowingAll = initialShowAllState;
-    
-    const updateButtonAndItems = () => {
-      btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
-      btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
+		let isCurrentlyShowingAll = initialShowAllState;
 
-      // Cambiar clases del contenedor del botón según el estado
-      if (isCurrentlyShowingAll) {
-        // Al mostrar todos: mt-12 md:mt-16
-        buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
-      } else {
-        // Al mostrar menos: -mt-16 md:mt-16 (por defecto)
-        buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', '-mt-16 md:mt-16');
-      }
+		const updateButtonAndItems = () => {
+			btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
+			btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
 
-      projectItems.forEach((item, index) => {
-        if (isCurrentlyShowingAll) {
-          // Show all projects with staggered smooth animation
-          item.classList.remove('project-hidden');
-          
-          // Use a longer delay for more dramatic stagger effect
-          setTimeout(() => {
-            item.classList.add('project-visible');
-            setTimeout(() => {
-              item.classList.add('project-animate-in');
-            }, 50);
-          }, index * 80); // Increased delay for smoother stagger
-          
-        } else {
-          // Hide projects beyond initial max with reverse animation
-          if (index >= initialMaxProjects) {
-            item.classList.remove('project-visible', 'project-animate-in');
-            // Add a small delay before hiding for smoother transition
-            setTimeout(() => {
-              item.classList.add('project-hidden');
-            }, (projectItems.length - index) * 40);
-          } else {
-            item.classList.remove('project-hidden');
-            item.classList.add('project-visible', 'project-animate-in');
-          }
-        }
-      });    };
+			// Cambiar clases del contenedor del botón según el estado
+			if (isCurrentlyShowingAll) {
+				// Al mostrar todos: mt-12 md:mt-16
+				buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+			} else {
+				// Al mostrar menos: -mt-16 md:mt-16 (por defecto)
+				buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', '-mt-16 md:mt-16');
+			}
 
-    // Configurar clases iniciales basadas en el estado de la URL
-    if (initialShowAllState) {
-      buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
-    }
+			projectItems.forEach((item, index) => {
+				if (isCurrentlyShowingAll) {
+					item.classList.remove('project-hidden');
+					setTimeout(() => {
+						item.classList.add('project-visible');
+					}, index * 80);
+				} else {
+					if (index >= initialMaxProjects) {
+						item.classList.remove('project-visible');
+						setTimeout(
+							() => {
+								item.classList.add('project-hidden');
+							},
+							(projectItems.length - index) * 40
+						);
+					} else {
+						item.classList.remove('project-hidden');
+						item.classList.add('project-visible');
+					}
+				}
+			});
+		};
 
-    // Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
-    // updateButtonAndItems(); // Astro handles initial render, so this might be redundant or cause a flash
+		// Configurar clases iniciales basadas en el estado de la URL
+		if (initialShowAllState) {
+			buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+		}
 
-    btn.addEventListener('click', (e) => {
-      e.preventDefault(); 
-      
-      // Disable button temporarily to prevent spam clicking
-      btn.style.pointerEvents = 'none';
-      
-      isCurrentlyShowingAll = !isCurrentlyShowingAll;
-      
-      const currentUrl = new URL(window.location.href);
-      if (isCurrentlyShowingAll) {
-        currentUrl.searchParams.set('show_all', 'true');
-      } else {
-        currentUrl.searchParams.delete('show_all');
-      }
-      history.pushState({}, '', currentUrl.toString()); 
+		// Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
+		// updateButtonAndItems(); // Astro handles initial render, so this might be redundant or cause a flash
 
-      updateButtonAndItems(); // Update UI immediately
-        // Re-enable button after animation completes (increased time for new animations)
-      setTimeout(() => {
-        btn.style.pointerEvents = 'auto';
-      }, 1200); // Increased to match new animation duration
-    });
-  });
+		btn.addEventListener('click', (e) => {
+			e.preventDefault();
+
+			// Disable button temporarily to prevent spam clicking
+			btn.style.pointerEvents = 'none';
+
+			isCurrentlyShowingAll = !isCurrentlyShowingAll;
+
+			const currentUrl = new URL(window.location.href);
+			if (isCurrentlyShowingAll) {
+				currentUrl.searchParams.set('show_all', 'true');
+			} else {
+				currentUrl.searchParams.delete('show_all');
+			}
+			history.pushState({}, '', currentUrl.toString());
+
+			updateButtonAndItems(); // Update UI immediately
+			// Re-enable button after animation completes (increased time for new animations)
+			setTimeout(() => {
+				btn.style.pointerEvents = 'auto';
+			}, 1200); // Increased to match new animation duration
+		});
+	});
 </script>
 
 <style>
-  .tech-chip {
-    /* Base styles for tech chips */
-    line-height: 1.25;
-  }
-  .project-card-hover:hover .group-hover\:opacity-100 {
-    opacity: 1;
-  }
-    /* Project animation styles - Ultra smooth and fresh */
-  .project-hidden {
-    opacity: 0;
-    transform: translateY(40px) scale(0.88) rotateX(15deg);
-    visibility: hidden;
-    height: 0;
-    margin: 0;
-    overflow: hidden;
-    filter: blur(8px);
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  .project-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotateX(0deg);
-    visibility: visible;
-    height: auto;
-    filter: blur(0px);
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  .project-animate-in {
-    animation: projectFadeInFresh 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
-  
-  @keyframes projectFadeInFresh {
-    0% {
-      opacity: 0;
-      transform: translateY(60px) scale(0.8) rotateX(25deg) rotateY(5deg);
-      filter: blur(12px) brightness(0.7);
-    }
-    25% {
-      opacity: 0.3;
-      transform: translateY(30px) scale(0.9) rotateX(15deg) rotateY(3deg);
-      filter: blur(6px) brightness(0.85);
-    }
-    50% {
-      opacity: 0.7;
-      transform: translateY(10px) scale(0.98) rotateX(5deg) rotateY(1deg);
-      filter: blur(2px) brightness(0.95);
-    }
-    75% {
-      opacity: 0.9;
-      transform: translateY(-5px) scale(1.02) rotateX(-2deg) rotateY(0deg);
-      filter: blur(0px) brightness(1.05);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg);
-      filter: blur(0px) brightness(1);
-    }
-  }  
-  /* Ensure smooth grid transitions with spring effect */
-  .grid {
-    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  
-  /* Better hover animations with 3D effect */
-  .project-card-hover {
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-  }
-  
-  .project-card-hover:hover {
-    transform: translateY(-12px) scale(1.03) rotateX(5deg);
-    box-shadow: 
-      0 25px 50px rgba(0, 0, 0, 0.15),
-      0 15px 35px rgba(0, 0, 0, 0.1),
-      0 5px 15px rgba(0, 0, 0, 0.05);
-  }
+	.tech-chip {
+		/* Base styles for tech chips */
+		line-height: 1.25;
+	}
+	.project-card-hover:hover .group-hover\:opacity-100 {
+		opacity: 1;
+	}
+	/* Project animation styles - Ultra smooth and fresh */
+	.project-hidden {
+		visibility: hidden;
+		height: 0;
+		margin: 0;
+		overflow: hidden;
+	}
 
-  /* Add a subtle bounce effect on first load */
-  .scroll-animate-fast {
-    animation: bounceInSmooth 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-  }
+	.project-visible {
+		visibility: visible;
+		height: auto;
+	}
+	/* Ensure smooth grid transitions with spring effect */
+	.grid {
+		transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
 
-  @keyframes bounceInSmooth {
-    0% {
-      opacity: 0;
-      transform: translateY(30px) scale(0.9);
-    }
-    60% {
-      opacity: 0.8;
-      transform: translateY(-8px) scale(1.02);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
+	/* Better hover animations with 3D effect */
+	.project-card-hover {
+		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		transform-style: preserve-3d;
+		backface-visibility: hidden;
+	}
+
+	.project-card-hover:hover {
+		transform: translateY(-12px) scale(1.03) rotateX(5deg);
+		box-shadow:
+			0 25px 50px rgba(0, 0, 0, 0.15),
+			0 15px 35px rgba(0, 0, 0, 0.1),
+			0 5px 15px rgba(0, 0, 0, 0.05);
+	}
+
 </style>

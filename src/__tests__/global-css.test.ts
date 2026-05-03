@@ -54,4 +54,16 @@ describe('global.css fixes (REQ-CSS-001 to 004)', () => {
     const staggerMatch = css.match(/\.stagger-children\s*>\s*\*[\s\S]*?opacity:\s*0/);
     expect(staggerMatch).not.toBeNull();
   });
+
+  it('should NOT contain transition properties inside scroll animation utility rules', () => {
+    const scrollAnimateBlock = css.match(/\.scroll-animate,?[\s\S]*?\.title-animate\s*\{([\s\S]*?)\}/);
+    expect(scrollAnimateBlock).not.toBeNull();
+    expect(scrollAnimateBlock![1]).not.toMatch(/transition:/);
+  });
+
+  it('should NOT contain transition properties inside .stagger-children > * rules', () => {
+    const staggerBlock = css.match(/\.stagger-children\s*>\s*\*\s*\{([\s\S]*?)\}/);
+    expect(staggerBlock).not.toBeNull();
+    expect(staggerBlock![1]).not.toMatch(/transition:/);
+  });
 });
