@@ -1,29 +1,42 @@
-export interface PortfolioData {
-  name: string;
-  title: string;
-  email: string;
-  location: string;
-  about: About;
-  social: SocialProfile[];
-  experience: ExperienceEntry[];
-  education: EducationEntry[];
-  skills: SkillEntry[];
-  projects: ProjectEntry[];
-  languages: LanguageEntry[];
+export interface TranslatedString {
+  es: string;
+  en: string;
 }
 
-export interface SocialProfile {
-  network: string;
-  username: string;
-  url: string;
+export interface AboutBlock {
+  paragraph1: string;
+  paragraph2: string;
+}
+
+export interface About {
+  es: AboutBlock;
+  en: AboutBlock;
+}
+
+export interface PersonalInfo {
+  name: string;
+  title: TranslatedString;
+  greeting: TranslatedString;
+  description: TranslatedString;
+  about: About;
+  sleepingMessage: TranslatedString;
+  location: string;
+  email: string;
+  image: string;
+}
+
+export interface SocialLinks {
+  linkedin: string;
+  github: string;
+  twitter: string;
 }
 
 export interface ExperienceEntry {
   company: string;
-  position: TranslatedString; // Changed from string to TranslatedString
+  position: TranslatedString;
   website?: string;
-  period: string; // Added period, removed startDate and endDate
-  description: TranslatedString; // Changed from summary: string to description: TranslatedString
+  period: string;
+  description: TranslatedString;
   highlights?: string[];
 }
 
@@ -43,13 +56,8 @@ export interface TechnicalSkillEntry {
   name: string;
   type: "technical";
   category: SkillCategory;
-  level?: string; 
-  icon?: string; 
-}
-
-export interface TranslatedString {
-  es: string;
-  en: string;
+  level?: string;
+  icon?: string;
 }
 
 export interface SoftSkillEntry {
@@ -62,8 +70,10 @@ export type SkillEntry = TechnicalSkillEntry | SoftSkillEntry;
 
 export interface ProjectEntry {
   name: string;
-  description: string;
-  keywords?: string[];
+  description: TranslatedString;
+  technologies: string[];
+  year: string;
+  screenshot: string;
   url?: string;
   repo?: string;
 }
@@ -73,7 +83,12 @@ export interface LanguageEntry {
   fluency: string;
 }
 
-export interface About {
-  paragraph1: string;
-  paragraph2: string;
+export interface PortfolioData {
+  personalInfo: PersonalInfo;
+  social: SocialLinks;
+  experience: ExperienceEntry[];
+  education: EducationEntry[];
+  skills: SkillEntry[];
+  projects: ProjectEntry[];
+  languages: LanguageEntry[];
 }

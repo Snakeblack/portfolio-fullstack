@@ -28,13 +28,12 @@
 
   // Hacer la función disponible globalmente para CommonScripts
   window.updateThemeIcons = updateIcons;
-  // Cargar el tema guardado o el preferido por el sistema y actualizar iconos
-  const savedTheme = localStorage.getItem('color-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  htmlElement.classList.toggle('dark', savedTheme === 'dark');
-  updateIcons(savedTheme === 'dark');
-  // Asegurarse de que el evento themeChanged se dispare al cargar para que WebGLBackground lo coja
-  document.dispatchEvent(new CustomEvent('themeChanged')); 
 
+  // Theme is initialized by Layout.astro's inline script.
+  // Sync icons when the theme is ready.
+  document.addEventListener('themeChanged', () => {
+    updateIcons(htmlElement.classList.contains('dark'));
+  });
 
   themeToggle?.addEventListener('click', () => {
     htmlElement.classList.toggle('dark');
@@ -50,7 +49,11 @@
     // Solo aplicar si no hay un tema guardado explícitamente por el usuario
     if (localStorage.getItem('color-theme') === null) {
       const isDark = e.matches;
-      htmlElement.classList.toggle('dark', isDark);
+      if (isDark) {
+        htmlElement.classList.add('dark');
+      } else {
+        htmlElement.classList.remove('dark');
+      }
       updateIcons(isDark);
       document.dispatchEvent(new CustomEvent('themeChanged'));
     }

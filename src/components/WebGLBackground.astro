@@ -1,81 +1,168 @@
 ---
-// src/components/WebGLBackground.astro
 ---
-<canvas id="webgl-background" class="blur-lg"></canvas>
+<canvas id="webgl-background" class="blur-lg" aria-hidden="true" role="presentation"></canvas>
 
 <script>
-  /**
-   * Crea y compila un shader.
-   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
-   * @param {number} type El tipo de shader (VERTEX_SHADER o FRAGMENT_SHADER).
-   * @param {string} source El código fuente del shader.
-   * @returns {WebGLShader | undefined} El shader creado o undefined si hubo un error.
-   */
+  type ThemeMode = 'light' | 'dark';
+
+  interface ThemeUniforms {
+    baseColor: [number, number, number];
+    centerAmplitude: number;
+    centerSpeed: [number, number];
+    colorModFactors: [number, number, number];
+    colorModOffsets: [number, number, number];
+    smoothstepRange: [number, number];
+    colorSpeed: [number, number, number];
+    distanceMults: [number, number, number];
+    grainAmount: number;
+    isLight: number;
+  }
+
+  interface UniformHandles {
+    resolution: WebGLUniformLocation;
+    time: WebGLUniformLocation;
+    baseColor: WebGLUniformLocation;
+    centerAmplitude: WebGLUniformLocation;
+    centerSpeed: WebGLUniformLocation;
+    colorModFactors: WebGLUniformLocation;
+    colorModOffsets: WebGLUniformLocation;
+    smoothstepRange: WebGLUniformLocation;
+    colorSpeed: WebGLUniformLocation;
+    distanceMults: WebGLUniformLocation;
+    grainAmount: WebGLUniformLocation;
+    isLight: WebGLUniformLocation;
+  }
+
+  interface WebGLState {
+    gl: WebGLRenderingContext;
+    uniforms: UniformHandles;
+    animationFrameId: number | null;
+    startedAt: number;
+  }
+
+  const THEME_UNIFORMS: Record<ThemeMode, ThemeUniforms> = {
+    dark: {
+      baseColor: [0.05, 0.05, 0.1],
+      centerAmplitude: 0.2,
+      centerSpeed: [0.1, 0.07],
+      colorModFactors: [0.3, 0.2, 0.4],
+      colorModOffsets: [0.2, 0.1, 0.3],
+      smoothstepRange: [0.1, 0.6],
+      colorSpeed: [0.17, 0.13, 0.2],
+      distanceMults: [5.0, 4.0, 6.0],
+      grainAmount: 0.05,
+      isLight: 0,
+    },
+    light: {
+      baseColor: [0.9, 0.9, 0.95],
+      centerAmplitude: 0.15,
+      centerSpeed: [0.12, 0.08],
+      colorModFactors: [-0.2, -0.15, -0.25],
+      colorModOffsets: [-0.15, -0.1, -0.2],
+      smoothstepRange: [0.15, 0.65],
+      colorSpeed: [0.15, 0.11, 0.18],
+      distanceMults: [5.5, 4.5, 6.5],
+      grainAmount: 0.03,
+      isLight: 1,
+    },
+  };
+
   function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | undefined {
     const shader = gl.createShader(type);
-    if (shader) {
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-      if (success) {
-        return shader;
-      }
-      console.error("Error de compilación del shader:", gl.getShaderInfoLog(shader));
-      gl.deleteShader(shader);
+
+    if (!shader) {
+      return undefined;
     }
+
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+
+    if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      return shader;
+    }
+
+    console.error('Error de compilación del shader:', gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
     return undefined;
   }
 
-  /**
-   * Crea un programa WebGL a partir de un shader de vértices y un shader de fragmentos.
-   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
-   * @param {WebGLShader} vertexShader El shader de vértices.
-   * @param {WebGLShader} fragmentShader El shader de fragmentos.
-   * @returns {WebGLProgram | undefined} El programa WebGL creado o undefined si hubo un error.
-   */
   function createProgram(gl: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram | undefined {
     const program = gl.createProgram();
-    if (program) {
-      gl.attachShader(program, vertexShader);
-      gl.attachShader(program, fragmentShader);
-      gl.linkProgram(program);
-      const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-      if (success) {
-        return program;
-      }
-      console.error("Error de enlace del programa:", gl.getProgramInfoLog(program));
-      gl.deleteProgram(program);
+
+    if (!program) {
+      return undefined;
     }
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      return program;
+    }
+
+    console.error('Error de enlace del programa:', gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
     return undefined;
   }
 
-  /**
-   * Redimensiona el canvas para que coincida con el tamaño de visualización.
-   * @param {HTMLCanvasElement} canvas El elemento canvas.
-   * @returns {boolean} True si el canvas fue redimensionado, false en caso contrario.
-   */
   function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement): boolean {
-    const displayWidth  = canvas.clientWidth;
+    const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
-    if (canvas.width  !== displayWidth || canvas.height !== displayHeight) {
-      canvas.width  = displayWidth;
+
+    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+      canvas.width = displayWidth;
       canvas.height = displayHeight;
       return true;
     }
+
     return false;
   }
 
-  /**
-   * Inicializa el contexto WebGL, los shaders, el programa y renderiza la escena.
-   * @param {WebGLRenderingContext} gl El contexto de renderizado WebGL.
-   * @param {HTMLCanvasElement} canvas El elemento canvas.
-   * @param {'light' | 'dark'} theme El tema actual ('light' o 'dark').
-   */
-  function initWebGL(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, theme: 'light' | 'dark') {
-    // Detener animación anterior si existe
-    if (canvasElement && canvasElement._animationFrameId) {
-      cancelAnimationFrame(canvasElement._animationFrameId);
+  function getUniformLocation(gl: WebGLRenderingContext, program: WebGLProgram, name: string): WebGLUniformLocation {
+    const location = gl.getUniformLocation(program, name);
+
+    if (!location) {
+      throw new Error(`No se encontró el uniform ${name}`);
     }
+
+    return location;
+  }
+
+  function applyThemeUniforms(gl: WebGLRenderingContext, uniforms: UniformHandles, theme: ThemeMode) {
+    const values = THEME_UNIFORMS[theme];
+
+    gl.uniform3f(uniforms.baseColor, ...values.baseColor);
+    gl.uniform1f(uniforms.centerAmplitude, values.centerAmplitude);
+    gl.uniform2f(uniforms.centerSpeed, ...values.centerSpeed);
+    gl.uniform3f(uniforms.colorModFactors, ...values.colorModFactors);
+    gl.uniform3f(uniforms.colorModOffsets, ...values.colorModOffsets);
+    gl.uniform2f(uniforms.smoothstepRange, ...values.smoothstepRange);
+    gl.uniform3f(uniforms.colorSpeed, ...values.colorSpeed);
+    gl.uniform3f(uniforms.distanceMults, ...values.distanceMults);
+    gl.uniform1f(uniforms.grainAmount, values.grainAmount);
+    gl.uniform1f(uniforms.isLight, values.isLight);
+  }
+
+  const canvasElement = document.getElementById('webgl-background') as HTMLCanvasElement | null;
+  let webglState: WebGLState | null = null;
+
+  function getCurrentTheme(): ThemeMode {
+    return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  }
+
+  function initializeWebGL() {
+    if (!canvasElement) {
+      console.error('Elemento canvas #webgl-background no encontrado.');
+      return;
+    }
+
+    const gl = canvasElement.getContext('webgl');
+    if (!gl) {
+      console.error('WebGL no soportado o fallo al crear el contexto.');
+      return;
+    }
+
     const vertexShaderSource = `
       attribute vec2 a_position;
       void main() {
@@ -83,167 +170,152 @@
       }
     `;
 
-    const fragmentShaderSourceDark = `
+    const fragmentShaderSource = `
       precision mediump float;
       uniform vec2 u_resolution;
       uniform float u_time;
+      uniform vec3 u_baseColor;
+      uniform float u_centerAmplitude;
+      uniform vec2 u_centerSpeed;
+      uniform vec3 u_colorModFactors;
+      uniform vec3 u_colorModOffsets;
+      uniform vec2 u_smoothstepRange;
+      uniform vec3 u_colorSpeed;
+      uniform vec3 u_distanceMults;
+      uniform float u_grainAmount;
+      uniform float u_isLight;
 
       void main() {
         vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        st.x *= u_resolution.x / u_resolution.y; // Corrección de aspecto
+        st.x *= u_resolution.x / u_resolution.y;
 
-        vec3 color = vec3(0.05, 0.05, 0.1); // Color base oscuro
-
-        // Centrar las coordenadas normalizadas independientemente de la relación de aspecto
+        vec3 color = u_baseColor;
         vec2 centerCorrectedST = st;
-        if (u_resolution.x > u_resolution.y) { // Si es más ancho que alto
+
+        if (u_resolution.x > u_resolution.y) {
           centerCorrectedST.x -= (u_resolution.x / u_resolution.y - 1.0) / 2.0;
         }
 
-        float d = distance(centerCorrectedST, vec2(0.5 + 0.2 * sin(u_time * 0.1), 0.5 + 0.2 * cos(u_time * 0.07))); // Reducida la velocidad de movimiento del centro
-        color += vec3(0.3 * sin(u_time * 0.17 + d * 5.0) + 0.2, 
-                      0.2 * cos(u_time * 0.13 + d * 4.0) + 0.1, 
-                      0.4 * sin(u_time * 0.2 + d * 6.0) + 0.3 // Reducida la velocidad de cambio de color
-                     ) * (1.0 - smoothstep(0.1, 0.6, d)); // Efecto de desvanecimiento suave
+        vec2 center = vec2(
+          0.5 + u_centerAmplitude * sin(u_time * u_centerSpeed.x),
+          0.5 + u_centerAmplitude * cos(u_time * u_centerSpeed.y)
+        );
 
-        float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.05;
+        float d = distance(centerCorrectedST, center);
+        vec3 colorWave = vec3(
+          u_colorModFactors.x * sin(u_time * u_colorSpeed.x + d * u_distanceMults.x) + u_colorModOffsets.x,
+          u_colorModFactors.y * cos(u_time * u_colorSpeed.y + d * u_distanceMults.y) + u_colorModOffsets.y,
+          u_colorModFactors.z * sin(u_time * u_colorSpeed.z + d * u_distanceMults.z) + u_colorModOffsets.z
+        ) * (1.0 - smoothstep(u_smoothstepRange.x, u_smoothstepRange.y, d));
+
+        color += colorWave;
+
+        float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * u_grainAmount;
         color += grain;
-        
+        color = mix(color, clamp(color, 0.0, 1.0), u_isLight);
+
         gl_FragColor = vec4(color, 1.0);
       }
     `;
-
-    const fragmentShaderSourceLight = `
-      precision mediump float;
-      uniform vec2 u_resolution;
-      uniform float u_time;
-
-      void main() {
-        vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        st.x *= u_resolution.x / u_resolution.y; // Corrección de aspecto
-
-        vec3 color = vec3(0.9, 0.9, 0.95); // Color base claro
-
-        vec2 centerCorrectedST = st;
-        if (u_resolution.x > u_resolution.y) { 
-          centerCorrectedST.x -= (u_resolution.x / u_resolution.y - 1.0) / 2.0;
-        }
-
-        float d = distance(centerCorrectedST, vec2(0.5 + 0.15 * sin(u_time * 0.12), 0.5 + 0.15 * cos(u_time * 0.08)));
-        color -= vec3(0.2 * sin(u_time * 0.15 + d * 5.5) + 0.15, 
-                      0.15 * cos(u_time * 0.11 + d * 4.5) + 0.1, 
-                      0.25 * sin(u_time * 0.18 + d * 6.5) + 0.2
-                     ) * (1.0 - smoothstep(0.15, 0.65, d));
-
-        float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.03;
-        color += grain;
-        color = clamp(color, 0.0, 1.0); // Asegurar que los colores no se salgan del rango
-        
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `;
-
-    const fragmentShaderSource = theme === 'light' ? fragmentShaderSourceLight : fragmentShaderSourceDark;
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
 
     if (!vertexShader || !fragmentShader) {
-        console.error("Fallo al crear los shaders WebGL.");
-        return;
+      console.error('Fallo al crear los shaders WebGL.');
+      return;
     }
 
     const program = createProgram(gl, vertexShader, fragmentShader);
     if (!program) {
-        console.error("Fallo al crear el programa WebGL.");
-        return;
+      console.error('Fallo al crear el programa WebGL.');
+      return;
     }
 
-    // Obtener ubicaciones de atributos y uniformes
-    const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-    const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
-    const timeUniformLocation = gl.getUniformLocation(program, "u_time");
-
-    if (positionAttributeLocation === -1 || !resolutionUniformLocation || !timeUniformLocation) {
-       console.error("Fallo al obtener las ubicaciones de las variables del shader.");
-       return;
+    const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+    if (positionAttributeLocation === -1) {
+      console.error('Fallo al obtener la ubicación del atributo a_position.');
+      return;
     }
 
-    // Crear y enlazar el buffer de posición
+    const uniforms: UniformHandles = {
+      resolution: getUniformLocation(gl, program, 'u_resolution'),
+      time: getUniformLocation(gl, program, 'u_time'),
+      baseColor: getUniformLocation(gl, program, 'u_baseColor'),
+      centerAmplitude: getUniformLocation(gl, program, 'u_centerAmplitude'),
+      centerSpeed: getUniformLocation(gl, program, 'u_centerSpeed'),
+      colorModFactors: getUniformLocation(gl, program, 'u_colorModFactors'),
+      colorModOffsets: getUniformLocation(gl, program, 'u_colorModOffsets'),
+      smoothstepRange: getUniformLocation(gl, program, 'u_smoothstepRange'),
+      colorSpeed: getUniformLocation(gl, program, 'u_colorSpeed'),
+      distanceMults: getUniformLocation(gl, program, 'u_distanceMults'),
+      grainAmount: getUniformLocation(gl, program, 'u_grainAmount'),
+      isLight: getUniformLocation(gl, program, 'u_isLight'),
+    };
+
     const positionBuffer = gl.createBuffer();
     if (!positionBuffer) {
-        console.error("Fallo al crear el buffer de posición.");
-        return; 
+      console.error('Fallo al crear el buffer de posición.');
+      return;
     }
-    
+
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    // Coordenadas para un rectángulo que cubre todo el canvas
-    const positions = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-    
-    // Configuración inicial de WebGL
-    gl.clearColor(0, 0, 0, 0); // Limpiar a transparente
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      gl.STATIC_DRAW,
+    );
+
+    gl.clearColor(0, 0, 0, 0);
     gl.useProgram(program);
     gl.enableVertexAttribArray(positionAttributeLocation);
-    // Indicar a WebGL cómo tomar datos del buffer de posición
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    let lastTime = 0;
-    let animationFrameId: number | null = null; 
+    const state: WebGLState = {
+      gl,
+      uniforms,
+      animationFrameId: null,
+      startedAt: performance.now(),
+    };
 
-    function render(currentTime: number) {
-        currentTime *= 0.001; // Convertir a segundos
-        lastTime = currentTime;
+    webglState = state;
+    applyThemeUniforms(gl, uniforms, getCurrentTheme());
 
-        if (resizeCanvasToDisplaySize(canvas)) {
-            // Ajustar el viewport si el canvas fue redimensionado
-            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        }
-        
-        gl.clear(gl.COLOR_BUFFER_BIT); // Limpiar el canvas
-        // Establecer uniformes
-        gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
-        gl.uniform1f(timeUniformLocation, currentTime);
-        // Dibujar los triángulos
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-        animationFrameId = requestAnimationFrame(render); // Solicitar el siguiente frame
-        if(canvasElement) canvasElement._animationFrameId = animationFrameId;
-    }
-    
-
-
-    // Redimensionar inicialmente y ajustar el viewport
-    if (resizeCanvasToDisplaySize(canvas)) {
-       gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    }
-    animationFrameId = requestAnimationFrame(render);
-    if(canvasElement) canvasElement._animationFrameId = animationFrameId; // Guardar el ID para cancelarlo después
-  }
-
-  // Ejecución principal del script
-  const canvasElement = document.getElementById('webgl-background') as HTMLCanvasElement & { _animationFrameId?: number };
-  
-  function initializeAndRunWebGL() {
-    if (canvasElement) {
-      const glContext = canvasElement.getContext('webgl');
-      if (glContext) {
-          const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-          initWebGL(glContext, canvasElement, currentTheme);
-      } else {
-          console.error("WebGL no soportado o fallo al crear el contexto.");
+    const render = (frameTime: number) => {
+      if (!webglState || !canvasElement) {
+        return;
       }
-    } else {
-      console.error("Elemento canvas #webgl-background no encontrado.");
+
+      if (resizeCanvasToDisplaySize(canvasElement)) {
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      }
+
+      const elapsedSeconds = (frameTime - state.startedAt) * 0.001;
+
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height);
+      gl.uniform1f(uniforms.time, elapsedSeconds);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      state.animationFrameId = requestAnimationFrame(render);
+    };
+
+    if (resizeCanvasToDisplaySize(canvasElement)) {
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     }
+
+    state.animationFrameId = requestAnimationFrame(render);
   }
 
-  initializeAndRunWebGL(); // Inicializar al cargar la página
+  initializeWebGL();
 
-  // Escuchar cambios de tema
   document.addEventListener('themeChanged', () => {
-    initializeAndRunWebGL(); // Reinicializar WebGL con el nuevo tema
-  });
+    if (!webglState) {
+      return;
+    }
 
+    applyThemeUniforms(webglState.gl, webglState.uniforms, getCurrentTheme());
+  });
 </script>
 
 <style>
@@ -252,10 +324,10 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; /* Fallback para navegadores sin soporte dvh */
-    height: 100dvh; /* Dynamic viewport height para evitar problemas con barras del navegador móvil */
-    z-index: -1; 
-    display: block; 
-    touch-action: none; 
+    height: 100vh;
+    height: 100dvh;
+    z-index: -1;
+    display: block;
+    touch-action: none;
   }
 </style>

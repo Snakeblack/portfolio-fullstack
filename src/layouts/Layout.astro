@@ -3,8 +3,6 @@ import "@fontsource-variable/geist/wght.css";
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
 import WebGLBackground from "../components/WebGLBackground.astro";
-import ScrollReveal from "../components/ScrollReveal.astro";
-
 const navLinks = [
   { name: "About", url: "#about-header", id: "about-header" }, 
   { name: "Experience", url: "#experience", id: "experience" },
@@ -115,6 +113,11 @@ const structuredData = {
 <!doctype html>
 <html lang={typedLang}>
 	<head>
+		<script is:inline>
+			if ('scrollRestoration' in history) {
+				history.scrollRestoration = 'manual';
+			}
+		</script>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} especializado en ${personalInfo.title[typedLang]} con experiencia en Angular y .NET.`} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -155,6 +158,17 @@ const structuredData = {
     <meta name="twitter:creator" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+		<script>
+			import { gsap } from 'gsap';
+			import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+			gsap.registerPlugin(ScrollTrigger);
+			ScrollTrigger.config({
+				autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
+				ignoreMobileResize: true,
+				syncInterval: 10,
+			});
+		</script>
 	</head>
   <body
     class:list={[
@@ -164,7 +178,6 @@ const structuredData = {
     ]}
   >
   <WebGLBackground /> {/* Movido aquí para que ocupe toda la pantalla */}
-  <ScrollReveal />
   <main class="w-screen mx-auto relative z-10">
     <slot />
   </main>
@@ -176,6 +189,8 @@ const structuredData = {
       } else {
         document.documentElement.classList.remove('dark');
       }
+      // Notify components that theme is initialized
+      document.dispatchEvent(new CustomEvent('themeChanged'));
     </script>
 	</body>
 </html>

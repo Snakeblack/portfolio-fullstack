@@ -9,7 +9,9 @@ export const translations = {
       projects: 'Proyectos',
       blog: 'Blog',
       contact: 'Contacto',
-      me: 'Mí'
+      me: 'Mí',
+      menuOpen: 'Abrir el menú',
+      menuClose: 'Cerrar el menú'
     },
     // Secciones
     sections: {
@@ -72,7 +74,9 @@ export const translations = {
       projects: 'Projects',
       blog: 'Blog',
       contact: 'Contact',
-      me: 'Me'
+      me: 'Me',
+      menuOpen: 'Open menu',
+      menuClose: 'Close menu'
     },
     // Secciones
     sections: {
