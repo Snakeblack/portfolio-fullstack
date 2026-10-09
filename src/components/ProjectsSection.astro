@@ -1,6 +1,5 @@
 ---
 import { getTranslations, type Locale } from '../utils/translations';
-import { techColorMap, hexToRgba, type TechColorEntry } from '../utils/techColors';
 
 interface ProjectItem {
 	name: string;
@@ -27,35 +26,11 @@ const showAll = urlParams.get('show_all') === 'true';
 
 const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
 const showAllId = `show-all-projects-btn`;
-
-const getTechChipStyles = (tech: string) => {
-	const normalizedTechKey = Object.keys(techColorMap).find(
-		(key) => key.toLowerCase() === tech.toLowerCase() && key !== 'default'
-	);
-	const styleInfo = normalizedTechKey ? techColorMap[normalizedTechKey] : techColorMap['default'];
-
-	const opacityValue = 0.7; // Adjusted opacity for better visibility
-
-	let bgColorStyle = '';
-	let bgClass = '';
-
-	if (styleInfo.bg.startsWith('#')) {
-		bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
-	} else {
-		bgClass = styleInfo.bg;
-	}
-
-	return {
-		bgColorStyle: bgColorStyle,
-		bgClass: bgClass,
-		textClass: styleInfo.text
-	};
-};
 ---
 
 <section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
 	<header class="text-center scroll-animate-fast">
-		<h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
+		<h2 class="text-[1.875rem] md:text-[3.75rem] font-bold tracking-tight leading-[1.1] text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
 			{title}
 		</h2>
 	</header>
@@ -67,7 +42,7 @@ const getTechChipStyles = (tech: string) => {
 				const isVisibleInitially = index < initialMaxProjects;
 				return (
 					<article
-						class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative`}
+						class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover glass-card group rounded-xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out`}
 						style={`transition-delay: ${index * 100}ms;`}
 						data-project-index={index}
 					>
@@ -90,25 +65,21 @@ const getTechChipStyles = (tech: string) => {
 							{project.technologies && project.technologies.length > 0 && (
 								<div class="mb-4">
 									<h4 class="text-xs font-semibold uppercase tracking-wider text-light-subtext dark:text-dark-subtext mb-2">
-										{currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
+									{currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
 									</h4>
 									<div class="flex flex-wrap gap-2">
-										{project.technologies.map((tech) => {
-											const { bgColorStyle, bgClass, textClass } = getTechChipStyles(tech);
-											return (
-												<span
-													style={bgColorStyle}
-													class={`tech-chip ${bgClass} ${textClass} px-3 py-1 rounded-full text-[0.7rem] font-medium shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105`}
-												>
-													{tech}
-												</span>
-											);
-										})}
+										{project.technologies.map((tech) => (
+											<span
+												class="tech-chip px-2.5 py-0.5 text-[0.7rem] font-mono tracking-[0.05em] rounded border border-light-border dark:border-dark-border text-light-text/80 dark:text-dark-text/80 bg-transparent hover:border-light-accent dark:hover:border-dark-accent hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-200"
+											>
+												{tech}
+											</span>
+										))}
 									</div>
 								</div>
 							)}
 							<div class="mt-auto pt-4 flex items-center justify-between border-t border-light-border/50 dark:border-dark-border/50">
-								<span class="text-xs text-light-subtext dark:text-dark-subtext italic">{project.year}</span>
+								<span class="text-xs text-light-subtext dark:text-dark-subtext font-mono tracking-[0.05em]">{project.year}</span>
 								{project.url && (
 									<a
 										href={project.url}
@@ -145,7 +116,7 @@ const getTechChipStyles = (tech: string) => {
 		projects.length > initialMaxProjects && (
 			<div
 				id="button-container"
-				class="-mt-16 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out"
+				class="mt-8 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out"
 				style="transition-delay: 0.2s;"
 			>
 				<a
@@ -186,10 +157,10 @@ const getTechChipStyles = (tech: string) => {
 			// Cambiar clases del contenedor del botón según el estado
 			if (isCurrentlyShowingAll) {
 				// Al mostrar todos: mt-12 md:mt-16
-				buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+				buttonContainer.className = buttonContainer.className.replace('mt-8 md:mt-16', 'mt-12 md:mt-16');
 			} else {
-				// Al mostrar menos: -mt-16 md:mt-16 (por defecto)
-				buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', '-mt-16 md:mt-16');
+				// Al mostrar menos: mt-8 md:mt-16 (por defecto)
+				buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', 'mt-8 md:mt-16');
 			}
 
 			projectItems.forEach((item, index) => {
@@ -217,7 +188,7 @@ const getTechChipStyles = (tech: string) => {
 
 		// Configurar clases iniciales basadas en el estado de la URL
 		if (initialShowAllState) {
-			buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
+			buttonContainer.className = buttonContainer.className.replace('mt-8 md:mt-16', 'mt-12 md:mt-16');
 		}
 
 		// Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
@@ -256,36 +227,23 @@ const getTechChipStyles = (tech: string) => {
 	.project-card-hover:hover .group-hover\:opacity-100 {
 		opacity: 1;
 	}
-	/* Project animation styles - Ultra smooth and fresh */
+
 	.project-hidden {
-		visibility: hidden;
-		height: 0;
-		margin: 0;
-		overflow: hidden;
+		display: none;
+		border: 0;
 	}
 
 	.project-visible {
 		visibility: visible;
 		height: auto;
 	}
-	/* Ensure smooth grid transitions with spring effect */
-	.grid {
-		transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	}
 
-	/* Better hover animations with 3D effect */
 	.project-card-hover {
-		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-		transform-style: preserve-3d;
-		backface-visibility: hidden;
+		transition: transform 0.3s ease, border-color 0.3s ease;
 	}
 
 	.project-card-hover:hover {
-		transform: translateY(-12px) scale(1.03) rotateX(5deg);
-		box-shadow:
-			0 25px 50px rgba(0, 0, 0, 0.15),
-			0 15px 35px rgba(0, 0, 0, 0.1),
-			0 5px 15px rgba(0, 0, 0, 0.05);
+		transform: translateY(-2px);
 	}
 
 </style>

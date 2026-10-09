@@ -1,36 +1,37 @@
 ---
 ---
-<canvas id="webgl-background" class="blur-lg" aria-hidden="true" role="presentation"></canvas>
+<canvas id="webgl-background" aria-hidden="true" role="presentation"></canvas>
 
 <script>
   type ThemeMode = 'light' | 'dark';
 
-  interface ThemeUniforms {
+  interface GridThemeUniforms {
     baseColor: [number, number, number];
-    centerAmplitude: number;
-    centerSpeed: [number, number];
-    colorModFactors: [number, number, number];
-    colorModOffsets: [number, number, number];
-    smoothstepRange: [number, number];
-    colorSpeed: [number, number, number];
-    distanceMults: [number, number, number];
-    grainAmount: number;
+    gridSize: number;
+    gridColor: [number, number, number];
+    gridLineWidth: number;
+    fadeRadius: number;
+    pulseSpeed: number;
+    grainIntensity: number;
+    displacementAmplitude: number;
+    displacementSpeed: number;
     isLight: number;
   }
 
   interface UniformHandles {
     resolution: WebGLUniformLocation;
     time: WebGLUniformLocation;
+    mouse: WebGLUniformLocation;
     baseColor: WebGLUniformLocation;
-    centerAmplitude: WebGLUniformLocation;
-    centerSpeed: WebGLUniformLocation;
-    colorModFactors: WebGLUniformLocation;
-    colorModOffsets: WebGLUniformLocation;
-    smoothstepRange: WebGLUniformLocation;
-    colorSpeed: WebGLUniformLocation;
-    distanceMults: WebGLUniformLocation;
-    grainAmount: WebGLUniformLocation;
+    gridSize: WebGLUniformLocation;
+    gridColor: WebGLUniformLocation;
+    gridLineWidth: WebGLUniformLocation;
+    fadeRadius: WebGLUniformLocation;
+    pulseSpeed: WebGLUniformLocation;
+    grainIntensity: WebGLUniformLocation;
     isLight: WebGLUniformLocation;
+    displacementAmplitude: WebGLUniformLocation;
+    displacementSpeed: WebGLUniformLocation;
   }
 
   interface WebGLState {
@@ -40,29 +41,29 @@
     startedAt: number;
   }
 
-  const THEME_UNIFORMS: Record<ThemeMode, ThemeUniforms> = {
+  const THEME_UNIFORMS: Record<ThemeMode, GridThemeUniforms> = {
     dark: {
-      baseColor: [0.05, 0.05, 0.1],
-      centerAmplitude: 0.2,
-      centerSpeed: [0.1, 0.07],
-      colorModFactors: [0.3, 0.2, 0.4],
-      colorModOffsets: [0.2, 0.1, 0.3],
-      smoothstepRange: [0.1, 0.6],
-      colorSpeed: [0.17, 0.13, 0.2],
-      distanceMults: [5.0, 4.0, 6.0],
-      grainAmount: 0.05,
+      baseColor: [0.05, 0.05, 0.09],
+      gridSize: 0.08,
+      gridColor: [0.18, 0.18, 0.28],
+      gridLineWidth: 0.003,
+      fadeRadius: 0.85,
+      pulseSpeed: 0.2,
+      grainIntensity: 0.04,
+      displacementAmplitude: 0.012,
+      displacementSpeed: 0.12,
       isLight: 0,
     },
     light: {
-      baseColor: [0.9, 0.9, 0.95],
-      centerAmplitude: 0.15,
-      centerSpeed: [0.12, 0.08],
-      colorModFactors: [-0.2, -0.15, -0.25],
-      colorModOffsets: [-0.15, -0.1, -0.2],
-      smoothstepRange: [0.15, 0.65],
-      colorSpeed: [0.15, 0.11, 0.18],
-      distanceMults: [5.5, 4.5, 6.5],
-      grainAmount: 0.03,
+      baseColor: [0.97, 0.97, 0.98],
+      gridSize: 0.08,
+      gridColor: [0.55, 0.55, 0.62],
+      gridLineWidth: 0.002,
+      fadeRadius: 0.8,
+      pulseSpeed: 0.18,
+      grainIntensity: 0.025,
+      displacementAmplitude: 0.008,
+      displacementSpeed: 0.08,
       isLight: 1,
     },
   };
@@ -133,19 +134,36 @@
     const values = THEME_UNIFORMS[theme];
 
     gl.uniform3f(uniforms.baseColor, ...values.baseColor);
-    gl.uniform1f(uniforms.centerAmplitude, values.centerAmplitude);
-    gl.uniform2f(uniforms.centerSpeed, ...values.centerSpeed);
-    gl.uniform3f(uniforms.colorModFactors, ...values.colorModFactors);
-    gl.uniform3f(uniforms.colorModOffsets, ...values.colorModOffsets);
-    gl.uniform2f(uniforms.smoothstepRange, ...values.smoothstepRange);
-    gl.uniform3f(uniforms.colorSpeed, ...values.colorSpeed);
-    gl.uniform3f(uniforms.distanceMults, ...values.distanceMults);
-    gl.uniform1f(uniforms.grainAmount, values.grainAmount);
+    gl.uniform1f(uniforms.gridSize, values.gridSize);
+    gl.uniform3f(uniforms.gridColor, ...values.gridColor);
+    gl.uniform1f(uniforms.gridLineWidth, values.gridLineWidth);
+    gl.uniform1f(uniforms.fadeRadius, values.fadeRadius);
+    gl.uniform1f(uniforms.pulseSpeed, values.pulseSpeed);
+    gl.uniform1f(uniforms.grainIntensity, values.grainIntensity);
     gl.uniform1f(uniforms.isLight, values.isLight);
+    gl.uniform1f(uniforms.displacementAmplitude, values.displacementAmplitude);
+    gl.uniform1f(uniforms.displacementSpeed, values.displacementSpeed);
   }
 
   const canvasElement = document.getElementById('webgl-background') as HTMLCanvasElement | null;
   let webglState: WebGLState | null = null;
+  
+  // Mouse tracking
+  let targetMouseX = 0.5;
+  let targetMouseY = 0.5;
+  let currentMouseX = 0.5;
+  let currentMouseY = 0.5;
+  const finePointerQuery = window.matchMedia('(pointer: fine)');
+  const prefersReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function autonomousMotionEnabled() {
+    return !finePointerQuery.matches && !prefersReducedMotionQuery.matches;
+  }
+  
+  window.addEventListener('mousemove', (e) => {
+    targetMouseX = e.clientX / window.innerWidth;
+    targetMouseY = 1.0 - (e.clientY / window.innerHeight); // WebGL Y is flipped
+  });
 
   function getCurrentTheme(): ThemeMode {
     return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -174,45 +192,97 @@
       precision mediump float;
       uniform vec2 u_resolution;
       uniform float u_time;
+      uniform vec2 u_mouse;
       uniform vec3 u_baseColor;
-      uniform float u_centerAmplitude;
-      uniform vec2 u_centerSpeed;
-      uniform vec3 u_colorModFactors;
-      uniform vec3 u_colorModOffsets;
-      uniform vec2 u_smoothstepRange;
-      uniform vec3 u_colorSpeed;
-      uniform vec3 u_distanceMults;
-      uniform float u_grainAmount;
+      uniform float u_gridSize;
+      uniform vec3 u_gridColor;
+      uniform float u_gridLineWidth;
+      uniform float u_fadeRadius;
+      uniform float u_pulseSpeed;
+      uniform float u_grainIntensity;
       uniform float u_isLight;
+      uniform float u_displacementAmplitude;
+      uniform float u_displacementSpeed;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+      }
 
       void main() {
         vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        st.x *= u_resolution.x / u_resolution.y;
+        float aspect = u_resolution.x / u_resolution.y;
+        st.x *= aspect;
+        
+        vec2 mousePos = u_mouse;
+        mousePos.x *= aspect;
 
-        vec3 color = u_baseColor;
-        vec2 centerCorrectedST = st;
+        // 1. Magnetic distortion (Original twist)
+        // The grid bends slightly away from the mouse, creating a physical "field" feeling
+        float distToMouse = distance(st, mousePos);
+        vec2 dirToMouse = normalize(st - mousePos);
+        float magneticForce = exp(-distToMouse * 4.0) * u_displacementAmplitude * 3.0;
+        vec2 distortedSt = st + dirToMouse * magneticForce;
+        
+        // Very subtle background drifting to keep it alive
+        distortedSt.x += sin(st.y * 5.0 + u_time * u_displacementSpeed) * (u_displacementAmplitude * 0.2);
+        distortedSt.y += cos(st.x * 5.0 + u_time * u_displacementSpeed * 0.8) * (u_displacementAmplitude * 0.2);
 
-        if (u_resolution.x > u_resolution.y) {
-          centerCorrectedST.x -= (u_resolution.x / u_resolution.y - 1.0) / 2.0;
-        }
+        // 2. Strict Grid Coordinates (Nothing style)
+        vec2 gridPos = fract(distortedSt / u_gridSize);
+        float distToCenter = length(gridPos - 0.5);
 
-        vec2 center = vec2(
-          0.5 + u_centerAmplitude * sin(u_time * u_centerSpeed.x),
-          0.5 + u_centerAmplitude * cos(u_time * u_centerSpeed.y)
-        );
+        // 3. Dot Matrix definition
+        // Create sharp, perfect dots instead of lines
+        float dotRadius = u_gridLineWidth * 2.5; 
+        float dotMatrix = 1.0 - smoothstep(dotRadius - 0.01, dotRadius + 0.01, distToCenter);
 
-        float d = distance(centerCorrectedST, center);
-        vec3 colorWave = vec3(
-          u_colorModFactors.x * sin(u_time * u_colorSpeed.x + d * u_distanceMults.x) + u_colorModOffsets.x,
-          u_colorModFactors.y * cos(u_time * u_colorSpeed.y + d * u_distanceMults.y) + u_colorModOffsets.y,
-          u_colorModFactors.z * sin(u_time * u_colorSpeed.z + d * u_distanceMults.z) + u_colorModOffsets.z
-        ) * (1.0 - smoothstep(u_smoothstepRange.x, u_smoothstepRange.y, d));
+        // 4. Crosshairs (Technical schematic detail)
+        // Every nth dot is replaced by a faint cross
+        vec2 gridId = floor(distortedSt / u_gridSize);
+        float isCrosshairX = step(0.9, fract(gridId.x * 0.25));
+        float isCrosshairY = step(0.9, fract(gridId.y * 0.25));
+        float isCrosshair = isCrosshairX * isCrosshairY;
+        
+        float crossLineX = 1.0 - smoothstep(u_gridLineWidth * 0.3, u_gridLineWidth * 0.6, abs(gridPos.x - 0.5));
+        float crossLineY = 1.0 - smoothstep(u_gridLineWidth * 0.3, u_gridLineWidth * 0.6, abs(gridPos.y - 0.5));
+        float crossAlpha = max(crossLineX * step(abs(gridPos.y - 0.5), 0.25), crossLineY * step(abs(gridPos.x - 0.5), 0.25));
+        
+        float finalShape = mix(dotMatrix, crossAlpha, isCrosshair);
 
-        color += colorWave;
+        // 5. Illumination / Flashlight (Vercel style)
+        // Mouse proximity lights up the dots
+        float flashlight = exp(-distToMouse * distToMouse * 8.0);
+        
+        // 6. Data Scanline (Original twist)
+        // A subtle horizontal scanning band
+        float scanline = smoothstep(0.98, 1.0, sin(distortedSt.y * 2.0 - u_time * u_pulseSpeed * 2.0));
+        
+        // Base visibility (very faint) + flashlight + scanline
+        float visibility = 0.15 + (flashlight * 1.5) + (scanline * 0.4);
+        
+        // Subtle global breathing
+        visibility *= 0.9 + 0.1 * sin(u_time * u_pulseSpeed);
 
-        float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * u_grainAmount;
+        // Radial vignette
+        vec2 center = vec2(aspect * 0.5, 0.5);
+        float d = distance(st, center) / (aspect * 0.5);
+        float vignette = 1.0 - smoothstep(0.1, u_fadeRadius, d);
+
+        // Composite
+        vec3 shapeColor = u_gridColor;
+        
+        // Intense contrast near the mouse:
+        // Dark mode: dots glow brighter. Light mode: dots become deeper/darker.
+        vec3 highlightColor = mix(min(u_gridColor * 3.0, vec3(1.0)), u_gridColor * 0.1, u_isLight);
+        shapeColor = mix(shapeColor, highlightColor, clamp(flashlight * 1.5, 0.0, 1.0));
+        
+        // Clamp mix factor to prevent additive blowout in light mode
+        float mixFactor = clamp(finalShape * visibility * vignette, 0.0, 1.0);
+        vec3 color = mix(u_baseColor, shapeColor, mixFactor);
+
+        // Noise Grain
+        float grain = (hash(gl_FragCoord.xy + fract(u_time)) - 0.5) * u_grainIntensity;
         color += grain;
-        color = mix(color, clamp(color, 0.0, 1.0), u_isLight);
 
         gl_FragColor = vec4(color, 1.0);
       }
@@ -241,16 +311,17 @@
     const uniforms: UniformHandles = {
       resolution: getUniformLocation(gl, program, 'u_resolution'),
       time: getUniformLocation(gl, program, 'u_time'),
+      mouse: getUniformLocation(gl, program, 'u_mouse'),
       baseColor: getUniformLocation(gl, program, 'u_baseColor'),
-      centerAmplitude: getUniformLocation(gl, program, 'u_centerAmplitude'),
-      centerSpeed: getUniformLocation(gl, program, 'u_centerSpeed'),
-      colorModFactors: getUniformLocation(gl, program, 'u_colorModFactors'),
-      colorModOffsets: getUniformLocation(gl, program, 'u_colorModOffsets'),
-      smoothstepRange: getUniformLocation(gl, program, 'u_smoothstepRange'),
-      colorSpeed: getUniformLocation(gl, program, 'u_colorSpeed'),
-      distanceMults: getUniformLocation(gl, program, 'u_distanceMults'),
-      grainAmount: getUniformLocation(gl, program, 'u_grainAmount'),
+      gridSize: getUniformLocation(gl, program, 'u_gridSize'),
+      gridColor: getUniformLocation(gl, program, 'u_gridColor'),
+      gridLineWidth: getUniformLocation(gl, program, 'u_gridLineWidth'),
+      fadeRadius: getUniformLocation(gl, program, 'u_fadeRadius'),
+      pulseSpeed: getUniformLocation(gl, program, 'u_pulseSpeed'),
+      grainIntensity: getUniformLocation(gl, program, 'u_grainIntensity'),
       isLight: getUniformLocation(gl, program, 'u_isLight'),
+      displacementAmplitude: getUniformLocation(gl, program, 'u_displacementAmplitude'),
+      displacementSpeed: getUniformLocation(gl, program, 'u_displacementSpeed'),
     };
 
     const positionBuffer = gl.createBuffer();
@@ -292,9 +363,26 @@
 
       const elapsedSeconds = (frameTime - state.startedAt) * 0.001;
 
+      if (autonomousMotionEnabled()) {
+        const waterDriftX =
+          Math.sin(elapsedSeconds * 0.35) * 0.10 +
+          Math.sin(elapsedSeconds * 0.21) * 0.04;
+        const waterDriftY =
+          Math.cos(elapsedSeconds * 0.28) * 0.08 +
+          Math.cos(elapsedSeconds * 0.18) * 0.03;
+
+        targetMouseX = 0.5 + waterDriftX;
+        targetMouseY = 0.5 + waterDriftY;
+      }
+
+      // Smooth mouse interpolation (easing)
+      currentMouseX += (targetMouseX - currentMouseX) * 0.1;
+      currentMouseY += (targetMouseY - currentMouseY) * 0.1;
+
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform2f(uniforms.resolution, gl.canvas.width, gl.canvas.height);
       gl.uniform1f(uniforms.time, elapsedSeconds);
+      gl.uniform2f(uniforms.mouse, currentMouseX, currentMouseY);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
       state.animationFrameId = requestAnimationFrame(render);

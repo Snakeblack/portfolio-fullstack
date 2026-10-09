@@ -15,7 +15,7 @@ const madeWithText = currentLocale === 'es' ? 'Hecho con' : 'Made with';
 <footer class="border-t border-light-border dark:border-dark-border py-10 md:py-12 mt-20 scroll-animate">
   <div class="max-w-6xl mx-auto px-6">
     <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-      <p class="text-xs text-light-subtext dark:text-dark-subtext text-center sm:text-left">
+      <p class="text-xs text-light-subtext dark:text-dark-subtext text-center sm:text-left font-mono tracking-[0.05em]">
         {madeWithText}
         <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="font-medium text-light-accent dark:text-dark-accent hover:underline hover:opacity-80 transition-opacity">
           Astro
@@ -27,7 +27,7 @@ const madeWithText = currentLocale === 'es' ? 'Hecho con' : 'Made with';
       </p>
       
       <div class="flex items-center">
-        <span class="text-xs text-light-subtext dark:text-dark-subtext">
+        <span class="text-xs text-light-subtext dark:text-dark-subtext font-mono tracking-[0.05em]">
           {copyrightText}
         </span>
       </div>

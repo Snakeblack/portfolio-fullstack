@@ -13,7 +13,6 @@ const t = getTranslations(currentLocale);
 const otherLocaleUrl = currentLocale === 'es' ? '/en' : '/';
 const otherLocaleName = currentLocale === 'es' ? 'EN' : 'ES';
 const otherLocaleAriaLabel = currentLocale === 'es' ? 'Switch to English version' : 'Cambiar a la versión en español';
-const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
 ---
 
 <nav class="fixed top-0 left-0 right-0 z-30">
@@ -21,16 +20,14 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
   <div id="navbar-background" class="w-full bg-light-bg/70 dark:bg-dark-bg/70 border-b border-light-border/50 dark:border-dark-border/50 backdrop-blur-md shadow-sm transition-all duration-300">
     {/* Este div es para restringir y centrar el contenido */}
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16 md:h-20">
-        <a href="https://mretamozo.com" class="font-semibold text-xl md:text-2xl text-light-text dark:text-dark-text tracking-tight mmrg-link">
-          {name.split('').map((char, index) => (
-            <span class="letter-span" style={`--stagger-delay: ${index * 75}ms`}>{char === ' ' ? '\u00A0' : char}</span>
-          ))}
+      <div class="flex items-center justify-between h-12 md:h-14">
+        <a href="https://mretamozo.com" class="font-semibold text-lg md:text-xl text-light-text dark:text-dark-text tracking-tight">
+          {name}
         </a>
       
         <button 
           id="mobile-menu-toggle" 
-          class="md:hidden flex items-center justify-center p-2 rounded-md text-light-subtext dark:text-dark-subtext hover:bg-light-card-bg dark:hover:bg-dark-card-bg focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-50 transition-colors duration-150"
+          class="md:hidden flex items-center justify-center p-2 rounded-md text-light-subtext dark:text-dark-subtext focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-50 transition-colors duration-150"
           aria-controls="nav-content"
           aria-expanded="false"
           data-menu-open={t.nav.menuOpen}
@@ -65,7 +62,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
               <li class="nav-item opacity-0 md:opacity-100 transform translate-y-4 md:translate-y-0 transition-all duration-500 ease-out" style={`--delay: ${index * 100}ms`}>
                 <a 
                   href={item.href} 
-                  class="block py-2 text-4xl md:text-base font-bold md:font-medium text-light-text dark:text-dark-text hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-300 md:hover:bg-transparent"
+                  class="block py-2 text-xl md:text-xs font-bold md:font-medium font-mono tracking-[0.05em] uppercase text-light-text dark:text-dark-text hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-300 md:hover:bg-transparent"
                 >
                   {item.label}
                 </a>
@@ -77,7 +74,7 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
             <a 
               href={otherLocaleUrl} 
               aria-label={otherLocaleAriaLabel}
-              class="text-xl md:text-base font-medium text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-200"
+              class="text-xl md:text-xs font-mono tracking-[0.05em] uppercase text-light-subtext dark:text-dark-subtext hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-200"
             >
               {otherLocaleName}
             </a>
@@ -129,51 +126,6 @@ const projectGithubUrl = "https://github.com/Snakeblack/portfolio-fullstack";
     transition-delay: var(--delay);
   }
 
-  .mmrg-link .letter-span {
-    display: inline-block; /* Allows transform and respects layout */
-    position: relative; 
-  }
-
-  .mmrg-link:hover .letter-span {
-    animation-name: subtleLetterBounce;
-    animation-duration: 0.4s;
-    animation-timing-function: ease-in-out;
-    animation-delay: var(--stagger-delay);
-  }
-
-  @keyframes subtleLetterBounce {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-3px); /* Adjust for desired "bounce" height */
-    }
-  }
-
-  nav a {
-  position: relative;
-  text-decoration: none; /* Ensure no default underline interferes */
-}
-
-/* Animated underline for desktop navigation links */
-@media (min-width: 768px) { /* Corresponds to md: breakpoint */
-  .nav-item a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 1.5px; /* Subtle thickness */
-    bottom: -5px; /* Position below the text */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: currentColor; /* Uses the link's current text color (accent on hover) */
-    transition: width 0.3s ease-in-out;
-  }
-
-  .nav-item a:hover::after,
-  .nav-item a:focus::after { /* Apply on hover and focus */
-    width: 100%;
-  }
-}
 </style>
 
 <script>

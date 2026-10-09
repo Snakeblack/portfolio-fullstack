@@ -30,6 +30,13 @@ pnpm-debug.log*
 .playwright-mcp/
 skills-lock.json
 
+# Playwright MCP screenshots & snapshots at project root
+/page-*.png
+/page-*.yml
+/projects-dark*.png
+/projects-section.png
+/update_specs.py
+
 # test artifacts
 coverage/
 test-results/

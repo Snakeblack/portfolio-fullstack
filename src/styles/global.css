@@ -49,22 +49,30 @@ html.dark {
 }
 
 @theme {
-  /* Colores para Modo Claro */
-  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
-  --color-light-text: oklch(0.25 0.02 240);      /* Gris oscuro para texto */
-  --color-light-subtext: oklch(0.40 0.02 240);   /* Gris medio-oscuro para texto secundario */
-  --color-light-card-bg: oklch(0.95 0.01 240);  /* Gris claro para fondos de tarjetas */
-  --color-light-border: oklch(0.90 0.01 240);   /* Gris ligeramente más oscuro para bordes */
-  --color-light-accent: oklch(0.45 0.15 260);     /* Azul oscuro para acentos */
-  --color-light-accent-hover: oklch(0.40 0.16 260); /* Azul más oscuro para hover */
-  /* Colores para Modo Oscuro */
-  --color-dark-bg: oklch(0.15 0.01 240);        /* Gris muy oscuro con tono fresco */
-  --color-dark-text: oklch(0.90 0.01 240);       /* Gris claro para texto */
-  --color-dark-subtext: oklch(0.65 0.01 240);    /* Gris medio-claro para texto secundario */
-  --color-dark-card-bg: oklch(0.22 0.015 240);   /* Gris oscuro para fondos de tarjetas - Ligeramente más claro */
-  --color-dark-border: oklch(0.28 0.015 240);    /* Gris oscuro ligeramente más claro para bordes - Ligeramente más claro */
-  --color-dark-accent: oklch(0.7 0.15 260);      /* Azul brillante para acentos en modo oscuro */
-  --color-dark-accent-hover: oklch(0.75 0.16 260);/* Azul ligeramente más brillante para hover */
+  /* Light — near-achromatic with cool blue hint */
+  --color-light-bg: oklch(0.985 0.005 260);
+  --color-light-text: oklch(0.15 0.01 260);
+  --color-light-subtext: oklch(0.40 0.01 260);
+  --color-light-card-bg: oklch(0.965 0.005 260);
+  --color-light-border: oklch(0.88 0.008 260);
+  --color-light-accent: oklch(0.55 0.20 260);
+  --color-light-accent-hover: oklch(0.50 0.22 260);
+
+  /* Dark — rich near-black */
+  --color-dark-bg: oklch(0.11 0.008 260);
+  --color-dark-text: oklch(0.93 0.005 260);
+  --color-dark-subtext: oklch(0.58 0.01 260);
+  --color-dark-card-bg: oklch(0.16 0.01 260);
+  --color-dark-border: oklch(0.22 0.01 260);
+  --color-dark-accent: oklch(0.65 0.20 260);
+  --color-dark-accent-hover: oklch(0.70 0.22 260);
+
+  /* Gradient tokens */
+  --color-gradient-start: oklch(0.55 0.20 260);
+  --color-gradient-end: oklch(0.65 0.18 300);
+
+  /* Monospace font */
+  --font-mono: 'Geist Mono', 'Geist Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 /* Variante personalizada para modo oscuro */
@@ -76,13 +84,13 @@ html.dark {
   .scroll-animate-fast,
   .title-animate {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(5px);
     will-change: opacity, transform;
   }
 
   .stagger-children > * {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(5px);
   }
   
   /* Noscript fallback: ensure content is visible when JavaScript is disabled */
@@ -131,4 +139,78 @@ body {
 
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
   color: var(--color-dark-text); /* Usar la variable para que se actualice */
+}
+
+/* Grain overlay — film noise texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+.dark body::after {
+  opacity: 0.05;
+}
+
+/* Gradient border utility */
+.gradient-border {
+  position: relative;
+  background: transparent;
+  border: none;
+}
+
+.glass-card {
+  position: relative;
+  background-color: rgb(255 255 255 / 0.45);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.10);
+}
+
+.dark .glass-card {
+  background-color: rgb(255 255 255 / 0.04);
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.05),
+    0 12px 40px rgb(0 0 0 / 0.22);
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@supports not (mask-composite: exclude) {
+  .gradient-border {
+    border: 1px solid var(--color-light-border);
+  }
+  .dark .gradient-border {
+    border: 1px solid var(--color-dark-border);
+  }
+}
+
+/* Disable grain overlay for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    opacity: 0;
+  }
 }

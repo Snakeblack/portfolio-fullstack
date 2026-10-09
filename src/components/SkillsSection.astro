@@ -1,7 +1,6 @@
 ---
 import type { SkillEntry, TechnicalSkillEntry, SoftSkillEntry, SkillCategory, TranslatedString } from "../types/portfolio";
 import type { Locale } from "../utils/translations";
-import { techColorMap, hexToRgba, type TechColorEntry } from "../utils/techColors";
 
 interface Props {
   title: string;
@@ -20,40 +19,11 @@ const technicalSkills = skills.filter(
 const softSkills = skills.filter(
   (skill) => skill.type === "soft"
 ) as SoftSkillEntry[];
-
-const getSkillStyles = (skillName: string) => {
-  const normalizedSkillKey = Object.keys(techColorMap).find(
-    (key) => key.toLowerCase() === skillName.toLowerCase() && key !== "default"
-  );
-  const styleInfo = normalizedSkillKey
-    ? techColorMap[normalizedSkillKey]
-    : techColorMap["default"];
-
-  const solidOpacityForTextContrast = 0.85; 
-
-  let bgColorStyle = "";
-  let bgClass = ""; 
-  let finalBorderClass = styleInfo.border || "";
-
-  if (styleInfo.bg.startsWith("#")) {
-    bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, solidOpacityForTextContrast)};`;
-  } else {
-    bgClass = styleInfo.bg;
-  }
-  
-  return {
-    bgColorStyle: bgColorStyle,
-    bgClass: bgClass,
-    textClass: styleInfo.text,
-    borderClass: finalBorderClass
-  };
-};
-
 ---
 
 <section id="skills" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
   <header class="text-center scroll-animate-fast">
-    <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
+    <h2 class="text-[1.875rem] md:text-[3.75rem] font-bold tracking-tight leading-[1.1] text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
       {title}
     </h2>
   </header>
@@ -63,19 +33,14 @@ const getSkillStyles = (skillName: string) => {
       {technicalSkillsTitle}
     </h3>
     <div class="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4 mb-12 md:mb-16 stagger-children">
-      {technicalSkills.map((skill, index) => {
-        const { bgColorStyle, bgClass, textClass, borderClass } = getSkillStyles(skill.name);
-        return (
-          <div
-            style={bgColorStyle}
-            class={`skill-item ${bgClass} ${textClass} ${borderClass} px-4 py-2 rounded-lg text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105`}
-            data-category={skill.category}
-          >
-            {/* Keep data-category if used for filtering, though not implemented here */}
-            {skill.name}
-          </div>
-        );
-      })}
+      {technicalSkills.map((skill) => (
+        <div
+          class="skill-item px-2.5 py-0.5 text-[0.7rem] font-mono tracking-[0.05em] rounded border border-light-border dark:border-dark-border text-light-text/80 dark:text-dark-text/80 bg-transparent hover:border-light-accent dark:hover:border-dark-accent hover:text-light-accent dark:hover:text-dark-accent transition-colors duration-200"
+          data-category={skill.category}
+        >
+          {skill.name}
+        </div>
+      ))}
     </div>
   </div>
 
@@ -91,7 +56,7 @@ const getSkillStyles = (skillName: string) => {
           : '';
         return (
           <article 
-            class="soft-skill-card bg-light-card-bg dark:bg-dark-card-bg p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:-translate-y-1"
+            class="soft-skill-card glass-card p-6 rounded-xl transition-transform duration-300 ease-in-out hover:-translate-y-0.5"
             style={`transition-delay: ${index * 50}ms;`}
           >
             <h4 class="text-lg font-semibold text-light-accent dark:text-dark-accent mb-2.5">{skillName}</h4>
@@ -109,9 +74,6 @@ const getSkillStyles = (skillName: string) => {
 
 <style>
   .skill-item {
-    line-height: 1.25; /* Ensure consistent line height */
-  }
-  .soft-skill-card {
-    /* Add any specific styles for soft skill cards if needed */
+    line-height: 1.25;
   }
 </style>

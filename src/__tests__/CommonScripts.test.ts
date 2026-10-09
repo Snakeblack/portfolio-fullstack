@@ -52,3 +52,17 @@ describe('CommonScripts refactor (REQ-SCROLL-001, 002, 005, 006)', () => {
     expect(content).toMatch(/gsap\.to\(node/);
   });
 });
+
+describe('CommonScripts reduced amplitude (T-014)', () => {
+  it('scroll-animate initial y value is 5 or less', () => {
+    expect(content).toMatch(/y:\s*isFast\s*\?\s*[35]\s*:\s*isTitle\s*\?\s*5\s*:\s*5/);
+  });
+
+  it('stagger-children initial y value is 5 or less', () => {
+    expect(content).toMatch(/gsap\.set\(children,[\s\S]*y:\s*5/);
+  });
+
+  it('stagger delay is 0.03 or less', () => {
+    expect(content).toMatch(/stagger:\s*0\.03/);
+  });
+});

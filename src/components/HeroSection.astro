@@ -13,8 +13,9 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
 
 <section id="hero" class="max-w-6xl mx-auto px-6 py-16 md:py-20 lg:py-28 scroll-animate scroll-mt-16">
   <header class="scroll-animate-fast">
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-light-text dark:text-dark-text mb-6 leading-tight text-balance title-animate">
-      {greeting} <span id="typing-name" class="text-light-accent dark:text-dark-accent relative inline-block min-w-[1ch]">{name}</span><span class="animate-pulse text-light-accent dark:text-dark-accent">|</span>
+    <h1 class="text-[3rem] lg:text-[6rem] font-bold tracking-[-0.025em] leading-none text-light-text dark:text-dark-text mb-6 title-animate">
+      {greeting}<br>
+      <span class="text-light-accent dark:text-dark-accent">{name}</span>
     </h1>
   </header>
   
@@ -30,7 +31,7 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
     
     <a
       href={`mailto:${email}?subject=Project Discussion Opportunity`}
-      class="inline-flex items-center gap-2 text-sm font-medium text-light-accent dark:text-dark-accent px-5 py-2.5 border border-light-accent/40 dark:border-dark-accent/40 rounded-lg hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:border-light-accent dark:hover:border-dark-accent hover:bg-light-accent/10 dark:hover:bg-dark-accent/10 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent text-pretty shadow-sm hover:shadow-md"
+      class="inline-flex items-center gap-2 font-mono tracking-[0.05em] text-xs uppercase text-light-accent dark:text-dark-accent px-6 py-2.5 rounded-md border border-light-accent/50 dark:border-dark-accent/50 hover:bg-light-accent/5 dark:hover:bg-dark-accent/5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent text-pretty"
     >
       <span>{getInTouchText}</span>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -44,41 +45,3 @@ const { greeting, name, description, sleepingMessage, email, getInTouchText } = 
   </div>
 </section>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const madridTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Europe/Madrid', hour12: false });
-    const hour = parseInt(madridTime.split(':')[0]);
-    const sleepingMessageContainer = document.getElementById('sleeping-message-container');
-    const statusContainer = document.getElementById('status-container');
-
-    if (sleepingMessageContainer && statusContainer) {
-      if (hour >= 22 || hour < 7) {
-        sleepingMessageContainer.style.display = 'flex';
-      }
-    }
-
-    // Typing effect
-    const nameElement = document.getElementById('typing-name');
-    if (nameElement) {
-      const text = nameElement.textContent || '';
-      nameElement.textContent = '';
-      let i = 0;
-      
-      // Delay start slightly to wait for fade-in
-      setTimeout(() => {
-        const typeWriter = () => {
-          if (i < text.length) {
-            nameElement.textContent += text.charAt(i);
-            i++;
-            setTimeout(typeWriter, 100); // Typing speed
-          } else {
-             // Optional: remove cursor after typing
-             const cursor = nameElement.nextElementSibling as HTMLElement | null;
-             if(cursor) cursor.style.display = 'none';
-          }
-        };
-        typeWriter();
-      }, 1000); // Start after 1s
-    }
-  });
-</script>

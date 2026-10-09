@@ -33,7 +33,7 @@
 
         gsap.set(element, {
           opacity: 0,
-          y: isFast ? 15 : isTitle ? 10 : 20,
+          y: isFast ? 3 : isTitle ? 5 : 5,
           scale: 0.99,
           visibility: 'visible',
           clearProps: 'transition,transition-delay',
@@ -65,7 +65,7 @@
 
         gsap.set(children, {
           opacity: 0,
-          y: 15,
+          y: 5,
           scale: 0.99,
           visibility: 'visible',
           clearProps: 'transition,transition-delay',
@@ -81,7 +81,7 @@
               y: 0,
               scale: 1,
               duration: 0.6,
-              stagger: 0.05,
+              stagger: 0.03,
               ease: 'power1.out',
               overwrite: 'auto',
             });
@@ -138,7 +138,7 @@
         y: 0,
         scale: 1,
         duration: 0.45,
-        stagger: 0.05,
+        stagger: 0.03,
         ease: 'power1.out',
         overwrite: 'auto',
       });
