@@ -1,7 +1,7 @@
 ---
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
-import type { Locale } from "../utils/translations";
+import { getTranslations, type Locale } from "../utils/translations";
 
 const { social, personalInfo, skills } = portfolioData;
 
@@ -9,13 +9,19 @@ interface Props {
   title: string;
   description: string;
   lang?: Locale;
+  /** Páginas que no deben indexarse (404): sin canonical ni hreflang. */
+  noindex?: boolean;
 }
 
-const { title, description, lang = "es" } = Astro.props;
+const { title, description, lang = "es", noindex = false } = Astro.props;
+const t = getTranslations(lang);
 
 const siteUrl = Astro.site ? Astro.site.toString() : "https://mretamozo.com/";
 const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
-const ogImage = new URL("profile.webp", siteUrl).href;
+const ogImage = new URL("og-image.png", siteUrl).href;
+const profileImage = new URL("profile.webp", siteUrl).href;
+const ogLocale = { es: "es_ES", en: "en_US" } as const;
+const ogLocaleAlternate = lang === "es" ? ogLocale.en : ogLocale.es;
 const twitterHandle = `@${social.twitter.substring(social.twitter.lastIndexOf("/") + 1)}`;
 
 const structuredData = {
@@ -27,7 +33,7 @@ const structuredData = {
       name: personalInfo.name,
       alternateName: [personalInfo.displayName, "Snakeblack"],
       url: siteUrl,
-      image: ogImage,
+      image: profileImage,
       sameAs: [social.linkedin, social.github, social.twitter],
       jobTitle: personalInfo.title[lang],
       description: personalInfo.description[lang],
@@ -83,38 +89,49 @@ const structuredData = {
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<meta name="author" content={personalInfo.name} />
-		<meta name="robots" content="index, follow" />
+		<meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
 		<meta name="theme-color" content="#0a0a0a" />
 		<meta name="color-scheme" content="dark" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="canonical" href={pageUrl} />
 		<link rel="preload" href="/fonts/gambarino-400.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="preload" href="/fonts/general-sans-400.woff2" as="font" type="font/woff2" crossorigin />
 
-		<link rel="alternate" hreflang="es" href={new URL("/", siteUrl).href} />
-		<link rel="alternate" hreflang="en" href={new URL("/en/", siteUrl).href} />
-		<link rel="alternate" hreflang="x-default" href={new URL("/", siteUrl).href} />
+		{!noindex && (
+			<>
+				<link rel="canonical" href={pageUrl} />
+				<link rel="alternate" hreflang="es" href={new URL("/", siteUrl).href} />
+				<link rel="alternate" hreflang="en" href={new URL("/en/", siteUrl).href} />
+				<link rel="alternate" hreflang="x-default" href={new URL("/", siteUrl).href} />
+			</>
+		)}
 
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="profile" />
+		<meta property="profile:first_name" content="Michael" />
+		<meta property="profile:last_name" content="Retamozo" />
 		<meta property="og:image" content={ogImage} />
-		<meta property="og:image:width" content="1024" />
-		<meta property="og:image:height" content="1024" />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={t.meta.imageAlt} />
 		<meta property="og:url" content={pageUrl} />
 		<meta property="og:site_name" content={personalInfo.displayName} />
-		<meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
+		<meta property="og:locale" content={ogLocale[lang]} />
+		<meta property="og:locale:alternate" content={ogLocaleAlternate} />
 
-		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:site" content={twitterHandle} />
 		<meta name="twitter:creator" content={twitterHandle} />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content={t.meta.imageAlt} />
 
-		<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+		{!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
 		<script>
 			import { gsap } from 'gsap';
 			import { ScrollTrigger } from 'gsap/ScrollTrigger';

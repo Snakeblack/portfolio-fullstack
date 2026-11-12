@@ -99,6 +99,54 @@ describe('Astro 6 build', () => {
     }
   });
 
+  it('shares a 1200x630 PNG card with a text alternative in each language', () => {
+    expect(existsSync(resolve(DIST_DIR, 'og-image.png'))).toBe(true);
+    for (const html of [es, en]) {
+      expect(html).toContain('<meta property="og:image" content="https://mretamozo.com/og-image.png"');
+      expect(html).toContain('<meta property="og:image:type" content="image/png"');
+      expect(html).toContain('<meta property="og:image:width" content="1200"');
+      expect(html).toContain('<meta property="og:image:height" content="630"');
+      expect(html).toContain('<meta name="twitter:card" content="summary_large_image"');
+      expect(html).toContain('<meta name="twitter:image" content="https://mretamozo.com/og-image.png"');
+    }
+    expect(es).toContain('<meta property="og:image:alt" content="Michael Retamozo, Software Engineer en Madrid"');
+    expect(en).toContain('<meta property="og:image:alt" content="Michael Retamozo, Software Engineer in Madrid"');
+    expect(es).toContain('<meta property="og:locale:alternate" content="en_US"');
+    expect(en).toContain('<meta property="og:locale:alternate" content="es_ES"');
+  });
+
+  it('keeps the meta description within 155 characters and offers an apple-touch-icon', () => {
+    expect(existsSync(resolve(DIST_DIR, 'apple-touch-icon.png'))).toBe(true);
+    for (const html of [es, en]) {
+      const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
+      expect(description.length).toBeGreaterThan(80);
+      expect(description.length).toBeLessThanOrEqual(155);
+      expect(html).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png"');
+    }
+  });
+
+  it('uses the same hreflang codes in the sitemap as in the head', () => {
+    const sitemap = readFileSync(resolve(DIST_DIR, 'sitemap-0.xml'), 'utf-8');
+    expect(sitemap).toContain('hreflang="es" href="https://mretamozo.com/"');
+    expect(sitemap).toContain('hreflang="en" href="https://mretamozo.com/en/"');
+    expect(sitemap).not.toMatch(/hreflang="(es-ES|en-US)"/);
+    expect(sitemap).not.toContain('404');
+  });
+
+  it('serves its own bilingual 404 that is not indexed and leads home', () => {
+    const notFound = readFileSync(resolve(DIST_DIR, '404.html'), 'utf-8');
+    expect(notFound).toContain('<meta name="robots" content="noindex, follow"');
+    expect(notFound).not.toContain('rel="canonical"');
+    expect(notFound).not.toContain('hreflang=');
+    expect(notFound).toContain('href="/"');
+    expect(notFound).toContain('href="/en/"');
+    expect(notFound).toMatch(/<h1[^>]*>[\s\S]*404[\s\S]*<\/h1>/);
+    expect(text(notFound)).not.toMatch(/[—–]/);
+    for (const html of [es, en]) {
+      expect(html).toContain('<meta name="robots" content="index, follow"');
+    }
+  });
+
   it('the text of the page has no emoji and no dashes used as punctuation', () => {
     for (const html of [es, en]) {
       const visible = text(html);

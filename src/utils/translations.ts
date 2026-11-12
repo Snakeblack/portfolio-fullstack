@@ -18,7 +18,15 @@ export const translations = {
     meta: {
       title: 'Michael Retamozo · Software Engineer',
       description:
-        'Portfolio de Michael Retamozo, Software Engineer en Madrid: software de empresa en Hiberus para Ibercaja, aplicaciones para empresas con Retama y Ospec-Workflow, un arnés para agentes de IA.',
+        'Michael Retamozo, Software Engineer en Madrid. Hago software de empresa en Hiberus para Ibercaja y mantengo Ospec-Workflow, un arnés para agentes de IA.',
+      imageAlt: 'Michael Retamozo, Software Engineer en Madrid',
+    },
+    notFound: {
+      title: 'Página no encontrada · Michael Retamozo',
+      description: 'Esta página no existe. Vuelve al portfolio de Michael Retamozo.',
+      heading: 'Aquí no hay nada',
+      body: 'La dirección que buscas no existe o ha cambiado de sitio.',
+      home: 'Volver al inicio',
     },
     hero: {
       role: 'Software Engineer',
@@ -97,7 +105,15 @@ export const translations = {
     meta: {
       title: 'Michael Retamozo · Software Engineer',
       description:
-        'Portfolio of Michael Retamozo, Software Engineer in Madrid: enterprise software at Hiberus for Ibercaja, apps for companies with Retama, and Ospec-Workflow, a harness for AI coding agents.',
+        'Michael Retamozo, Software Engineer in Madrid. I build enterprise software at Hiberus for Ibercaja and maintain Ospec-Workflow, a harness for AI agents.',
+      imageAlt: 'Michael Retamozo, Software Engineer in Madrid',
+    },
+    notFound: {
+      title: 'Page not found · Michael Retamozo',
+      description: 'This page does not exist. Head back to the portfolio of Michael Retamozo.',
+      heading: 'Nothing here',
+      body: 'The address you are looking for does not exist or has moved.',
+      home: 'Back to home',
     },
     hero: {
       role: 'Software Engineer',
