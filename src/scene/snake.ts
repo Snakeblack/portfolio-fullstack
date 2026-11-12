@@ -6,7 +6,6 @@ import {
   Color,
   DoubleSide,
   DynamicDrawUsage,
-  Group,
   LinearMipmapLinearFilter,
   Mesh,
   MeshBasicMaterial,
@@ -18,7 +17,7 @@ import {
   SRGBColorSpace,
   WebGLRenderer,
 } from 'three';
-import { bodyRadius, resampleTrail, steerAngle } from './trail';
+import { bodyRadius, hurry, resampleTrail, steerAngle, strayFraction, wanderZone } from './trail';
 
 /** Alto visible del mundo en z = 0, en unidades de escena. */
 const VIEW_HEIGHT = 10;
@@ -29,6 +28,11 @@ const TRAIL_STEP = 0.06;
 const MAX_TRAIL_POINTS = 460;
 const POINTER_MEMORY_MS = 2600;
 const TAU = Math.PI * 2;
+/** Anillo del cuerpo, contado desde el hocico, a cuya altura van los ojos. */
+const EYE_RING = 6;
+
+/** Cuánto puede salirse el cuerpo por la izquierda de su zona sin que se considere fuera de ella. */
+const STRAY_SLACK = 1.5;
 
 /** Largo de cuerpo, en radios, que cubre una repetición de la textura de tinta. */
 const BRUSH_TILE = 16;
@@ -54,9 +58,6 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   renderer.outputColorSpace = SRGBColorSpace;
 
   const scene = new Scene();
-  // Todo lo que forma la serpiente cuelga de aquí, para poder apartarla entera con el scroll.
-  const rig = new Group();
-  scene.add(rig);
   const band = stage.querySelector<HTMLElement>('.hero__band');
   const nav = stage.querySelector<HTMLElement>('.nav');
   const camera = new PerspectiveCamera(FOV, 1, 0.1, 100);
@@ -67,6 +68,20 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   const positions = new Float32Array(vertexCount * 3);
   const normals = new Float32Array(vertexCount * 3);
   const uvs = new Float32Array(vertexCount * 2);
+  // La sección de cada anillo (cuánto se aparta cada vértice del centro y hacia dónde mira) no
+  // depende del recorrido, solo del radio: se calcula al redimensionar, no en cada fotograma.
+  const sideOffset = new Float64Array(vertexCount);
+  const sideNormal = new Float64Array(vertexCount);
+  const ringCos = new Float64Array(RADIAL + 1);
+  const ringSin = new Float64Array(RADIAL + 1);
+  for (let j = 0; j <= RADIAL; j++) {
+    const angle = (j / RADIAL) * TAU;
+    ringCos[j] = Math.cos(angle);
+    ringSin[j] = Math.sin(angle);
+  }
+  // Tamaño de la cabeza en el anillo del hocico y en el de los ojos, para colocar lengua y ojos.
+  let eyeWide = 0;
+  let eyeTall = 0;
   const indices: number[] = [];
   for (let i = 0; i < RINGS - 1; i++) {
     for (let j = 0; j < RADIAL; j++) {
@@ -95,18 +110,18 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   // trazo pasa sobre sí mismo deja un filo oscuro que separa las dos pasadas.
   const halo = new Mesh(geometry, groundHull(0.045));
   halo.frustumCulled = false;
-  rig.add(halo, body);
+  scene.add(halo, body);
 
   const eyeGeometry = new SphereGeometry(1, 20, 14);
   const eyeMaterial = new MeshBasicMaterial({ color: CRIMSON, toneMapped: false });
   const eyes = [0, 1].map(() => {
     const eye = new Mesh(eyeGeometry, eyeMaterial);
-    rig.add(eye);
+    scene.add(eye);
     return eye;
   });
 
   const tongue = new Mesh(tongueGeometry(), new MeshBasicMaterial({ color: CRIMSON, side: DoubleSide, toneMapped: false }));
-  rig.add(tongue);
+  scene.add(tongue);
 
   // ── Estado ──
   const trail = new Float32Array(MAX_TRAIL_POINTS * 3);
@@ -125,6 +140,9 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   // Franja libre del hero, en unidades de escena: debajo de la navegación y encima del nombre.
   let heroTop = 3.6;
   let heroBottom = -1;
+  let shownOpacity = '';
+  let stageOffset = 0;
+  let viewHeight = 1;
   const pointer = { x: 0, y: 0, at: -Infinity };
 
   function resize(): void {
@@ -140,21 +158,60 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
     length = narrow ? 12 : 19;
 
     const stageTop = stage.getBoundingClientRect().top;
+    // Dónde empieza el escenario en la página y cuánto mide la vista: measureScroll los usa en
+    // cada fotograma sin volver a medir el DOM.
+    stageOffset = stageTop + window.scrollY;
+    viewHeight = height;
     const toScene = (pixels: number) => (0.5 - pixels / height) * VIEW_HEIGHT;
     if (nav) heroTop = toScene(nav.getBoundingClientRect().bottom - stageTop);
     if (band) heroBottom = toScene(band.getBoundingClientRect().top - stageTop);
+    shapeRings();
+  }
+
+  /** Todo lo que el cuerpo tiene de fijo mientras no cambie el radio: sección, altura y textura. */
+  function shapeRings(): void {
+    for (let i = 0; i < RINGS; i++) {
+      const s = i / (RINGS - 1);
+      // La cabeza va por encima de la cola: los cruces del cuerpo se resuelven en profundidad.
+      const cz = (1 - s) * 1.2;
+
+      // El grosor respira un poco a lo largo, como la presión de un pincel.
+      const profile = bodyRadius(s) * radius * (1 + 0.09 * Math.sin(s * 15 + 1.7));
+      const headShape = 1 - Math.min(s / 0.07, 1);
+      const wide = Math.max(profile * (1 + 0.42 * headShape), 1e-4);
+      const tall = Math.max(profile * (0.86 - 0.2 * headShape), 1e-4);
+      if (i === EYE_RING) {
+        eyeWide = wide;
+        eyeTall = tall;
+      }
+
+      for (let j = 0; j <= RADIAL; j++) {
+        const cos = ringCos[j];
+        const sin = ringSin[j];
+        const vertex = i * (RADIAL + 1) + j;
+        const lateral = cos / wide;
+        const vertical = sin / tall;
+        const scale = 1 / Math.hypot(lateral, vertical);
+        sideOffset[vertex] = cos * wide;
+        sideNormal[vertex] = lateral * scale;
+        positions[vertex * 3 + 2] = cz + sin * tall;
+        normals[vertex * 3 + 2] = vertical * scale;
+        uvs[vertex * 2] = j / RADIAL;
+        uvs[vertex * 2 + 1] = (s * length) / (radius * BRUSH_TILE);
+      }
+    }
+    uvAttribute.needsUpdate = true;
   }
 
   /** El punto al que va la cabeza cuando nadie mueve el cursor: recorre una curva cerrada por la vista. */
   function wander(dt: number): [number, number] {
     // La zona: en el hero, la franja libre entre la navegación y el nombre, para no pasar nunca
-    // por detrás del texto; después, toda la altura (y `rig` la aparta de la columna de texto).
+    // por detrás del texto; después, toda la altura de la mitad derecha, lejos de la columna de texto.
     const top = heroTop + (4.4 - heroTop) * scroll;
     const bottom = heroBottom + (-4.4 - heroBottom) * scroll;
     const reach = radius + 0.75; // lo que el cuerpo se sale del punto que persigue al girar
-    const centreX = 0;
+    const { centre: centreX, span: spanX } = wanderZone(scroll, halfWidth, narrow);
     const centreY = (top + bottom) / 2;
-    const spanX = halfWidth * (narrow ? 0.62 : 0.8 - 0.4 * scroll);
     const spanY = Math.max((top - bottom) / 2 - reach, 0.5);
 
     // La fase avanza a velocidad constante sobre la curva, para que el punto no se pare en los
@@ -210,38 +267,21 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
         ty = dy / span;
       }
 
-      // La cabeza va por encima de la cola: los cruces del cuerpo se resuelven en profundidad.
       const cx = centres[i * 3];
       const cy = centres[i * 3 + 1];
-      const cz = (1 - s) * 1.2;
       const nx = -ty; // lateral, en el plano
       const ny = tx;
 
-      // El grosor respira un poco a lo largo, como la presión de un pincel.
-      const profile = bodyRadius(s) * radius * (1 + 0.09 * Math.sin(s * 15 + 1.7));
-      const headShape = 1 - Math.min(s / 0.07, 1);
-      const wide = Math.max(profile * (1 + 0.42 * headShape), 1e-4);
-      const tall = Math.max(profile * (0.86 - 0.2 * headShape), 1e-4);
-
+      // Solo x e y siguen al recorrido; la altura y la textura ya las dejó shapeRings.
+      const ring = i * (RADIAL + 1);
       for (let j = 0; j <= RADIAL; j++) {
-        const angle = (j / RADIAL) * TAU;
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
-        const v = (i * (RADIAL + 1) + j) * 3;
-        positions[v] = cx + nx * cos * wide;
-        positions[v + 1] = cy + ny * cos * wide;
-        positions[v + 2] = cz + sin * tall;
-
-        const lateral = cos / wide;
-        const vertical = sin / tall;
-        const scale = 1 / Math.hypot(lateral, vertical);
-        normals[v] = nx * lateral * scale;
-        normals[v + 1] = ny * lateral * scale;
-        normals[v + 2] = vertical * scale;
-
-        const uv = (i * (RADIAL + 1) + j) * 2;
-        uvs[uv] = j / RADIAL;
-        uvs[uv + 1] = (s * length) / (radius * BRUSH_TILE);
+        const offset = sideOffset[ring + j];
+        const facing = sideNormal[ring + j];
+        const v = (ring + j) * 3;
+        positions[v] = cx + nx * offset;
+        positions[v + 1] = cy + ny * offset;
+        normals[v] = nx * facing;
+        normals[v + 1] = ny * facing;
       }
 
       if (i === 0) {
@@ -249,16 +289,17 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
         const beat = (clock % 3.1) / 0.55;
         const out = beat < 1 ? Math.sin(beat * Math.PI) : 0;
         tongue.visible = out > 0.02;
-        tongue.position.set(cx, cy, cz);
+        tongue.position.set(cx, cy, 1.2);
         tongue.rotation.z = Math.atan2(ty, tx);
         tongue.scale.set(radius * 2.4 * out, radius * 2.4, 1);
       }
 
-      if (i === 6) {
+      if (i === EYE_RING) {
         const size = radius * 0.14;
+        const cz = (1 - s) * 1.2;
         eyes.forEach((eye, side) => {
           const sign = side === 0 ? 1 : -1;
-          eye.position.set(cx + nx * wide * 0.6 * sign, cy + ny * wide * 0.6 * sign, cz + tall * 0.74);
+          eye.position.set(cx + nx * eyeWide * 0.6 * sign, cy + ny * eyeWide * 0.6 * sign, cz + eyeTall * 0.74);
           eye.scale.setScalar(size);
         });
       }
@@ -266,22 +307,24 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
 
     positionAttribute.needsUpdate = true;
     normalAttribute.needsUpdate = true;
-    uvAttribute.needsUpdate = true;
   }
 
   function measureScroll(): void {
-    const top = stage.getBoundingClientRect().top;
-    scroll = Math.min(Math.max(-top / Math.max(view.clientHeight, 1), 0), 1);
-    // Al bajar a la introducción la serpiente se aparta a la derecha, al ritmo del scroll, y deja
-    // libre la columna de texto. En pantallas estrechas no hay sitio al lado: se desvanece.
-    rig.position.x = narrow ? 0 : halfWidth * 0.55 * scroll;
-    view.style.opacity = narrow ? String(1 - 0.9 * scroll) : '';
+    const top = stageOffset - window.scrollY;
+    scroll = Math.min(Math.max(-top / Math.max(viewHeight, 1), 0), 1);
+    // Al bajar a la introducción la zona de la serpiente se va a la derecha (wanderZone) y ella
+    // nada hasta allí. En pantallas estrechas no hay sitio al lado: se desvanece.
+    const opacity = narrow ? String(1 - 0.9 * scroll) : '';
+    if (opacity !== shownOpacity) {
+      shownOpacity = opacity;
+      view.style.opacity = opacity;
+    }
   }
 
   // ── Arranque: la serpiente llega ya extendida, no crece desde un punto ──
   resize();
-  for (let i = 0; i < 1500; i++) step(1 / 60, 0);
   measureScroll();
+  for (let i = 0; i < 1500; i++) step(1 / 60, 0);
   rebuild();
   renderer.render(scene, camera);
   canvas.dataset.ready = '';
@@ -301,7 +344,7 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
       if (event.pointerType === 'touch') return;
       const rect = canvas.getBoundingClientRect();
       if (event.clientY < rect.top || event.clientY > rect.bottom) return;
-      pointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2 * halfWidth - rig.position.x;
+      pointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2 * halfWidth;
       pointer.y = (0.5 - (event.clientY - rect.top) / rect.height) * VIEW_HEIGHT;
       pointer.at = performance.now();
     },
@@ -309,6 +352,7 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   );
 
   let visible = true;
+  let pace = 1;
   let frame = 0;
   let last = performance.now();
 
@@ -318,7 +362,16 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
     const dt = Math.min(Math.max((now - last) / 1000, 0), 0.05);
     last = now;
     measureScroll();
-    step(dt, now);
+
+    // Si el scroll ha dejado parte del cuerpo a la izquierda de su zona, detrás del texto, la
+    // serpiente se da prisa: la simulación avanza más deprisa y vuelve a su ritmo según entra.
+    const zone = wanderZone(scroll, halfWidth, narrow);
+    const chasing = now - pointer.at < POINTER_MEMORY_MS;
+    const wanted = chasing ? 1 : hurry(strayFraction(centres, RINGS, zone.centre - zone.span - STRAY_SLACK));
+    pace += (wanted - pace) * Math.min(dt * 6, 1);
+    const steps = Math.ceil(pace);
+    for (let i = 0; i < steps; i++) step((dt * pace) / steps, now);
+
     rebuild();
     renderer.render(scene, camera);
     frame = requestAnimationFrame(loop);

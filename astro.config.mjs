@@ -8,6 +8,15 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  // El CSS va dentro del HTML: el primer pintado no espera a otra petición.
+  build: {
+    inlineStylesheets: "always",
+  },
+  // Las páginas internas se piden al pasar el cursor o al tocar su enlace.
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
   vite: {
     plugins: [tailwindcss()],
   },

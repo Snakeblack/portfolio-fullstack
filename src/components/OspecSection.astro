@@ -1,7 +1,9 @@
 ---
+import { Picture } from 'astro:assets';
 import type { OspecInfo } from '../types/portfolio';
 import { getTranslations, type Locale } from '../utils/translations';
 import { OBLIGATION_RULES, TOUCHES } from '../utils/ospecObligations';
+import { screenshotImage } from '../utils/images';
 
 interface Props {
   ospec: OspecInfo;
@@ -10,13 +12,23 @@ interface Props {
 
 const { ospec, currentLocale } = Astro.props;
 const t = getTranslations(currentLocale).ospec;
+const plate = screenshotImage(ospec.image);
 const hosts = new Intl.ListFormat(currentLocale, { style: 'long', type: 'conjunction' }).format(ospec.hosts);
 ---
 
 <section class="ospec" id="ospec">
   <figure class="ospec__plate">
     <div data-reveal="shutter">
-      <img src={ospec.image} width="821" height="821" alt={t.imageAlt} loading="lazy" decoding="async" />
+      <Picture
+        src={plate}
+        formats={['avif']}
+        fallbackFormat="webp"
+        widths={[420, 640, plate.width]}
+        sizes="(min-width: 48em) 50vw, 100vw"
+        alt={t.imageAlt}
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   </figure>
 

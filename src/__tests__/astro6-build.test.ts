@@ -1,5 +1,5 @@
 import { beforeAll, describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 
@@ -230,6 +230,83 @@ describe('Astro 6 build', () => {
       expect(entry).toContain('hreflang="en" href="https://mretamozo.com/en/projects/noema/"');
       expect(sitemap).not.toContain('/en/proyectos/');
       expect(sitemap).not.toMatch(/mretamozo\.com\/projects\//);
+    });
+  });
+
+  describe('rendimiento', () => {
+    const assets = () => readdirSync(resolve(DIST_DIR, '_astro'));
+
+    it('el primer pintado no espera a ninguna hoja de estilos: el CSS va dentro del HTML', () => {
+      const project = readFileSync(resolve(DIST_DIR, 'proyectos/retama/index.html'), 'utf-8');
+      for (const html of [es, en, project]) {
+        expect(html).not.toMatch(/<link[^>]+rel="stylesheet"/);
+        expect(html).toMatch(/<style>[\s\S]*\.monument/);
+      }
+      expect(assets().filter((file) => file.endsWith('.css'))).toEqual([]);
+    });
+
+    it('las fuentes salen con hash en el nombre y se precargan las tres', () => {
+      const fonts = assets().filter((file) => file.endsWith('.woff2'));
+      expect(fonts).toHaveLength(3);
+      for (const font of fonts) expect(font).toMatch(/^[a-z0-9-]+\.[\w-]{8}\.woff2$/);
+      for (const html of [es, en]) {
+        const preloads = [...html.matchAll(/<link rel="preload" href="(\/_astro\/[^"]+\.woff2)" as="font" type="font\/woff2" crossorigin>/g)].map((match) => match[1]);
+        expect(preloads.sort()).toEqual(fonts.map((font) => `/_astro/${font}`).sort());
+      }
+      expect(existsSync(resolve(DIST_DIR, 'fonts'))).toBe(false);
+    });
+
+    it('no envía ninguna librería de animación y Three.js solo se carga aparte', () => {
+      const scripts = assets().filter((file) => file.endsWith('.js'));
+      const eager = [...es.matchAll(/<script[^>]+src="\/_astro\/([^"]+)"/g)].map((match) => match[1]);
+      for (const file of scripts) {
+        const source = readFileSync(resolve(DIST_DIR, '_astro', file), 'utf-8');
+        expect(source).not.toMatch(/ScrollTrigger|gsap/i);
+        if (eager.includes(file)) expect(source.length).toBeLessThan(8_000);
+      }
+      expect(scripts.some((file) => file.startsWith('snake.'))).toBe(true);
+      expect(eager.some((file) => file.startsWith('snake.'))).toBe(false);
+    });
+
+    it('cada imagen se ofrece en AVIF y WebP a varios anchos, con hash, y dice cuánto ocupa en pantalla', () => {
+      const landings = readFileSync(resolve(DIST_DIR, 'proyectos/landings/index.html'), 'utf-8');
+      for (const html of [es, en, landings]) {
+        const pictures = html.match(/<picture[\s\S]*?<\/picture>/g) ?? [];
+        expect(pictures.length).toBe((html.match(/<img[^>]*>/g) ?? []).length);
+        for (const picture of pictures) {
+          const avif = picture.match(/<source srcset="([^"]+)" type="image\/avif" sizes="[^"]+">/)?.[1] ?? '';
+          const webp = picture.match(/<img[^>]+srcset="([^"]+)"/)?.[1] ?? '';
+          for (const srcset of [avif, webp]) {
+            const candidates = srcset.split(', ');
+            expect(candidates.length).toBeGreaterThanOrEqual(3);
+            for (const candidate of candidates) expect(candidate).toMatch(/^\/_astro\/[\w.-]+\.(avif|webp) \d+w$/);
+          }
+          expect(picture).toMatch(/<img[^>]+sizes="[^"]+"/);
+        }
+        expect(html).not.toContain('/assets/screenshots/');
+      }
+    });
+
+    it('en la home las imágenes esperan a acercarse a la vista; la portada de un proyecto se pide ya', () => {
+      for (const html of [es, en]) {
+        for (const image of html.match(/<img[^>]*>/g) ?? []) expect(image).toContain('loading="lazy"');
+      }
+      const cover = readFileSync(resolve(DIST_DIR, 'proyectos/retama/index.html'), 'utf-8').match(/<img[^>]*>/)?.[0] ?? '';
+      expect(cover).toContain('fetchpriority="high"');
+      expect(cover).toContain('loading="eager"');
+    });
+
+    it('la imagen de cada proyecto en los datos estructurados existe en la compilación', () => {
+      const project = readFileSync(resolve(DIST_DIR, 'proyectos/retama/index.html'), 'utf-8');
+      const image = project.match(/"image":"https:\/\/mretamozo\.com(\/_astro\/[^"]+\.webp)"/)?.[1] ?? '';
+      expect(image).not.toBe('');
+      expect(existsSync(resolve(DIST_DIR, `.${image}`))).toBe(true);
+    });
+
+    it('precarga las páginas internas al pasar el cursor o tocar su enlace', () => {
+      const prefetch = assets().filter((file) => file.endsWith('.js')).map((file) => readFileSync(resolve(DIST_DIR, '_astro', file), 'utf-8')).filter((source) => source.includes('prefetch'));
+      expect(prefetch).toHaveLength(1);
+      expect(prefetch[0]).toMatch(/mouseenter|touchstart/);
     });
   });
 

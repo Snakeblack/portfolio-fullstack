@@ -1,7 +1,9 @@
 ---
+import { Picture } from 'astro:assets';
 import type { ProjectEntry } from '../types/portfolio';
 import { getTranslations, type Locale } from '../utils/translations';
 import { isCover, localizedName, projectPath } from '../utils/projects';
+import { screenshotImage } from '../utils/images';
 
 interface Props {
   projects: ProjectEntry[];
@@ -41,10 +43,12 @@ for (let r = 0, cursor = 0; cursor < projects.length; r++) {
             style={`--ratio: ${(project.width / project.height).toFixed(3)}`}
           >
             <div class="tile__picture" data-reveal="shutter">
-              <img
-                src={project.screenshot}
-                width={project.width}
-                height={project.height}
+              <Picture
+                src={screenshotImage(project.screenshot)}
+                formats={['avif']}
+                fallbackFormat="webp"
+                widths={[480, 800, 1200, project.width]}
+                sizes={`(min-width: 48em) ${Math.round(100 / row.length)}vw, 100vw`}
                 alt={`${isCover(project.screenshot) ? t.coverAlt : t.screenshotAlt} ${localizedName(project.name, currentLocale)}`}
                 loading="lazy"
                 decoding="async"
