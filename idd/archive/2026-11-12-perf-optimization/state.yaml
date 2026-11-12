@@ -1,0 +1,179 @@
+{
+  "schema": "idd-state/v1",
+  "change": "perf-optimization",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "kind": "refactor",
+    "summary": "Optimizar el rendimiento de la web: menos JavaScript, menos trabajo por fotograma en la escena 3D, imágenes adaptadas al tamaño de pantalla, CSS y fuentes sin peticiones bloqueantes ni revalidaciones",
+    "acceptance": "Con el mismo contenido y las mismas entradas al hacer scroll, la home transfiere menos bytes y bloquea menos el hilo principal que la línea base medida (Lighthouse móvil: 80 puntos, TBT 860 ms, 347 KiB), las páginas de proyecto bajan su LCP de 1,6 s, y pnpm test:run pasa"
+  },
+  "facts": {
+    "open": [
+      "GSAP: ¿sustituyo GSAP y ScrollTrigger por IntersectionObserver y transiciones CSS con las mismas entradas (quita unos 45 KB comprimidos de cada página) y cambio el texto del pie «Hecha con Astro, Three.js y GSAP», o GSAP se queda?",
+      "Three.js: ¿se queda Three.js y solo optimizo el bucle de la serpiente, o reescribo la escena en WebGL puro (quita unos 133 KB comprimidos de la home, y el pie dejaría de nombrar Three.js)?",
+      "Serpiente: ¿cero cambios visibles, o admites reducir detalle que no se aprecia a simple vista (textura de tinta a la mitad de resolución, menos anillos en pantallas estrechas)?",
+      "Imágenes: ¿puedo mover las portadas a src/assets y servirlas recodificadas en AVIF y WebP a varios anchos, sin recortar, de modo que las URL /assets/screenshots/*.webp dejen de existir?"
+    ]
+  },
+  "plan": {
+    "paths": [
+      "README.md",
+      "astro.config.mjs",
+      "package.json",
+      "src/__tests__/CommonScripts.test.ts",
+      "src/__tests__/Layout.test.ts",
+      "src/__tests__/WebGLBackground.test.ts",
+      "src/__tests__/astro6-build.test.ts",
+      "src/__tests__/global-css.test.ts",
+      "src/__tests__/portfolio-types.test.ts",
+      "src/__tests__/reveal.test.ts",
+      "src/components/CommonScripts.astro",
+      "src/components/OspecSection.astro",
+      "src/components/ProjectPage.astro",
+      "src/components/ProjectsSection.astro",
+      "src/layouts/Layout.astro",
+      "src/scene/snake.ts",
+      "src/styles/global.css",
+      "src/utils/images.ts",
+      "src/utils/reveal.ts",
+      "src/utils/translations.ts"
+    ],
+    "work_units": 4,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "Las entradas al hacer scroll pasan de GSAP y ScrollTrigger a IntersectionObserver y transiciones CSS con las mismas distancias, duraciones y escalonado; el estado oculto solo se aplica bajo una clase que pone el propio script, así que sin script el contenido se sigue viendo. GSAP sale de las dependencias y del texto del pie.",
+      "Three.js se queda. El bucle de la serpiente deja de recalcular senos, cosenos, perfil y UV en cada fotograma: van en tablas que solo cambian al redimensionar. La imagen que pinta es la misma.",
+      "Las portadas pasan a src/assets y se sirven con astro:assets en AVIF y WebP a varios anchos, sin recortar; el JSON conserva el campo screenshot, que se resuelve por nombre de archivo.",
+      "El CSS se incrusta en el HTML (inlineStylesheets: always) y las fuentes pasan por el build para salir con hash y caché inmutable.",
+      "Los enlaces internos se precargan al pasar el cursor o tocarlos con el prefetch de Astro.",
+      "Corrige la primera decisión: el estado oculto no va bajo una clase CSS, sino en estilos en línea que pone src/utils/reveal.ts; al entrar la pieza se quitan y la entrada es una animación de la Web Animations API que no deja nada al terminar, así que las transiciones propias de cada elemento (hover) no se pisan.",
+      "De Tailwind solo se importa el reinicio de estilos (preflight) en la capa base: el diseño no usa clases de utilidad y el render queda idéntico.",
+      "La portada de cada página de proyecto se pide con prioridad alta y sin carga diferida; el resto de imágenes siguen con carga diferida.",
+      "El scroll de la escena se calcula con window.scrollY y medidas guardadas al redimensionar, sin medir el DOM en cada fotograma."
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared 4 work units",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-3"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-4"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "open-facts",
+      "status": "resolved",
+      "opened_turn": 13,
+      "answer": "todas las recomendadas",
+      "source": "user",
+      "resolved_turn": 14
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T22:05:18.460Z",
+      "detail": {
+        "tree": "sha256:c67c015eddec03cd2ed1a2923c91010f4f5e233ded47c01e769f08899b427fbb",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T22:26:02.226Z",
+      "detail": {
+        "tree": "sha256:a589d6408f3543f15b9672d378e4a74d7af2529f45b2d4a67a46b0684e0c1eee",
+        "runs": [
+          "run-2"
+        ]
+      }
+    },
+    {
+      "id": "ev-3",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T22:28:32.217Z",
+      "detail": {
+        "tree": "sha256:a589d6408f3543f15b9672d378e4a74d7af2529f45b2d4a67a46b0684e0c1eee",
+        "runs": [
+          "run-3"
+        ]
+      }
+    },
+    {
+      "id": "ev-4",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T22:28:32.345Z"
+    }
+  ],
+  "base": "71c51c3798795693a69af7a3081c7964cc78c9e7",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:306bd0ea575b93ec5515f87214ae54889d473990b783cf9461f7cf2d6ec5c37f",
+      "tree": "sha256:c67c015eddec03cd2ed1a2923c91010f4f5e233ded47c01e769f08899b427fbb",
+      "recorded_at": "2026-11-12T22:05:18.460Z"
+    },
+    {
+      "id": "run-2",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:6fb6ff9ef727845d9acbe4c15ee49ede53434e023f520d74d5dd9e44a42778a9",
+      "tree": "sha256:a589d6408f3543f15b9672d378e4a74d7af2529f45b2d4a67a46b0684e0c1eee",
+      "recorded_at": "2026-11-12T22:26:02.226Z"
+    },
+    {
+      "id": "run-3",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:6f87165f6cf42710270bce9ae3c9e2620745e68ee9ed5aeb078605fef7562acd",
+      "tree": "sha256:a589d6408f3543f15b9672d378e4a74d7af2529f45b2d4a67a46b0684e0c1eee",
+      "recorded_at": "2026-11-12T22:28:32.217Z"
+    }
+  ],
+  "assumptions": [
+    "Calidad por defecto de astro:assets para AVIF y WebP: comparada con las portadas originales da entre 40 y 45 dB de PSNR y el texto se lee nítido; no se dispone de los PNG originales, así que se recodifica desde los WebP.",
+    "public/assets/screenshots/preview.png (2,3 MB) no se usa en ninguna página y se deja como está: no afecta a quien visita la web."
+  ],
+  "closed_at": "2026-11-12T22:28:32.345Z"
+}

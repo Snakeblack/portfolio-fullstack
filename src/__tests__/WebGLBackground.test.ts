@@ -31,6 +31,18 @@ describe('Escena 3D', () => {
     expect(scene).toMatch(/cancelAnimationFrame/);
   });
 
+  it('en cada fotograma solo mueve el cuerpo: la sección de los anillos y la textura se calculan al redimensionar', () => {
+    const rebuild = scene.slice(scene.indexOf('function rebuild()'), scene.indexOf('function measureScroll()'));
+    expect(rebuild).not.toMatch(/bodyRadius\(/);
+    expect(rebuild).not.toMatch(/uvs\[/);
+    expect(rebuild).not.toMatch(/uvAttribute\.needsUpdate/);
+    // Dentro del bucle de vértices no queda trigonometría: senos y cosenos salen de tablas.
+    const perVertex = rebuild.slice(rebuild.indexOf('for (let j = 0'), rebuild.indexOf('if (i === 0)'));
+    expect(perVertex).not.toMatch(/Math\.(cos|sin|hypot)\(/);
+    const resize = scene.slice(scene.indexOf('function resize()'), scene.indexOf('function shapeRings()'));
+    expect(resize).toMatch(/shapeRings\(\);/);
+  });
+
   it('limita la densidad de píxeles', () => {
     expect(scene).toMatch(/setPixelRatio\(Math\.min\(Math\.max\(window\.devicePixelRatio, 1\.5\), 2\)\)/);
   });
