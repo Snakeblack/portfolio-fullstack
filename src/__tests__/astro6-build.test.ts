@@ -140,11 +140,97 @@ describe('Astro 6 build', () => {
     expect(notFound).not.toContain('hreflang=');
     expect(notFound).toContain('href="/"');
     expect(notFound).toContain('href="/en/"');
+    expect(notFound).toContain('href="/#projects"');
+    expect(notFound).toContain('href="/en/#projects"');
     expect(notFound).toMatch(/<h1[^>]*>[\s\S]*404[\s\S]*<\/h1>/);
     expect(text(notFound)).not.toMatch(/[—–]/);
     for (const html of [es, en]) {
       expect(html).toContain('<meta name="robots" content="index, follow"');
     }
+  });
+
+  describe('project pages', () => {
+    const slugs = ['ospec-workflow', 'noema', 'retama', 'finanzas-snake', 'opencode-pr-status', 'stream-overlay-chat', 'background-generator', 'landings', 'blog'];
+    const page = (locale: 'es' | 'en', slug: string) =>
+      readFileSync(resolve(DIST_DIR, locale === 'es' ? `proyectos/${slug}` : `en/projects/${slug}`, 'index.html'), 'utf-8');
+
+    it('every tile opens the project page in the same tab', () => {
+      for (const [html, prefix] of [[es, '/proyectos/'], [en, '/en/projects/']] as const) {
+        const tiles = html.match(/<a[^>]*class="tile"[^>]*>/g) ?? [];
+        expect(tiles.map((tile) => tile.match(/href="([^"]+)"/)?.[1])).toEqual(slugs.map((slug) => `${prefix}${slug}/`));
+        for (const tile of tiles) expect(tile).not.toContain('target=');
+      }
+    });
+
+    it('each page exists in both languages, links its translation and has one h1', () => {
+      for (const slug of slugs) {
+        const [pageEs, pageEn] = [page('es', slug), page('en', slug)];
+        expect(pageEs).toMatch(/<html lang="es"/);
+        expect(pageEn).toMatch(/<html lang="en"/);
+        for (const html of [pageEs, pageEn]) {
+          expect(html.match(/<h1[\s\S]*?<\/h1>/g)).toHaveLength(1);
+          expect(html).toContain(`hreflang="es" href="https://mretamozo.com/proyectos/${slug}/"`);
+          expect(html).toContain(`hreflang="en" href="https://mretamozo.com/en/projects/${slug}/"`);
+          expect(html).toContain('<meta name="robots" content="index, follow"');
+          expect(html).toContain('href="/#projects"'.replace('/#', html === pageEn ? '/en/#' : '/#'));
+        }
+        expect(pageEs).toContain(`<link rel="canonical" href="https://mretamozo.com/proyectos/${slug}/"`);
+        expect(pageEn).toContain(`<link rel="canonical" href="https://mretamozo.com/en/projects/${slug}/"`);
+      }
+    });
+
+    it('the complex projects explain how they work and Retama tells the whole loop', () => {
+      for (const slug of ['noema', 'retama', 'finanzas-snake', 'opencode-pr-status', 'stream-overlay-chat']) {
+        expect(text(page('es', slug))).toMatch(/Cómo funciona/);
+        expect(text(page('en', slug))).toMatch(/How it works/);
+      }
+      const retama = text(page('es', 'retama'));
+      for (const heading of ['El área de clientes', 'El avance sale del repositorio', 'El playbook de Retama', 'Gestión desde Claude']) {
+        expect(retama).toContain(heading);
+      }
+      expect(page('es', 'retama')).toContain('<h1');
+      expect(text(page('es', 'retama'))).toContain('Área de clientes de Retama');
+      expect(text(page('en', 'retama'))).toContain('Retama client area');
+    });
+
+    it('the landings page shows each client site with a link out', () => {
+      for (const locale of ['es', 'en'] as const) {
+        const html = page(locale, 'landings');
+        expect(html).toContain('href="https://www.bateriascoches24horas.es/"');
+        expect(html).toContain('href="https://recambioslasmargaritas.es/"');
+        expect(html.match(/<img[^>]*>/g)?.length).toBeGreaterThanOrEqual(3);
+      }
+    });
+
+    it('pages describe themselves for search engines and keep the copy clean', () => {
+      for (const slug of slugs) {
+        for (const html of [page('es', slug), page('en', slug)]) {
+          const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '';
+          expect(description.length).toBeGreaterThan(30);
+          expect(description.length).toBeLessThanOrEqual(155);
+          const visible = text(html);
+          expect(visible).not.toMatch(/\p{Emoji_Presentation}/u);
+          expect(visible).not.toMatch(/[—–]/);
+          for (const image of html.match(/<img[^>]*>/g) ?? []) {
+            expect(image).toMatch(/\swidth="\d+"/);
+            expect(image).toMatch(/\salt="[^"]+"/);
+          }
+        }
+      }
+    });
+
+    it('the sitemap lists every project page and never invents a translated path', () => {
+      const sitemap = readFileSync(resolve(DIST_DIR, 'sitemap-0.xml'), 'utf-8');
+      for (const slug of slugs) {
+        expect(sitemap).toContain(`<loc>https://mretamozo.com/proyectos/${slug}/</loc>`);
+        expect(sitemap).toContain(`<loc>https://mretamozo.com/en/projects/${slug}/</loc>`);
+      }
+      const entry = sitemap.match(/<url><loc>https:\/\/mretamozo\.com\/proyectos\/noema\/<\/loc>[\s\S]*?<\/url>/)?.[0] ?? '';
+      expect(entry).toContain('hreflang="es" href="https://mretamozo.com/proyectos/noema/"');
+      expect(entry).toContain('hreflang="en" href="https://mretamozo.com/en/projects/noema/"');
+      expect(sitemap).not.toContain('/en/proyectos/');
+      expect(sitemap).not.toMatch(/mretamozo\.com\/projects\//);
+    });
   });
 
   it('the text of the page has no emoji and no dashes used as punctuation', () => {

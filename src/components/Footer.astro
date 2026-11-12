@@ -8,19 +8,23 @@ interface Props {
   copyrightName: string;
   social: SocialLinks;
   currentLocale: Locale;
+  /** Fuera de la home, las secciones se enlazan como /#seccion o /en/#seccion. */
+  anchorBase?: string;
+  /** Esta misma página en el otro idioma; por defecto, la otra home. */
+  otherLocaleUrl?: string;
 }
 
-const { firstName, lastName, copyrightName, social, currentLocale } = Astro.props;
+const { firstName, lastName, copyrightName, social, currentLocale, anchorBase = '' } = Astro.props;
 const t = getTranslations(currentLocale);
-const otherLocaleUrl = currentLocale === 'es' ? '/en/' : '/';
+const otherLocaleUrl = Astro.props.otherLocaleUrl ?? (currentLocale === 'es' ? '/en/' : '/');
 const otherLocale = currentLocale === 'es' ? 'en' : 'es';
 const sourceUrl = 'https://github.com/Snakeblack/portfolio-fullstack';
 const sections = [
-  { href: '#ospec', label: t.nav.ospec },
-  { href: '#work', label: t.nav.work },
-  { href: '#projects', label: t.nav.projects },
-  { href: '#about', label: t.nav.about },
-  { href: '#contact', label: t.nav.contact },
+  { href: `${anchorBase}#ospec`, label: t.nav.ospec },
+  { href: `${anchorBase}#work`, label: t.nav.work },
+  { href: `${anchorBase}#projects`, label: t.nav.projects },
+  { href: `${anchorBase}#about`, label: t.nav.about },
+  { href: `${anchorBase}#contact`, label: t.nav.contact },
 ];
 ---
 

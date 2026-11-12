@@ -1,6 +1,7 @@
 ---
 import type { ProjectEntry } from '../types/portfolio';
 import { getTranslations, type Locale } from '../utils/translations';
+import { isCover, localizedName, projectPath } from '../utils/projects';
 
 interface Props {
   projects: ProjectEntry[];
@@ -11,31 +12,16 @@ interface Props {
 const { projects, githubUrl, currentLocale } = Astro.props;
 const t = getTranslations(currentLocale).projects;
 
-// El muro desigual: cada fila tiene otra altura (en vw) y otro reparto de anchos.
-// Sin `weights`, cada tesela ocupa lo que pide la proporción de su imagen.
-const rowPlan: { size: number; height: number; weights?: number[] }[] = [
-  { size: 2, height: 24 },
-  { size: 3, height: 17.5 },
-  { size: 2, height: 21, weights: [1.25, 2.1] },
-  { size: 2, height: 25, weights: [2.2, 1.4] },
-];
-// En el teléfono: una a todo el ancho, luego dos a 62/38 y dos a 38/62.
-const phonePlan = ['full', 'wide', 'narrow', 'narrow', 'wide'] as const;
+// El muro desigual: filas de dos, tres, dos y dos. Cada tesela crece en proporción a su imagen
+// y toma su altura del aspect-ratio, así que en una fila todas miden lo mismo y ninguna se recorta.
+// La variedad de alturas sale de las proporciones de las portadas, no de un recorte.
+const rowSizes = [2, 3, 2, 2];
 
-const rows: { height: number; tiles: { project: ProjectEntry; weight: number; phone?: string }[] }[] = [];
-let cursor = 0;
-for (let r = 0; cursor < projects.length; r++) {
-  const plan = rowPlan[r % rowPlan.length];
-  const slice = projects.slice(cursor, cursor + plan.size);
-  rows.push({
-    height: plan.height,
-    tiles: slice.map((project, i) => ({
-      project,
-      weight: plan.weights?.[i] ?? project.width / project.height,
-      phone: phonePlan[(cursor + i) % phonePlan.length],
-    })),
-  });
-  cursor += plan.size;
+const rows: ProjectEntry[][] = [];
+for (let r = 0, cursor = 0; cursor < projects.length; r++) {
+  const size = rowSizes[r % rowSizes.length];
+  rows.push(projects.slice(cursor, cursor + size));
+  cursor += size;
 }
 ---
 
@@ -47,28 +33,25 @@ for (let r = 0; cursor < projects.length; r++) {
 
   <div class="wall">
     {rows.map((row) => (
-      <div class="wall__row" style={`--row-height: clamp(${row.height * 8}px, ${row.height}vw, ${row.height * 18}px)`}>
-        {row.tiles.map(({ project, weight, phone }) => (
+      <div class="wall__row">
+        {row.map((project) => (
           <a
             class="tile"
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={`--ratio: ${weight.toFixed(3)}`}
-            data-phone={phone}
+            href={projectPath(project.slug, currentLocale)}
+            style={`--ratio: ${(project.width / project.height).toFixed(3)}`}
           >
             <div class="tile__picture" data-reveal="shutter">
               <img
                 src={project.screenshot}
                 width={project.width}
                 height={project.height}
-                alt={`${t.screenshotAlt} ${project.name}`}
+                alt={`${isCover(project.screenshot) ? t.coverAlt : t.screenshotAlt} ${localizedName(project.name, currentLocale)}`}
                 loading="lazy"
                 decoding="async"
               />
             </div>
             <div class="tile__caption">
-              <span class="tile__name">{project.name}</span>
+              <span class="tile__name">{localizedName(project.name, currentLocale)}</span>
               <span class="tile__year">{project.year}</span>
               <p class="tile__text">{project.description[currentLocale]}</p>
             </div>

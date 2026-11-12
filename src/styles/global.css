@@ -798,7 +798,7 @@ html:not(.js) .touches {
 }
 
 .tile__picture {
-  height: var(--row-height);
+  aspect-ratio: var(--ratio);
   overflow: clip;
   background: #1e1e1e;
 }
@@ -857,42 +857,12 @@ html:not(.js) .touches {
   }
 
   .wall {
-    /* Tres columnas dan los dos repartos: 62/38 y 38/62. */
-    grid-template-columns: 38fr 24fr 38fr;
-    gap: 1.5rem 6px;
+    /* En el teléfono, una tesela por fila a todo el ancho y con su proporción entera. */
+    gap: 2rem;
   }
 
   .wall__row {
     display: contents;
-  }
-
-  .tile {
-    grid-column: span 3;
-  }
-
-  .tile__picture {
-    height: 220px;
-  }
-
-  .tile:not([data-phone='full']) .tile__text {
-    display: none;
-  }
-
-  .wall .tile[data-phone='wide'] {
-    grid-column: span 2;
-  }
-
-  .wall .tile[data-phone='narrow'] {
-    grid-column: span 1;
-  }
-
-  .wall .tile[data-phone='wide'] .tile__picture,
-  .wall .tile[data-phone='narrow'] .tile__picture {
-    height: 150px;
-  }
-
-  .wall .tile[data-phone='narrow'] .tile__caption {
-    grid-template-columns: 1fr;
   }
 }
 

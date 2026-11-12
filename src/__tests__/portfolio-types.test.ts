@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 import portfolioData from '../data/portfolio.json';
 import { translations } from '../utils/translations';
+import type { ProjectEntry } from '../types/portfolio';
 
 function allStrings(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') out.push(value);
@@ -17,31 +20,91 @@ describe('Portfolio data structure', () => {
     expect(portfolioData.social).toHaveProperty('twitter');
   });
 
-  it('every project has what its tile needs: link, picture with size, year and technologies', () => {
-    for (const project of portfolioData.projects) {
-      expect(project.url).toMatch(/^https:\/\//);
-      expect(project.screenshot).toMatch(/^\/assets\/screenshots\/.+\.(webp|avif|png|jpg)$/);
-      expect(project.width).toBeGreaterThan(0);
-      expect(project.height).toBeGreaterThan(0);
-      expect(project.year).toMatch(/^\d{4}$/);
-      expect(Array.isArray(project.technologies)).toBe(true);
-      expect(project.technologies.length).toBeGreaterThan(0);
+  const projects = portfolioData.projects as unknown as ProjectEntry[];
+
+  it('lists the chosen projects in order, without the ones that were dropped', () => {
+    expect(projects.map((project) => project.slug)).toEqual([
+      'ospec-workflow',
+      'noema',
+      'retama',
+      'finanzas-snake',
+      'opencode-pr-status',
+      'stream-overlay-chat',
+      'background-generator',
+      'landings',
+      'blog',
+    ]);
+    const names = JSON.stringify(projects.map((project) => project.name));
+    for (const dropped of ['Barreto', 'DevTools', 'Reactive Forms', 'Device Manager']) {
+      expect(names).not.toContain(dropped);
     }
   });
 
-  it('every project description should be {es, en} object', () => {
-    for (const project of portfolioData.projects) {
-      expect(typeof project.description.es).toBe('string');
-      expect(typeof project.description.en).toBe('string');
+  it('every project has what its tile and its page need', () => {
+    const kinds = ['site', 'github', 'docs', 'npm', 'download'];
+    for (const project of projects) {
+      expect(project.slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+      expect(project.screenshot).toMatch(/^\/assets\/screenshots\/.+\.(webp|avif|png|jpg)$/);
+      expect(existsSync(resolve(__dirname, '../../public', `.${project.screenshot}`))).toBe(true);
+      expect(project.width).toBeGreaterThan(0);
+      expect(project.height).toBeGreaterThan(0);
+      expect(project.year).toMatch(/^\d{4}$/);
+      expect(project.technologies.length).toBeGreaterThan(0);
+      for (const link of project.links) {
+        expect(kinds).toContain(link.kind);
+        expect(link.url).toMatch(/^https:\/\//);
+      }
+    }
+    expect(new Set(projects.map((project) => project.slug)).size).toBe(projects.length);
+  });
+
+  it('every project speaks both languages, with a description short enough for a search result', () => {
+    for (const project of projects) {
+      for (const locale of ['es', 'en'] as const) {
+        expect(project.description[locale].length).toBeGreaterThan(30);
+        expect(project.description[locale].length).toBeLessThanOrEqual(155);
+        expect(project.summary[locale].length).toBeGreaterThan(project.description[locale].length);
+        if (typeof project.name !== 'string') expect(project.name[locale]).toBeTruthy();
+      }
+      if (project.how) {
+        expect(project.how.en.map((section) => section.paragraphs.length)).toEqual(
+          project.how.es.map((section) => section.paragraphs.length),
+        );
+        expect(project.how.en.map((section) => Boolean(section.title))).toEqual(
+          project.how.es.map((section) => Boolean(section.title)),
+        );
+      }
+      for (const figure of project.figures ?? []) {
+        expect(figure.label.es && figure.label.en).toBeTruthy();
+      }
+    }
+  });
+
+  it('the complex projects explain how they work; Retama covers its client area, ospec and the playbook', () => {
+    for (const slug of ['ospec-workflow', 'noema', 'retama', 'finanzas-snake', 'opencode-pr-status', 'stream-overlay-chat']) {
+      expect(projects.find((project) => project.slug === slug)?.how).toBeDefined();
+    }
+    const retama = JSON.stringify(projects.find((project) => project.slug === 'retama')?.how?.es);
+    expect(retama).toMatch(/ospec snapshot/);
+    expect(retama).toMatch(/playbook/);
+    expect(retama).toMatch(/passkey/);
+    expect(retama).toMatch(/MCP/);
+  });
+
+  it('the client landings live together on one page, each with its own site', () => {
+    const landings = projects.find((project) => project.slug === 'landings');
+    expect(landings?.items?.map((item) => item.name)).toEqual(['Baterías Express', 'Recambios las Margaritas']);
+    for (const item of landings?.items ?? []) {
+      expect(item.url).toMatch(/^https:\/\//);
+      expect(existsSync(resolve(__dirname, '../../public', `.${item.screenshot}`))).toBe(true);
     }
   });
 
   it('Ospec-Workflow is listed once, first, and points to its repository', () => {
-    const matches = portfolioData.projects.filter((project) => /ospec/i.test(project.name));
-    expect(matches).toHaveLength(1);
-    expect(portfolioData.projects[0]).toBe(matches[0]);
-    expect(matches[0].url).toBe('https://github.com/Snakeblack/ospec-workflow');
-    expect(portfolioData.ospec.repo).toBe(matches[0].url);
+    const ospec = projects[0];
+    expect(ospec.slug).toBe('ospec-workflow');
+    expect(projects.filter((project) => /ospec/i.test(JSON.stringify(project.name)))).toHaveLength(1);
+    expect(ospec.links.find((link) => link.kind === 'github')?.url).toBe(portfolioData.ospec.repo);
   });
 
   it('personalInfo texts exist in both languages', () => {

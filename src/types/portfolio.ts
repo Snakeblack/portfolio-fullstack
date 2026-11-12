@@ -56,15 +56,54 @@ export interface SkillEntry {
   category: SkillCategory;
 }
 
-export interface ProjectEntry {
+/** Un nombre propio que no se traduce, o uno por idioma. */
+export type LocalizedName = string | TranslatedString;
+
+export type ProjectLinkKind = 'site' | 'github' | 'docs' | 'npm' | 'download';
+
+export interface ProjectLink {
+  kind: ProjectLinkKind;
+  url: string;
+}
+
+export interface ProjectFigure {
+  value: string;
+  label: TranslatedString;
+}
+
+/** Un bloque de «Cómo funciona»; sin título, la página usa el genérico. */
+export interface ProjectSection {
+  title?: string;
+  paragraphs: string[];
+}
+
+/** Una web dentro de un proyecto que agrupa varias (las landings). */
+export interface ProjectItem {
   name: string;
   description: TranslatedString;
+  url: string;
+  screenshot: string;
+  width: number;
+  height: number;
+}
+
+export interface ProjectEntry {
+  /** Ruta de la página: /proyectos/<slug>/ y /en/projects/<slug>/. */
+  slug: string;
+  name: LocalizedName;
+  /** Frase de la tarjeta y meta description: 155 caracteres como mucho. */
+  description: TranslatedString;
+  /** Entrada de la página del proyecto. */
+  summary: TranslatedString;
+  how?: { es: ProjectSection[]; en: ProjectSection[] };
+  figures?: ProjectFigure[];
+  items?: ProjectItem[];
   technologies: string[];
   year: string;
   screenshot: string;
   width: number;
   height: number;
-  url: string;
+  links: ProjectLink[];
 }
 
 export interface PortfolioData {

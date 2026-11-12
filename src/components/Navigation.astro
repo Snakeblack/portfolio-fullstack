@@ -5,19 +5,23 @@ interface Props {
   currentLocale: Locale;
   name: string;
   email: string;
+  /** Fuera de la home, las secciones se enlazan como /#seccion o /en/#seccion. */
+  anchorBase?: string;
+  /** Esta misma página en el otro idioma; por defecto, la otra home. */
+  otherLocaleUrl?: string;
 }
 
-const { currentLocale, name, email } = Astro.props;
+const { currentLocale, name, email, anchorBase = '' } = Astro.props;
 const t = getTranslations(currentLocale);
 
 const homeUrl = currentLocale === 'es' ? '/' : '/en/';
-const otherLocaleUrl = currentLocale === 'es' ? '/en/' : '/';
+const otherLocaleUrl = Astro.props.otherLocaleUrl ?? (currentLocale === 'es' ? '/en/' : '/');
 const otherLocale = currentLocale === 'es' ? 'en' : 'es';
 const links = [
-  { href: '#ospec', label: t.nav.ospec },
-  { href: '#work', label: t.nav.work },
-  { href: '#projects', label: t.nav.projects },
-  { href: '#contact', label: t.nav.contact },
+  { href: `${anchorBase}#ospec`, label: t.nav.ospec },
+  { href: `${anchorBase}#work`, label: t.nav.work },
+  { href: `${anchorBase}#projects`, label: t.nav.projects },
+  { href: `${anchorBase}#contact`, label: t.nav.contact },
 ];
 ---
 

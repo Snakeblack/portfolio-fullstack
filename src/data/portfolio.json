@@ -176,156 +176,589 @@
   ],
   "projects": [
     {
+      "slug": "ospec-workflow",
       "name": "Ospec-Workflow",
       "description": {
         "es": "Arnés para agentes de IA que programan: la CLI decide cuándo está terminado un cambio.",
         "en": "Harness for AI coding agents: the CLI decides when a change is done."
       },
-      "url": "https://github.com/Snakeblack/ospec-workflow",
+      "summary": {
+        "es": "Ospec-Workflow es el arnés con el que trabajo con agentes de IA, esta web incluida. Cada cambio pasa por la CLI ospec, que deduce sus obligaciones de lo que toca y no lo da por cerrado hasta ver la evidencia de cada una.",
+        "en": "Ospec-Workflow is the harness I use to work with AI coding agents, this site included. Every change goes through the ospec CLI, which works out what the change owes from what it touches and only closes it once it has seen evidence for each obligation."
+      },
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "El agente declara qué va a cambiar y la CLI lo contrasta con el diff real. Si el cambio toca una API pública, pide el contrato y su test. Si toca una migración, un test de compatibilidad con su plan de vuelta atrás. Las obligaciones salen de lo que se toca, no de lo que diga el modelo.",
+              "La evidencia solo cuenta si la CLI ha visto la ejecución: un test que primero falla y después pasa, o los checks del proyecto sobre el árbol actual. Decir que los tests pasan no satisface nada.",
+              "Funciona en Claude Code, Codex, Cursor, VS Code, Copilot CLI, OpenCode y Antigravity, y tiene un modo SDD opcional con OpenSpec para los cambios que piden especificación antes de código."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "The agent declares what it is going to change and the CLI checks it against the real diff. If the change touches a public API, it asks for the contract and its test. If it touches a migration, a compatibility test with a rollback plan. Obligations come from what the change touches, not from what the model says.",
+              "Evidence only counts when the CLI has watched the run: a test that fails first and then passes, or the project checks on the current tree. Saying the tests pass satisfies nothing.",
+              "It works in Claude Code, Codex, Cursor, VS Code, Copilot CLI, OpenCode and Antigravity, and has an optional SDD mode with OpenSpec for changes that need a spec before code."
+            ]
+          }
+        ]
+      },
       "technologies": [
         "Node.js",
         "Go",
         "Claude Code"
       ],
       "year": "2026",
-      "screenshot": "/assets/screenshots/ospec-workflow.webp",
-      "width": 1915,
-      "height": 821
+      "screenshot": "/assets/screenshots/cover-ospec.webp",
+      "width": 1760,
+      "height": 800,
+      "links": [
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/ospec-workflow"
+        },
+        {
+          "kind": "docs",
+          "url": "https://ospec-workflow.mretamozo.com"
+        }
+      ]
     },
     {
-      "name": "WebGL Backgrounds Generator",
+      "slug": "noema",
+      "name": "Noema",
       "description": {
-        "es": "Genera fondos animados en WebGL, los ajusta y los exporta sin escribir shaders.",
-        "en": "Generates animated WebGL backgrounds, tunes them and exports them without writing shaders."
+        "es": "Copiloto de trabajo con IA que responde con los documentos y las reuniones de tu equipo, y crea tareas desde el chat.",
+        "en": "AI work copilot that answers from your team's documents and meetings, and creates tasks straight from the chat."
       },
-      "url": "https://background.mretamozo.com/",
-      "technologies": [
-        "Astro",
-        "Tailwind CSS",
-        "Three.js"
+      "summary": {
+        "es": "Noema es un SaaS multi-tenant que convierte la información dispersa de un equipo en algo a lo que se le puede preguntar. Subes documentos o grabas una reunión, y después lo consultas en lenguaje natural o le pides que actúe, como crear una tarea o actualizar un registro.",
+        "en": "Noema is a multi-tenant SaaS that turns a team's scattered information into something you can ask. You upload documents or record a meeting, then query it in plain language or ask it to act, such as creating a task or updating a record."
+      },
+      "figures": [
+        {
+          "value": "596",
+          "label": {
+            "es": "commits",
+            "en": "commits"
+          }
+        },
+        {
+          "value": "89",
+          "label": {
+            "es": "migraciones SQL",
+            "en": "SQL migrations"
+          }
+        },
+        {
+          "value": "19",
+          "label": {
+            "es": "funciones edge",
+            "en": "edge functions"
+          }
+        },
+        {
+          "value": "2000+",
+          "label": {
+            "es": "tests",
+            "en": "tests"
+          }
+        }
       ],
-      "year": "2025",
-      "screenshot": "/assets/screenshots/background-generator.webp",
-      "width": 1920,
-      "height": 1075
-    },
-    {
-      "name": "Barreto Construcciones",
-      "description": {
-        "es": "Web de una constructora pensada para captar clientes, con campañas de Google Ads y analítica.",
-        "en": "Website for a construction company built to bring in clients, with Google Ads campaigns and analytics."
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "Es una aplicación web en Angular 21 sobre Supabase. Todas las organizaciones comparten una base Postgres, pero cada una solo ve lo suyo: el token de sesión lleva la organización y el rol, y las políticas RLS filtran cada consulta con ellos. Las cuentas nuevas no entran hasta que un administrador las aprueba.",
+              "Al subir un documento, una función en Deno extrae el texto. Si es un PDF escaneado o una imagen, lo lee Gemini. Después lo parte en fragmentos, calcula un embedding de 768 dimensiones para cada uno y lo guarda en pgvector. Las reuniones siguen el mismo camino: se transcriben separando a quien habla, se resumen y sus puntos de acción se convierten en tareas.",
+              "Cuando preguntas, el chat busca los fragmentos más cercanos en documentos, reuniones, entidades y memoria. Un modelo ligero clasifica la intención y elige qué modelo responde. Si la pregunta pide hacer algo, el modelo llama a herramientas que buscan o crean tareas y registros, con un máximo de tres rondas por mensaje, y la respuesta llega en streaming.",
+              "Cada llamada a la IA cuenta tokens, se descuenta de la cuota del plan antes de seguir y queda registrada como coste por sesión y por organización. Los planes se cobran con Stripe.",
+              "Ahora el backend está pasando de muchas funciones sueltas a una sola API con contratos tipados por caso de uso, módulo a módulo y sin parar producción. Las tareas ya funcionan así."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "It is an Angular 21 web app on Supabase. Every organization shares one Postgres database, but each one only sees its own data: the session token carries the organization and the role, and RLS policies filter every query with them. New accounts stay out until an administrator approves them.",
+              "When you upload a document, a Deno function extracts the text. If it is a scanned PDF or an image, Gemini reads it. Then the text is split into chunks, each chunk gets a 768-dimension embedding, and everything is stored in pgvector. Meetings follow the same path: they are transcribed with speakers apart, summarized, and their action items become tasks.",
+              "When you ask something, the chat looks for the closest chunks across documents, meetings, entities and memory. A light model classifies the intent and picks which model answers. If the question asks for an action, the model calls tools that search or create tasks and records, with at most three rounds per message, and the answer streams in.",
+              "Every AI call counts tokens, is charged against the plan quota before going on, and is logged as cost per session and per organization. Plans are billed with Stripe.",
+              "Right now the backend is moving from many separate functions to a single API with typed contracts per use case, one module at a time and without stopping production. Tasks already work that way."
+            ]
+          }
+        ]
       },
-      "url": "https://www.barretoconstrucciones.es/",
       "technologies": [
-        "Astro",
-        "Resend",
-        "Google Ads"
-      ],
-      "year": "2025",
-      "screenshot": "/assets/screenshots/barreto-construcciones.webp",
-      "width": 1920,
-      "height": 1054
-    },
-    {
-      "name": "DevTools MMRG",
-      "description": {
-        "es": "Colección de herramientas para desarrollar, cada una explicada con IA.",
-        "en": "A collection of developer tools, each one explained with AI."
-      },
-      "url": "https://devtools.mretamozo.com/",
-      "technologies": [
-        "Astro",
-        "Tailwind CSS",
+        "Angular 21",
+        "Supabase",
+        "pgvector",
+        "Deno",
         "Gemini API"
       ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/cover-noema.webp",
+      "width": 1600,
+      "height": 1000,
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://noema.mretamozo.com"
+        }
+      ]
+    },
+    {
+      "slug": "retama",
+      "name": {
+        "es": "Área de clientes de Retama",
+        "en": "Retama client area"
+      },
+      "description": {
+        "es": "Portal donde los clientes de Retama siguen el avance de sus proyectos, publicado por ospec desde cada repositorio.",
+        "en": "Portal where Retama's clients follow their projects' progress, published by ospec straight from each repository."
+      },
+      "summary": {
+        "es": "Los clientes de Retama no tienen que escribir para saber cómo va su proyecto. Entran con una invitación y una passkey. Dentro ven el avance por fases con las decisiones explicadas para ellos, y hablan con el estudio en una conversación por proyecto. Lo interesante está detrás: nadie actualiza ese avance a mano.",
+        "en": "Retama's clients do not have to write in to find out how their project is going. They sign in with an invitation and a passkey. Inside they see progress phase by phase with the decisions explained for them, and they talk to the studio in one conversation per project. The interesting part is behind it: nobody updates that progress by hand."
+      },
+      "figures": [
+        {
+          "value": "68",
+          "label": {
+            "es": "cambios cerrados con ospec",
+            "en": "changes closed with ospec"
+          }
+        },
+        {
+          "value": "10",
+          "label": {
+            "es": "ADRs",
+            "en": "ADRs"
+          }
+        },
+        {
+          "value": "12",
+          "label": {
+            "es": "herramientas MCP",
+            "en": "MCP tools"
+          }
+        },
+        {
+          "value": "UE",
+          "label": {
+            "es": "datos y archivos",
+            "en": "data and files"
+          }
+        }
+      ],
+      "how": {
+        "es": [
+          {
+            "title": "El área de clientes",
+            "paragraphs": [
+              "Es una aplicación Astro con renderizado en servidor sobre Cloudflare Workers, con la base de datos y los archivos guardados en la UE. Solo se entra por invitación: el enlace sirve una vez y caduca a los siete días, y la persona registra una passkey en lugar de una contraseña.",
+              "Cada proyecto muestra sus fases con lo que el cliente podrá hacer al terminarlas y lo que Retama necesita de él, la documentación con el motivo de cada decisión, los presupuestos y las facturas en PDF y una conversación con el estudio.",
+              "Cada cliente solo ve lo suyo. Una capa de acceso obligatoria toma la organización de la sesión, nunca de la petición, y un recurso ajeno responde igual que uno que no existe. Cada escritura se guarda junto a su entrada en un registro de auditoría al que solo se puede añadir."
+            ]
+          },
+          {
+            "title": "El avance sale del repositorio",
+            "paragraphs": [
+              "Los proyectos de Retama se construyen con Ospec-Workflow, así que cada cambio pasa por la CLI ospec y queda registrado con su evidencia. Cuando un cambio llega a la rama de integración, el CI ejecuta ospec snapshot, que junta el roadmap, los cambios cerrados, el changelog y los textos escritos para el cliente en un JSON versionado.",
+              "El repositorio lo publica con una credencial que solo sirve para ese proyecto, y la app lo valida contra su contrato. Si algo no cuadra lo rechaza, y el cliente sigue viendo la última versión buena. La app nunca lee los repositorios.",
+              "El estado de cada fase sale de git. Está en curso cuando se abre su cambio, pasa a «En pruebas» al fusionarse y a «En producción» con su release. El cliente ve lo mismo que el equipo sin que nadie tenga que acordarse de actualizar nada."
+            ]
+          },
+          {
+            "title": "El playbook de Retama",
+            "paragraphs": [
+              "Encima de ospec va un playbook privado: un marketplace de plugins para Claude Code con las reglas del estudio, desde la privacidad hasta la forma de entregar, y skills auditadas de diseño, redacción, SEO y Cloudflare. Cada sesión de trabajo arranca con esas reglas cargadas, sea un proyecto propio o de un cliente.",
+              "El reparto es deliberado. Lo genérico vive en Ospec-Workflow, que es abierto y sirve a cualquiera. Lo propio de Retama, como el contrato del área de clientes o la marca, se queda en el playbook, que nombra los comandos de ospec y exige una versión mínima pero nunca lo sustituye.",
+              "Una de sus skills da de alta un proyecto en el área: crea la organización y el proyecto con sus invitaciones a través del conector, y después comprueba que ha llegado el primer snapshot."
+            ]
+          },
+          {
+            "title": "Gestión desde Claude",
+            "paragraphs": [
+              "La propia app expone un servidor MCP con OAuth 2.1 que solo el estudio puede autorizar, siempre con su passkey. Las consultas son directas. Cualquier cambio, como contestar a un cliente o marcar una factura como pagada, pide dos llamadas: la primera enseña lo que va a pasar y devuelve un código que caduca en minutos, y la segunda lo ejecuta junto a su entrada de auditoría.",
+              "Así el círculo se cierra. El cliente pide algo, el agente lo construye bajo ospec con las reglas del playbook, el CI publica el avance y el cliente lo ve en su área y responde desde ella. La propia área de clientes se construye igual y publica su avance en sí misma."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "title": "The client area",
+            "paragraphs": [
+              "It is a server-rendered Astro app on Cloudflare Workers, with the database and files stored in the EU. You only get in by invitation: the link works once and expires after seven days, and the person registers a passkey instead of a password.",
+              "Each project shows its phases with what the client will be able to do once they are done and what Retama needs from them, the documentation with the reason behind each decision, quotes and invoices as PDF, and a conversation with the studio.",
+              "Each client only sees their own data. A mandatory access layer takes the organization from the session, never from the request, and someone else's resource answers exactly like one that does not exist. Every write is stored together with its entry in an append-only audit log."
+            ]
+          },
+          {
+            "title": "Progress comes from the repository",
+            "paragraphs": [
+              "Retama's projects are built with Ospec-Workflow, so every change goes through the ospec CLI and is recorded with its evidence. When a change reaches the integration branch, CI runs ospec snapshot, which gathers the roadmap, the closed changes, the changelog and the texts written for the client into a versioned JSON document.",
+              "The repository publishes it with a credential that only works for that project, and the app validates it against its contract. If something does not fit, it rejects it and the client keeps seeing the last good version. The app never reads the repositories.",
+              "The state of each phase comes from git. It is in progress when its change opens, moves to testing when it is merged and to production with its release. The client sees the same thing as the team without anyone having to remember to update anything."
+            ]
+          },
+          {
+            "title": "Retama's playbook",
+            "paragraphs": [
+              "On top of ospec sits a private playbook: a Claude Code plugin marketplace with the studio's rules, from privacy to how work is delivered, plus audited skills for design, writing, SEO and Cloudflare. Every work session starts with those rules loaded, whether the project is our own or a client's.",
+              "The split is deliberate. Whatever is generic lives in Ospec-Workflow, which is open and useful to anyone. Whatever belongs to Retama, such as the client area contract or the brand, stays in the playbook, which names the ospec commands and requires a minimum version but never replaces it.",
+              "One of its skills onboards a project into the area: it creates the organization and the project with their invitations through the connector, and then checks that the first snapshot has arrived."
+            ]
+          },
+          {
+            "title": "Managing it from Claude",
+            "paragraphs": [
+              "The app itself exposes an MCP server with OAuth 2.1 that only the studio can authorize, always with its passkey. Queries are direct. Any change, such as replying to a client or marking an invoice as paid, takes two calls: the first shows what will happen and returns a code that expires within minutes, and the second runs it together with its audit entry.",
+              "That closes the loop. The client asks for something, the agent builds it under ospec with the playbook's rules, CI publishes the progress, and the client sees it in their area and replies from there. The client area itself is built the same way and publishes its own progress to itself."
+            ]
+          }
+        ]
+      },
+      "technologies": [
+        "Astro 7",
+        "Cloudflare Workers",
+        "D1",
+        "WebAuthn",
+        "MCP"
+      ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/cover-retama.webp",
+      "width": 1600,
+      "height": 1000,
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://retama.dev"
+        }
+      ]
+    },
+    {
+      "slug": "finanzas-snake",
+      "name": "Finanzas Snake",
+      "description": {
+        "es": "Finanzas personales para una o dos personas que guarda todo en el navegador, con PIN opcional e importación de extractos con IA.",
+        "en": "Personal finance for one or two people that keeps everything in the browser, with an optional PIN and AI statement import."
+      },
+      "summary": {
+        "es": "Finanzas Snake lleva las cuentas de una persona o de una pareja sin base de datos en ningún servidor. Cada cuenta o movimiento es tuyo, de la otra persona o conjunto, y la app cubre desde el mes a mes hasta los préstamos con su amortización.",
+        "en": "Finanzas Snake keeps the books for one person or a couple without a database on any server. Every account or transaction is yours, the other person's or shared, and the app covers everything from month to month to loans and their amortization."
+      },
+      "figures": [
+        {
+          "value": "156",
+          "label": {
+            "es": "commits",
+            "en": "commits"
+          }
+        },
+        {
+          "value": "400+",
+          "label": {
+            "es": "tests",
+            "en": "tests"
+          }
+        },
+        {
+          "value": "0",
+          "label": {
+            "es": "bases de datos en servidor",
+            "en": "server databases"
+          }
+        }
+      ],
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "Es una aplicación en React 19. Cuentas, movimientos, deudas y periodos viven en IndexedDB y se validan con Zod cada vez que se leen. Los importes se guardan como texto y se calculan con big.js, para no perder céntimos por redondeo.",
+              "Si pones un PIN, la app deriva una clave AES de 256 bits con PBKDF2 y cifra con AES-GCM todos los datos, incluida tu clave de la API de IA. Sin el PIN, lo guardado en el navegador no se puede leer.",
+              "Un extracto en CSV se interpreta en local. Uno en PDF se envía a Gemini con tu propia clave, que devuelve los movimientos en JSON. Antes de confirmar, la app marca los duplicados y empareja los traspasos entre tus cuentas. El asesor también usa Gemini: recibe un resumen del mes y responde en un chat que se puede exportar a PDF.",
+              "Para pasar los datos al móvil, un dispositivo genera un código de diez caracteres y el otro lo introduce. Se conectan por WebRTC con PeerJS y la copia viaja de uno a otro. Solo si la red no permite la conexión directa pasa por un servidor de retransmisión, dentro del canal cifrado de WebRTC.",
+              "Los préstamos se calculan con amortización francesa a partir del TIN y del plazo, y un simulador compara qué pasaría al reunificar varias deudas."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "It is a React 19 app. Accounts, transactions, debts and periods live in IndexedDB and are validated with Zod every time they are read. Amounts are stored as text and calculated with big.js, so no cents are lost to rounding.",
+              "If you set a PIN, the app derives a 256-bit AES key with PBKDF2 and encrypts all the data with AES-GCM, your AI API key included. Without the PIN, what is stored in the browser cannot be read.",
+              "A CSV statement is parsed locally. A PDF one goes to Gemini with your own key, which returns the transactions as JSON. Before you confirm, the app flags duplicates and pairs transfers between your own accounts. The advisor uses Gemini too: it gets a summary of the month and answers in a chat you can export to PDF.",
+              "To move your data to your phone, one device generates a ten-character code and the other types it in. They connect over WebRTC with PeerJS and the copy travels from one to the other. Only when the network blocks a direct connection does it go through a relay server, inside the encrypted WebRTC channel.",
+              "Loans use French amortization from the nominal rate and the term, and a simulator compares what would happen if you consolidated several debts."
+            ]
+          }
+        ]
+      },
+      "technologies": [
+        "React 19",
+        "TypeScript",
+        "IndexedDB",
+        "Web Crypto",
+        "WebRTC"
+      ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/cover-finanzas.webp",
+      "width": 1600,
+      "height": 1000,
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://finanzas.mretamozo.com"
+        },
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/finanzas-snake"
+        }
+      ]
+    },
+    {
+      "slug": "opencode-pr-status",
+      "name": {
+        "es": "PR Status para OpenCode",
+        "en": "PR Status for OpenCode"
+      },
+      "description": {
+        "es": "Panel lateral para OpenCode que muestra tus pull requests abiertas y el estado de su CI sin salir del terminal.",
+        "en": "OpenCode sidebar panel that shows your open pull requests and their CI status without leaving the terminal."
+      },
+      "summary": {
+        "es": "Un plugin para la TUI de OpenCode V2 que añade a la barra lateral tus pull requests abiertas en el repositorio actual. Cada una lleva una marca con forma distinta según su CI, para que se lea sin depender del color, y las PR encadenadas aparecen sangradas bajo la primera.",
+        "en": "A plugin for the OpenCode V2 TUI that adds your open pull requests in the current repository to the sidebar. Each one carries a mark whose shape changes with its CI state, so it reads without relying on color, and stacked PRs appear indented under the first one."
+      },
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "El plugin se registra en la barra lateral a través de la API de plugins de la TUI. Al abrirse el panel lee tus pull requests abiertas y las vuelve a leer cada 30 segundos mientras sigue visible, sin que una lectura empiece antes de que acabe la anterior.",
+              "Todo pasa por la CLI gh que ya tienes autenticada. El plugin no guarda tokens ni llama a la API de GitHub por su cuenta: lanza gh pr list con salida en JSON y trabaja sobre esa respuesta. Si una lectura falla, se queda la última lista buena y el panel explica qué ha pasado, ya falte gh, la sesión o la red.",
+              "El estado de cada PR resume todos sus checks en una sola marca. Un fallo pesa más que un check en curso, y la PR solo sale en verde cuando pasan todos.",
+              "Para publicarlo en npm hubo que compilar el JSX de Solid de antemano y enlazarlo a la copia de Solid que ya carga OpenCode. Con una copia propia, el panel aparecía pero no se volvía a pintar."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "The plugin registers itself in the sidebar through the TUI plugin API. When the panel opens it reads your open pull requests and reads them again every 30 seconds while it stays visible, never starting a read before the previous one has finished.",
+              "Everything goes through the gh CLI you already have signed in. The plugin stores no tokens and never calls the GitHub API on its own: it runs gh pr list with JSON output and works on that response. If a read fails, the last good list stays on screen and the panel says what happened, whether gh, the session or the network is missing.",
+              "Each PR's state sums up all its checks in one mark. A failure outweighs a running check, and the PR only turns green when every check passes.",
+              "Publishing it to npm meant compiling Solid's JSX ahead of time and linking it to the copy of Solid that OpenCode already loads. With its own copy, the panel showed up but never repainted."
+            ]
+          }
+        ]
+      },
+      "technologies": [
+        "TypeScript",
+        "SolidJS",
+        "OpenTUI",
+        "GitHub CLI"
+      ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/cover-opencode.webp",
+      "width": 1600,
+      "height": 1000,
+      "links": [
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/opencode-pr-status-plugin"
+        },
+        {
+          "kind": "npm",
+          "url": "https://www.npmjs.com/package/opencode-pr-status-plugin"
+        }
+      ]
+    },
+    {
+      "slug": "stream-overlay-chat",
+      "name": "Stream Overlay Chat",
+      "description": {
+        "es": "Overlay nativo y transparente para leer el chat de Twitch encima de un juego sin que los clics salgan del juego.",
+        "en": "Native transparent overlay for reading Twitch chat on top of a game while your clicks stay in the game."
+      },
+      "summary": {
+        "es": "Una ventana para Windows, transparente y siempre encima, que muestra el chat de Twitch mientras juegas en ventana sin bordes. Con un atajo el ratón la atraviesa y los clics llegan al juego. El instalador ocupa unos 3 MB.",
+        "en": "A Windows window, transparent and always on top, that shows Twitch chat while you play in borderless windowed mode. With a shortcut the mouse passes straight through it and your clicks reach the game. The installer weighs about 3 MB."
+      },
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "Es una ventana de Tauri 2 sin marco, con fondo transparente y siempre por encima del resto. El núcleo está escrito en Rust y la interfaz es HTML y JavaScript sin framework, dibujada en el WebView2 que ya trae Windows. Por eso el instalador es tan pequeño.",
+              "El chat llega por el IRC de Twitch sobre un WebSocket cifrado y en modo anónimo, así que para leer no hace falta cuenta. Rust analiza cada mensaje, le pone sus badges y cambia las palabras por emotes de Twitch, 7TV, BetterTTV o FrankerFaceZ, que se descargan al conectarse y se quedan en memoria.",
+              "Para que los clics lleguen al juego, la app cambia los estilos extendidos de la ventana con la API Win32 y activa WS_EX_TRANSPARENT, con lo que Windows deja de entregarle el ratón. El atajo Ctrl+Space se registra como hotkey global en un hilo propio, así que funciona aunque el foco esté en el juego.",
+              "Los badges de suscriptor piden iniciar sesión una vez con el flujo de código de dispositivo de Twitch, sin escribir contraseñas en la app."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "It is a frameless Tauri 2 window with a transparent background that stays above everything else. The core is written in Rust and the interface is plain HTML and JavaScript with no framework, drawn in the WebView2 that Windows already ships. That is why the installer is so small.",
+              "Chat arrives over Twitch IRC on an encrypted WebSocket in anonymous mode, so reading needs no account. Rust parses each message, adds its badges and swaps words for Twitch, 7TV, BetterTTV or FrankerFaceZ emotes, which are downloaded on connect and kept in memory.",
+              "To let clicks reach the game, the app changes the window's extended styles through the Win32 API and turns on WS_EX_TRANSPARENT, so Windows stops handing it the mouse. The Ctrl+Space shortcut is registered as a global hotkey on its own thread, so it works while the game has focus.",
+              "Subscriber badges need a one-time sign-in with Twitch's device code flow, without typing a password into the app."
+            ]
+          }
+        ]
+      },
+      "technologies": [
+        "Rust",
+        "Tauri 2",
+        "Win32 API",
+        "Twitch IRC"
+      ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/cover-twitch.webp",
+      "width": 1600,
+      "height": 1000,
+      "links": [
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/stream-overlay-chat"
+        },
+        {
+          "kind": "download",
+          "url": "https://github.com/Snakeblack/stream-overlay-chat/releases/latest"
+        }
+      ]
+    },
+    {
+      "slug": "background-generator",
+      "name": "Background Generator",
+      "description": {
+        "es": "Diseña fondos animados con WebGPU, los afina con color OKLCH y los exporta listos para tu web.",
+        "en": "Design animated backgrounds with WebGPU, tune them in OKLCH color and export them ready for your site."
+      },
+      "summary": {
+        "es": "Una galería de 24 fondos animados para portfolios y landings. Eliges uno, ajustas sus colores y te llevas el código con una guía para HTML, React, Vue, Angular o Astro.",
+        "en": "A gallery of 24 animated backgrounds for portfolios and landing pages. You pick one, adjust its colors and take the code with a guide for HTML, React, Vue, Angular or Astro."
+      },
+      "how": {
+        "es": [
+          {
+            "paragraphs": [
+              "Cada fondo es un único shader escrito en TSL, el lenguaje de shaders de Three.js. El mismo archivo mueve la vista previa y el código que exportas, y WebGPURenderer lo ejecuta con WebGPU donde existe y con WebGL2 en el resto.",
+              "Los colores se eligen en OKLCH y se mezclan en OKLab, así que los degradados no se ensucian de gris por el medio. Lo exportado ya viene preparado para producción: carga three.js en diferido y se pausa cuando sale de pantalla."
+            ]
+          }
+        ],
+        "en": [
+          {
+            "paragraphs": [
+              "Each background is a single shader written in TSL, the Three.js shading language. The same file drives the preview and the code you export, and WebGPURenderer runs it on WebGPU where available and on WebGL2 everywhere else.",
+              "Colors are picked in OKLCH and mixed in OKLab, so gradients do not turn grey in the middle. The exported code is ready for production: it lazy-loads three.js and pauses when it scrolls off screen."
+            ]
+          }
+        ]
+      },
+      "technologies": [
+        "Three.js",
+        "WebGPU",
+        "TypeScript",
+        "Vite"
+      ],
       "year": "2025",
-      "screenshot": "/assets/screenshots/devtools.avif",
-      "width": 2647,
-      "height": 1362
+      "screenshot": "/assets/screenshots/cover-background.webp",
+      "width": 1800,
+      "height": 900,
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://background.mretamozo.com/"
+        },
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/background-tool"
+        }
+      ]
     },
     {
-      "name": "Baterías Express",
-      "description": {
-        "es": "Web de un servicio de entrega y reparación de baterías de coche.",
-        "en": "Website for a car battery delivery and repair service."
+      "slug": "landings",
+      "name": {
+        "es": "Landings para clientes",
+        "en": "Client landing pages"
       },
-      "url": "https://www.bateriascoches24horas.es/",
+      "description": {
+        "es": "Webs sencillas para negocios reales, pensadas para que el cliente llame o llegue a la tienda.",
+        "en": "Simple sites for real businesses, built so customers call or find their way to the shop."
+      },
+      "summary": {
+        "es": "Webs de una página para pequeños negocios: lo justo para que se les encuentre en Google y para que el cliente llame o llegue a la tienda sin dar vueltas.",
+        "en": "One-page sites for small businesses: just enough to be found on Google and to let customers call or reach the shop without searching around."
+      },
+      "items": [
+        {
+          "name": "Baterías Express",
+          "description": {
+            "es": "Web de un servicio de entrega y reparación de baterías de coche.",
+            "en": "Website for a car battery delivery and repair service."
+          },
+          "url": "https://www.bateriascoches24horas.es/",
+          "screenshot": "/assets/screenshots/bateriasexpress.webp",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "name": "Recambios las Margaritas",
+          "description": {
+            "es": "Web de una tienda de recambios, con el contacto y la ubicación a mano.",
+            "en": "Website for a car parts shop, with contact and location close at hand."
+          },
+          "url": "https://recambioslasmargaritas.es/",
+          "screenshot": "/assets/screenshots/recambioslasmargaritas.webp",
+          "width": 1920,
+          "height": 1080
+        }
+      ],
       "technologies": [
         "Astro",
         "Tailwind CSS",
         "Vercel"
       ],
       "year": "2024",
-      "screenshot": "/assets/screenshots/bateriasexpress.webp",
-      "width": 1920,
-      "height": 1080
+      "screenshot": "/assets/screenshots/cover-landings.webp",
+      "width": 1800,
+      "height": 900,
+      "links": []
     },
     {
-      "name": "Recambios las Margaritas",
-      "description": {
-        "es": "Web de una tienda de recambios, con el contacto y la ubicación a mano.",
-        "en": "Website for a car parts shop, with contact and location close at hand."
-      },
-      "url": "https://recambioslasmargaritas.es/",
-      "technologies": [
-        "Astro",
-        "Tailwind CSS",
-        "Vercel"
-      ],
-      "year": "2024",
-      "screenshot": "/assets/screenshots/recambioslasmargaritas.webp",
-      "width": 1920,
-      "height": 1080
-    },
-    {
+      "slug": "blog",
       "name": "Blog",
       "description": {
         "es": "Mis apuntes sobre desarrollo web y lo que voy aprendiendo.",
         "en": "My notes on web development and what I learn along the way."
       },
-      "url": "https://blog.mretamozo.com/",
+      "summary": {
+        "es": "Mis apuntes sobre desarrollo web y lo que voy aprendiendo, escritos en MDX, con comentarios a través de GitHub y una newsletter para quien quiera recibirlos.",
+        "en": "My notes on web development and what I learn along the way, written in MDX, with comments through GitHub and a newsletter for anyone who wants them by email."
+      },
       "technologies": [
         "Next.js",
-        "Tailwind CSS",
-        "MDX"
+        "MDX",
+        "Giscus"
       ],
       "year": "2023",
-      "screenshot": "/assets/screenshots/blog.webp",
-      "width": 1920,
-      "height": 1080
-    },
-    {
-      "name": "Reactive Forms",
-      "description": {
-        "es": "Prueba técnica de formularios reactivos en Angular.",
-        "en": "A technical test on reactive forms in Angular."
-      },
-      "url": "https://prueba-tecnica-alicunde.mretamozo.com/login",
-      "technologies": [
-        "Angular",
-        "Reactive Forms"
-      ],
-      "year": "2023",
-      "screenshot": "/assets/screenshots/pruebatecnicareactiveforms.webp",
-      "width": 1920,
-      "height": 1080
-    },
-    {
-      "name": "Device Manager",
-      "description": {
-        "es": "Gestión del inventario de dispositivos, con sus asignaciones y su estado.",
-        "en": "Device inventory management, with assignments and status."
-      },
-      "url": "https://github.com/Snakeblack/device-manager",
-      "technologies": [
-        "Next.js",
-        "Tailwind CSS",
-        "MySQL"
-      ],
-      "year": "2022",
-      "screenshot": "/assets/screenshots/devicemanager.webp",
-      "width": 1920,
-      "height": 1080
+      "screenshot": "/assets/screenshots/cover-blog.webp",
+      "width": 1500,
+      "height": 1200,
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://blog.mretamozo.com/"
+        },
+        {
+          "kind": "github",
+          "url": "https://github.com/Snakeblack/snakes-blog"
+        }
+      ]
     }
   ],
   "skills": [

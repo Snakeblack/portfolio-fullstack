@@ -4,8 +4,11 @@ import { getTranslations } from '../utils/translations';
 
 // Los hostings estáticos sirven un único 404.html para cualquier ruta,
 // así que la página habla los dos idiomas a la vez.
+// Una ruta de proyecto que no existe también acaba aquí, así que se ofrecen los proyectos.
 const es = getTranslations('es').notFound;
 const en = getTranslations('en').notFound;
+const esProjects = getTranslations('es').projects.back;
+const enProjects = getTranslations('en').projects.back;
 ---
 
 <Layout title={es.title} description={es.description} lang="es" noindex>
@@ -16,13 +19,19 @@ const en = getTranslations('en').notFound;
       <section>
         <h2 class="heading">{es.heading}</h2>
         <p class="muted">{es.body}</p>
-        <a class="button" href="/">{es.home}</a>
+        <div class="not-found__actions">
+          <a class="button" href="/">{es.home}</a>
+          <a class="link small" href="/#projects">{esProjects}</a>
+        </div>
       </section>
 
       <section lang="en">
         <h2 class="heading">{en.heading}</h2>
         <p class="muted">{en.body}</p>
-        <a class="button" href="/en/">{en.home}</a>
+        <div class="not-found__actions">
+          <a class="button" href="/en/">{en.home}</a>
+          <a class="link small" href="/en/#projects">{enProjects}</a>
+        </div>
       </section>
     </div>
   </main>
@@ -56,6 +65,13 @@ const en = getTranslations('en').notFound;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
   }
 
   .not-found__copy h2,

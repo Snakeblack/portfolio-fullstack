@@ -1,0 +1,16 @@
+---
+import ProjectPage from '../../components/ProjectPage.astro';
+import portfolioData from '../../data/portfolio.json';
+import type { ProjectEntry } from '../../types/portfolio';
+
+export function getStaticPaths() {
+  return (portfolioData.projects as unknown as ProjectEntry[]).map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<ProjectPage project={project} locale="es" />

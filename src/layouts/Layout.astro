@@ -11,9 +11,20 @@ interface Props {
   lang?: Locale;
   /** Páginas que no deben indexarse (404): sin canonical ni hreflang. */
   noindex?: boolean;
+  /** Ruta de esta misma página en cada idioma; por defecto, la home. */
+  alternates?: { es: string; en: string };
+  /** Entidad principal de la página para el JSON-LD; sin ella, la página es el perfil. */
+  mainEntity?: Record<string, unknown>;
 }
 
-const { title, description, lang = "es", noindex = false } = Astro.props;
+const {
+  title,
+  description,
+  lang = "es",
+  noindex = false,
+  alternates = { es: "/", en: "/en/" },
+  mainEntity,
+} = Astro.props;
 const t = getTranslations(lang);
 
 const siteUrl = Astro.site ? Astro.site.toString() : "https://mretamozo.com/";
@@ -62,13 +73,13 @@ const structuredData = {
       publisher: { "@id": `${siteUrl}#person` },
     },
     {
-      "@type": "ProfilePage",
+      "@type": mainEntity ? "WebPage" : "ProfilePage",
       url: pageUrl,
       name: title,
       description,
       inLanguage: lang,
       isPartOf: { "@id": `${siteUrl}#website` },
-      mainEntity: { "@id": `${siteUrl}#person` },
+      mainEntity: mainEntity ?? { "@id": `${siteUrl}#person` },
     },
   ],
 };
@@ -102,17 +113,23 @@ const structuredData = {
 		{!noindex && (
 			<>
 				<link rel="canonical" href={pageUrl} />
-				<link rel="alternate" hreflang="es" href={new URL("/", siteUrl).href} />
-				<link rel="alternate" hreflang="en" href={new URL("/en/", siteUrl).href} />
-				<link rel="alternate" hreflang="x-default" href={new URL("/", siteUrl).href} />
+				<link rel="alternate" hreflang="es" href={new URL(alternates.es, siteUrl).href} />
+				<link rel="alternate" hreflang="en" href={new URL(alternates.en, siteUrl).href} />
+				<link rel="alternate" hreflang="x-default" href={new URL(alternates.es, siteUrl).href} />
 			</>
 		)}
 
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:type" content="profile" />
-		<meta property="profile:first_name" content="Michael" />
-		<meta property="profile:last_name" content="Retamozo" />
+		{mainEntity ? (
+			<meta property="og:type" content="website" />
+		) : (
+			<>
+				<meta property="og:type" content="profile" />
+				<meta property="profile:first_name" content="Michael" />
+				<meta property="profile:last_name" content="Retamozo" />
+			</>
+		)}
 		<meta property="og:image" content={ogImage} />
 		<meta property="og:image:type" content="image/png" />
 		<meta property="og:image:width" content="1200" />
