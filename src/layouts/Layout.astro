@@ -1,6 +1,9 @@
 ---
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
+import gambarino from "../assets/fonts/gambarino-400.woff2?url";
+import generalSans400 from "../assets/fonts/general-sans-400.woff2?url";
+import generalSans500 from "../assets/fonts/general-sans-500.woff2?url";
 import { getTranslations, type Locale } from "../utils/translations";
 
 const { social, personalInfo, skills } = portfolioData;
@@ -107,8 +110,9 @@ const structuredData = {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="preload" href="/fonts/gambarino-400.woff2" as="font" type="font/woff2" crossorigin />
-		<link rel="preload" href="/fonts/general-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+		{[gambarino, generalSans400, generalSans500].map((font) => (
+			<link rel="preload" href={font} as="font" type="font/woff2" crossorigin />
+		))}
 
 		{!noindex && (
 			<>

@@ -14,7 +14,7 @@ describe('global.css', () => {
     const sources = css.match(/src:\s*url\([^)]+\)/g) ?? [];
     expect(sources.length).toBeGreaterThanOrEqual(3);
     for (const source of sources) {
-      expect(source).toMatch(/url\('\/fonts\/[a-z0-9-]+\.woff2'\)/);
+      expect(source).toMatch(/url\('\.\.\/assets\/fonts\/[a-z0-9-]+\.woff2'\)/);
     }
     expect(css).not.toMatch(/fontshare|googleapis|gstatic/);
   });
@@ -50,6 +50,11 @@ describe('global.css', () => {
     expect(css).not.toMatch(/gradient\(/);
     expect(css).not.toMatch(/box-shadow/);
     expect(css).not.toMatch(/backdrop-filter/);
+  });
+
+  it('de Tailwind solo trae el reinicio de estilos, sin utilidades', () => {
+    expect(css).toMatch(/@import "tailwindcss\/preflight\.css" layer\(base\);/);
+    expect(css).not.toMatch(/@import "tailwindcss";/);
   });
 
   it('el tema es solo oscuro', () => {

@@ -5,6 +5,9 @@ import portfolioData from '../data/portfolio.json';
 import { translations } from '../utils/translations';
 import type { ProjectEntry } from '../types/portfolio';
 
+// El JSON nombra cada imagen por su ruta (/assets/screenshots/x.webp) y el archivo vive en src/assets/screenshots/.
+const screenshotFile = (path: string) => resolve(__dirname, '../assets/screenshots', path.slice(path.lastIndexOf('/') + 1));
+
 function allStrings(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') out.push(value);
   else if (Array.isArray(value)) value.forEach((item) => allStrings(item, out));
@@ -45,7 +48,7 @@ describe('Portfolio data structure', () => {
     for (const project of projects) {
       expect(project.slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
       expect(project.screenshot).toMatch(/^\/assets\/screenshots\/.+\.(webp|avif|png|jpg)$/);
-      expect(existsSync(resolve(__dirname, '../../public', `.${project.screenshot}`))).toBe(true);
+      expect(existsSync(screenshotFile(project.screenshot))).toBe(true);
       expect(project.width).toBeGreaterThan(0);
       expect(project.height).toBeGreaterThan(0);
       expect(project.year).toMatch(/^\d{4}$/);
@@ -96,7 +99,7 @@ describe('Portfolio data structure', () => {
     expect(landings?.items?.map((item) => item.name)).toEqual(['Baterías Express', 'Recambios las Margaritas']);
     for (const item of landings?.items ?? []) {
       expect(item.url).toMatch(/^https:\/\//);
-      expect(existsSync(resolve(__dirname, '../../public', `.${item.screenshot}`))).toBe(true);
+      expect(existsSync(screenshotFile(item.screenshot))).toBe(true);
     }
   });
 

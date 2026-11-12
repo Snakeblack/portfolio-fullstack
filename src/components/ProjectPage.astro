@@ -1,4 +1,5 @@
 ---
+import { getImage, Picture } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Navigation from './Navigation.astro';
 import Footer from './Footer.astro';
@@ -6,6 +7,7 @@ import CommonScripts from './CommonScripts.astro';
 import portfolioData from '../data/portfolio.json';
 import { getTranslations, type Locale } from '../utils/translations';
 import { isCover, localizedName, nextProject, projectPath } from '../utils/projects';
+import { screenshotImage } from '../utils/images';
 import type { PortfolioData, ProjectEntry } from '../types/portfolio';
 
 interface Props {
@@ -24,6 +26,8 @@ const name = localizedName(project.name, locale);
 const next = nextProject(projects, project.slug);
 const [firstName, lastName] = personalInfo.displayName.split(' ');
 const siteUrl = Astro.site ? Astro.site.toString() : 'https://mretamozo.com/';
+const cover = screenshotImage(project.screenshot);
+const shared = await getImage({ src: cover, format: 'webp', width: Math.min(cover.width, 1200) });
 const external = project.links.find((link) => link.kind === 'site') ?? project.links[0];
 
 const mainEntity = {
@@ -31,7 +35,7 @@ const mainEntity = {
   name,
   description: project.summary[locale],
   url: external?.url ?? new URL(projectPath(project.slug, locale), siteUrl).href,
-  image: new URL(project.screenshot, siteUrl).href,
+  image: new URL(shared.src, siteUrl).href,
   dateCreated: project.year,
   keywords: project.technologies.join(', '),
   author: { '@id': `${siteUrl}#person` },
@@ -87,11 +91,14 @@ const mainEntity = {
     </header>
 
     <div class="project__cover" data-reveal="shutter">
-      <img
-        src={project.screenshot}
-        width={project.width}
-        height={project.height}
+      <Picture
+        src={cover}
+        formats={['avif']}
+        fallbackFormat="webp"
+        widths={[640, 960, 1280, cover.width]}
+        sizes="100vw"
         alt={`${isCover(project.screenshot) ? p.coverAlt : p.screenshotAlt} ${name}`}
+        loading="eager"
         decoding="async"
         fetchpriority="high"
       />
@@ -130,10 +137,12 @@ const mainEntity = {
             <li class="site">
               <a class="site__link" href={item.url} target="_blank" rel="noopener noreferrer">
                 <div class="site__picture" data-reveal="shutter">
-                  <img
-                    src={item.screenshot}
-                    width={item.width}
-                    height={item.height}
+                  <Picture
+                    src={screenshotImage(item.screenshot)}
+                    formats={['avif']}
+                    fallbackFormat="webp"
+                    widths={[640, 960, 1280, item.width]}
+                    sizes="(min-width: 48em) 66vw, 100vw"
                     alt={`${p.screenshotAlt} ${item.name}`}
                     loading="lazy"
                     decoding="async"

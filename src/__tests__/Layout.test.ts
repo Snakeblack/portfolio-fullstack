@@ -15,4 +15,10 @@ describe('Layout (REQ-SCROLL-003, REQ-SCROLL-004)', () => {
     expect(content).not.toMatch(/<script>/);
   });
 
+  it('preloads the three font files through the build, so their names carry a hash', () => {
+    const imports = content.match(/from "\.\.\/assets\/fonts\/[a-z0-9-]+\.woff2\?url"/g) ?? [];
+    expect(imports).toHaveLength(3);
+    expect(content).toMatch(/rel="preload" href=\{font\} as="font" type="font\/woff2" crossorigin/);
+    expect(content).not.toMatch(/href="\/fonts\//);
+  });
 });

@@ -1,9 +1,12 @@
-@import "tailwindcss";
+/* De Tailwind solo se usa el reinicio de estilos: el diseño no lleva clases de utilidad. */
+@layer base;
+@import "tailwindcss/preflight.css" layer(base);
 
-/* Fuentes servidas desde el propio sitio (Fontshare: Gambarino y General Sans). */
+/* Fuentes servidas desde el propio sitio (Fontshare: Gambarino y General Sans). Pasan por el
+   build, que les pone un hash en el nombre: se pueden guardar en caché sin caducidad. */
 @font-face {
   font-family: 'Gambarino';
-  src: url('/fonts/gambarino-400.woff2') format('woff2');
+  src: url('../assets/fonts/gambarino-400.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -11,7 +14,7 @@
 
 @font-face {
   font-family: 'General Sans';
-  src: url('/fonts/general-sans-400.woff2') format('woff2');
+  src: url('../assets/fonts/general-sans-400.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -19,7 +22,7 @@
 
 @font-face {
   font-family: 'General Sans';
-  src: url('/fonts/general-sans-500.woff2') format('woff2');
+  src: url('../assets/fonts/general-sans-500.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -103,6 +106,11 @@ body {
 
 a {
   color: inherit;
+}
+
+/* La imagen se comporta como si <picture> no estuviera: manda la caja que la contiene. */
+picture {
+  display: contents;
 }
 
 p {
