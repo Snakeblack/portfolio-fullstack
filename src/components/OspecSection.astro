@@ -1,0 +1,85 @@
+---
+import type { OspecInfo } from '../types/portfolio';
+import { getTranslations, type Locale } from '../utils/translations';
+import { OBLIGATION_RULES, TOUCHES } from '../utils/ospecObligations';
+
+interface Props {
+  ospec: OspecInfo;
+  currentLocale: Locale;
+}
+
+const { ospec, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale).ospec;
+const hosts = new Intl.ListFormat(currentLocale, { style: 'long', type: 'conjunction' }).format(ospec.hosts);
+---
+
+<section class="ospec" id="ospec">
+  <figure class="ospec__plate">
+    <div data-reveal="shutter">
+      <img src={ospec.image} width="821" height="821" alt={t.imageAlt} loading="lazy" decoding="async" />
+    </div>
+  </figure>
+
+  <div class="ospec__body">
+    <div>
+      <h2 class="heading" data-reveal>{t.title}</h2>
+      <p class="ospec__lead" data-reveal>{t.lead}</p>
+      <p class="ospec__hosts" data-reveal>{t.hosts} {hosts}.</p>
+    </div>
+
+    <div data-reveal>
+      <fieldset class="touches">
+        <legend>{t.question}</legend>
+        <div class="touches__row">
+          {TOUCHES.map((touch) => (
+            <button class="touch" type="button" data-touch={touch} aria-pressed={touch === 'bug' ? 'true' : 'false'}>
+              {t.touches[touch]}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="owes" data-reveal>
+      <p class="owes__title" id="owes-title">{t.owes}</p>
+      <ul class="owes__list" aria-labelledby="owes-title" aria-live="polite">
+        {OBLIGATION_RULES.map((rule) => (
+          <li class="owes__item" data-obligation={rule.id}>
+            <code>{rule.id}</code>
+            <span>{t.obligations[rule.id as keyof typeof t.obligations]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="ospec__actions" data-reveal>
+      <a class="cell cell--ink" href={ospec.repo} target="_blank" rel="noopener noreferrer">{t.repo}</a>
+      <a class="cell cell--tone" href={ospec.docs} target="_blank" rel="noopener noreferrer">{t.docs}</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { deriveObligations } from '../utils/ospecObligations';
+
+  const touches = Array.from(document.querySelectorAll<HTMLButtonElement>('.touch'));
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.owes__item'));
+
+  // Sin JavaScript la lista entera queda a la vista; con él, solo lo que debe el cambio elegido.
+  const render = () => {
+    const selected = touches.filter((button) => button.getAttribute('aria-pressed') === 'true').map((button) => button.dataset.touch ?? '');
+    const owed = new Set(deriveObligations(selected));
+    items.forEach((item) => {
+      item.hidden = !owed.has(item.dataset.obligation ?? '');
+    });
+  };
+
+  touches.forEach((button) => {
+    button.addEventListener('click', () => {
+      button.setAttribute('aria-pressed', button.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      render();
+    });
+  });
+
+  render();
+</script>

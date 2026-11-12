@@ -1,0 +1,166 @@
+{
+  "schema": "idd-state/v1",
+  "change": "project-pages",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "solo añade noema, finanzas snake, area de clientes de retama, explicando como funciona con el harness con el plugin playbook de retama, como existe sinergia y como funciona a groso modo el area de clientes, plugin de opencode, y el chat de twitch en rust; quita barreto construcciones, devtools, reactive forms, device manager y unifica en proyectos landing clientes reales (simples); en vez de hacer solo clic en cada uno, entrara a su ruta donde habra una descripción concisa y bonita, en proyectos complejos con más detalle",
+    "kind": "feature",
+    "summary": "Renueva los proyectos y da a cada uno su propia página de detalle",
+    "acceptance": "La cuadrícula muestra Ospec-Workflow, Noema, Área de clientes de Retama, Finanzas Snake, el plugin de OpenCode, el overlay de chat de Twitch en Rust, WebGL Backgrounds, Blog y un grupo Landings para clientes; cada tarjeta lleva a su página en es y en con descripción concisa, y los proyectos complejos explican cómo funcionan; desaparecen Barreto, DevTools, Reactive Forms y Device Manager; tests, astro check, build y e2e pasan"
+  },
+  "facts": {
+    "coverage": [
+      {
+        "category": "inputs",
+        "question": "Noema y el área de clientes solo muestran login sin sesión, y el plugin de OpenCode y el overlay de Twitch no tienen capturas: ¿me pasas capturas, las saco yo con datos sintéticos donde se pueda, o uso portadas diseñadas?"
+      },
+      {
+        "category": "uniqueness",
+        "cite": {
+          "kind": "path",
+          "path": "src/data/portfolio.json",
+          "line": 177
+        }
+      },
+      {
+        "category": "persistence",
+        "cite": {
+          "kind": "path",
+          "path": "src/types/portfolio.ts",
+          "line": 59
+        }
+      },
+      {
+        "category": "copy",
+        "question": "¿Barreto Construcciones desaparece del todo o entra en el grupo Landings para clientes junto a Baterías Express y Recambios las Margaritas?"
+      },
+      {
+        "category": "url-state",
+        "question": "¿Las rutas son /proyectos/<slug>/ en español y /en/projects/<slug>/ en inglés?"
+      },
+      {
+        "category": "accessibility",
+        "cite": {
+          "kind": "path",
+          "path": "src/__tests__/astro6-build.test.ts",
+          "line": 81
+        }
+      },
+      {
+        "category": "errors",
+        "cite": {
+          "kind": "path",
+          "path": "src/pages/404.astro",
+          "line": 11
+        }
+      }
+    ]
+  },
+  "plan": {
+    "paths": [
+      "astro.config.mjs",
+      "src/__tests__/astro6-build.test.ts",
+      "src/components/Footer.astro",
+      "src/components/Navigation.astro",
+      "src/components/ProjectPage.astro",
+      "src/components/ProjectsSection.astro",
+      "src/data/portfolio.json",
+      "src/layouts/Layout.astro",
+      "src/pages/404.astro",
+      "src/pages/en/projects/[slug].astro",
+      "src/pages/proyectos/[slug].astro",
+      "src/styles/global.css",
+      "src/types/portfolio.ts",
+      "src/utils/projects.ts",
+      "src/utils/translations.ts"
+    ],
+    "work_units": 3,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "Cada tarjeta toma la altura de su aspect-ratio en vez de una altura fija con object-fit cover, para que ninguna portada se recorte; la variedad del muro sale de las proporciones de las portadas",
+      "En el teléfono la cuadrícula pasa a una tarjeta por fila a todo el ancho, porque los repartos 62/38 recortaban las imágenes",
+      "Portadas diseñadas para los nueve proyectos, renderizadas con Chromium y las fuentes del sitio; las capturas que quedan sin uso se borran",
+      "El sitemap enlaza a mano /proyectos/<slug>/ con /en/projects/<slug>/ con serialize, porque el i18n del plugin solo empareja rutas con el mismo camino",
+      "Los textos de los proyectos no afirman lo que el código no respalda: ni E2EE en Noema, ni zero-knowledge en Finanzas, ni open source en los repos con Commons Clause"
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared 3 work units",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-1"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "open-facts",
+      "status": "resolved",
+      "opened_turn": 8,
+      "answer": "1. si, 2. lo que pasa es que, ya no lo usan, estan usando un worpreess que lo ha hecho otro, 3. la c",
+      "source": "user",
+      "resolved_turn": 9
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T19:02:57.988Z",
+      "detail": {
+        "tree": "sha256:466b6753d9453ff3e5d0ee6259d23485ec55f743b66cba5449f0e9e5d45f5056",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T19:03:13.823Z"
+    }
+  ],
+  "base": "5d12feab23906bbf45cd9fcf718aaee6051fda7b",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:ea46466e8473203a94e61f0c1e2ae34828672c5b9287c2b19a4777554dd81d9b",
+      "tree": "sha256:466b6753d9453ff3e5d0ee6259d23485ec55f743b66cba5449f0e9e5d45f5056",
+      "recorded_at": "2026-11-12T19:02:57.988Z"
+    }
+  ],
+  "assumptions": [
+    "Barreto sale del todo porque el cliente ya no usa esa web; 'portadas diseñadas para todos' se aplica a los proyectos sin captura (Noema, Retama, Finanzas, plugin de OpenCode, overlay de Twitch); Ospec, WebGL, Blog y las landings conservan sus capturas reales"
+  ],
+  "closed_at": "2026-11-12T19:03:13.823Z"
+}

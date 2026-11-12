@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from './Navigation.astro';
+import HeroSection from './HeroSection.astro';
+import OspecSection from './OspecSection.astro';
+import ExperienceSection from './ExperienceSection.astro';
+import ProjectsSection from './ProjectsSection.astro';
+import AboutSection from './AboutSection.astro';
+import ContactSection from './ContactSection.astro';
+import Footer from './Footer.astro';
+import CommonScripts from './CommonScripts.astro';
+import portfolioData from '../data/portfolio.json';
+import { getTranslations, type Locale } from '../utils/translations';
+import type { PortfolioData } from '../types/portfolio';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const { personalInfo, social, ospec, experience, projects, skills } = portfolioData as PortfolioData;
+const [firstName, lastName] = personalInfo.displayName.split(' ');
+---
+
+<Layout title={t.meta.title} description={t.meta.description} lang={locale}>
+  <main>
+    <HeroSection
+      firstName={firstName}
+      lastName={lastName}
+      role={t.hero.role}
+      description={personalInfo.description[locale]}
+      intro={personalInfo.intro[locale]}
+      introLinkText={t.hero.introLink}
+    >
+      <Navigation slot="nav" name="MMRG" currentLocale={locale} email={personalInfo.email} />
+    </HeroSection>
+
+    <OspecSection ospec={ospec} currentLocale={locale} />
+    <ExperienceSection experience={experience} currentLocale={locale} />
+    <ProjectsSection projects={projects} githubUrl={social.github} currentLocale={locale} />
+    <AboutSection content={personalInfo.about[locale]} facts={personalInfo.facts} skills={skills} currentLocale={locale} />
+    <ContactSection
+      email={personalInfo.email}
+      mailSubject={t.hero.mailSubject}
+      location={personalInfo.location[locale]}
+      sleepingMessage={personalInfo.sleepingMessage[locale]}
+      social={social}
+      currentLocale={locale}
+    />
+  </main>
+
+  <Footer firstName={firstName} lastName={lastName} copyrightName={personalInfo.name} social={social} currentLocale={locale} />
+
+  <CommonScripts />
+</Layout>

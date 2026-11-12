@@ -1,149 +1,52 @@
 ---
-import type { AboutBlock } from '../types/portfolio';
+import type { AboutBlock, Fact, SkillEntry } from '../types/portfolio';
 import { getTranslations, type Locale } from '../utils/translations';
 
 interface Props {
-  title: string;
   content: AboutBlock;
+  facts: Fact[];
+  skills: SkillEntry[];
   currentLocale: Locale;
 }
 
-const { title, content, currentLocale } = Astro.props;
-const t = getTranslations(currentLocale);
+const { content, facts, skills, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale).about;
 
-const initialMaxHeightMobile = '9rem'; // Increased from 8rem to show more text
+const columns = [
+  { title: t.columns.frontend, items: skills.filter((skill) => skill.category === 'frontend') },
+  { title: t.columns.backend, items: skills.filter((skill) => skill.category === 'backend') },
+  { title: t.columns.ai, items: skills.filter((skill) => skill.category === 'ai' || skill.category === 'tools') },
+];
 ---
 
-<section id="about" class="max-w-6xl mx-auto px-6 py-12 md:py-16 lg:py-20 scroll-animate scroll-mt-20">
-  <div class="max-w-[60rem]">
-    <header class="scroll-animate-fast mb-8 md:mb-10">
-      <h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text title-animate text-center md:text-left">
-        {title}
-      </h2>
-    </header>
-    <div class="relative scroll-animate-fast" style="transition-delay: 0.1s;">
-      <article 
-        id="about-text-content"
-        class="prose prose-lg dark:prose-invert text-light-subtext dark:text-dark-subtext overflow-hidden md:overflow-visible md:max-h-none transition-all duration-700 ease-in-out"
-        style={`max-height: ${initialMaxHeightMobile};`}
-      >
-        <p class="text-balance mb-6 md:mb-8 text-lg md:text-xl leading-relaxed">
-          {content.paragraph1}
-        </p>
-        <p class="text-balance text-lg md:text-xl leading-relaxed">
-          {content.paragraph2}
-        </p>
-      </article>
-      <button 
-        id="toggle-about-text"
-        aria-expanded="false"
-        class="relative mt-6 md:hidden flex items-center gap-2 text-sm font-medium text-light-accent dark:text-dark-accent px-4 py-2 border border-light-accent/30 dark:border-dark-accent/30 rounded-md hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:border-light-accent dark:hover:border-dark-accent hover:bg-light-accent/10 dark:hover:bg-dark-accent/10 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent z-20"
-      >
-        <span id="about-button-text">{t.actions.readMore}</span>
-        <svg class="w-4 h-4 transform transition-transform duration-300 ease-in-out" id="about-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-    </div>
+<section class="about" id="about">
+  <div class="about__side">
+    <h2 class="heading about__title" data-reveal>{t.title}</h2>
+    <dl class="facts" data-reveal>
+      {facts.map((fact) => (
+        <div>
+          <dt>{fact.label[currentLocale]}</dt>
+          <dd>{fact.value[currentLocale]}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <div class="about__main">
+    <p class="about__text" data-reveal>{content.paragraph1}</p>
+    <p class="about__text" data-reveal>{content.paragraph2}</p>
+  </div>
+
+  <h3 class="about__label" data-reveal>{t.stack}</h3>
+
+  <div class="stack">
+    {columns.map((column) => (
+      <div data-reveal>
+        <h4>{column.title}</h4>
+        <ul>
+          {column.items.map((skill) => <li>{skill.name}</li>)}
+        </ul>
+      </div>
+    ))}
   </div>
 </section>
-
-<script define:vars={{ readMoreText: t.actions.readMore, readLessText: t.actions.readLess, initialMaxHeight: initialMaxHeightMobile }}>
-  document.addEventListener('DOMContentLoaded', () => {
-    const contentElement = document.getElementById('about-text-content');
-    const toggleButton = document.getElementById('toggle-about-text');
-    const buttonTextElement = document.getElementById('about-button-text');
-    const toggleIcon = document.getElementById('about-toggle-icon');
-
-    if (!contentElement || !toggleButton || !buttonTextElement || !toggleIcon) {
-      console.warn('About section read more/less elements not found.');
-      return;
-    }
-
-    let isExpanded = false;
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    const initialMaxHeightInPx = parseFloat(initialMaxHeight) * rootFontSize; // initialMaxHeight is '10rem'
-
-    function updateButtonAppearance() {
-      if (isExpanded) {
-        buttonTextElement.textContent = readLessText;
-        toggleIcon.style.transform = 'rotate(180deg)';
-      } else {
-        buttonTextElement.textContent = readMoreText;
-        toggleIcon.style.transform = 'rotate(0deg)';
-      }
-      toggleButton.setAttribute('aria-expanded', isExpanded.toString());
-    }
-
-    function updateView() {
-      const isMobile = window.innerWidth < 768; // Tailwind 'md' breakpoint
-
-      if (isMobile) {
-        const isContentActuallyOverflowing = contentElement.scrollHeight > initialMaxHeightInPx + 5; // Add a small buffer
-
-        if (isContentActuallyOverflowing) {
-          toggleButton.style.display = 'flex';
-          
-          if (isExpanded) {
-            contentElement.style.maxHeight = contentElement.scrollHeight + 'px';
-            contentElement.classList.remove('apply-text-fade');
-          } else { // Collapsed state for overflowing content
-            contentElement.style.maxHeight = initialMaxHeight; // e.g., '10rem'
-            setTimeout(() => {
-              if (!isExpanded && window.innerWidth < 768 && (contentElement.scrollHeight > initialMaxHeightInPx + 5)) {
-                 contentElement.classList.add('apply-text-fade');
-              }
-            }, 250); // Slightly shorter delay to ensure fade starts before text animation ends
-          }
-        } else { // Not overflowing on mobile
-          contentElement.style.maxHeight = 'none';
-          toggleButton.style.display = 'none';
-          contentElement.classList.remove('apply-text-fade');
-          // If it was expanded and now not overflowing (e.g. dev tools change content), reset.
-          if (isExpanded) {
-            isExpanded = false; 
-          }
-        }
-      } else { // Desktop
-        contentElement.style.maxHeight = 'none'; // Tailwind's md:max-h-none handles this
-        toggleButton.style.display = 'none';    // Corrected: Added dot before style
-        contentElement.classList.remove('apply-text-fade');        // Tailwind's md:hidden implies this for fade
-
-        // Reset mobile-specific states if transitioning from mobile to desktop
-        if (isExpanded) {
-          isExpanded = false;
-        }
-      }
-      // Update ARIA and button text/icon after state changes
-      updateButtonAppearance();
-    }
-
-    toggleButton.addEventListener('click', () => {
-      isExpanded = !isExpanded;
-      
-      // If collapsing, hide fade immediately to prevent it from lingering during collapse animation
-      // It will be re-shown by updateView after a delay if needed.
-      if (!isExpanded) {
-           contentElement.classList.remove('apply-text-fade');
-      }
-      
-      updateView(); // Apply visual changes (height, fade visibility)
-      // updateButtonAppearance is called within updateView, so it's covered.
-    });
-
-    // Initial setup
-    updateView(); // Set initial view based on size and content length
-    // updateButtonAppearance is called by updateView
-
-    window.addEventListener('resize', () => {
-      updateView();
-    });
-  });
-</script>
-
-<style>
-  .apply-text-fade {
-    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 4rem), transparent 100%);
-    mask-image: linear-gradient(to bottom, black calc(100% - 4rem), transparent 100%);
-  }
-</style>

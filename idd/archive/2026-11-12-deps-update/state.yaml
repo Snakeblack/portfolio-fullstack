@@ -1,0 +1,119 @@
+{
+  "schema": "idd-state/v1",
+  "change": "deps-update",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "update de dependencias y comprueba que todo funciona bien",
+    "kind": "refactor",
+    "summary": "Actualiza las dependencias a su última versión compatible",
+    "acceptance": "pnpm outdated no lista nada salvo lo que no sea compatible y quede justificado; pnpm test:run, astro check y astro build pasan sin cambios de comportamiento"
+  },
+  "facts": {
+    "basis": "El usuario pidió update de dependencias y comprobar que todo funciona; el criterio para las mayores se recoge como supuesto"
+  },
+  "plan": {
+    "paths": [
+      "package.json",
+      "playwright.config.ts",
+      "pnpm-lock.yaml"
+    ],
+    "work_units": 1,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "TypeScript se queda en 6.x: astro check no admite TypeScript 7 y su sustituto (ts-content-mapper) exige 7.1+ y es experimental",
+      "El webServer de Playwright usa --ignore-lock porque Astro 7 pasa astro dev a segundo plano al detectar un agente y Playwright lo da por caído"
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared a non-obvious decision",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-3"
+      ]
+    }
+  ],
+  "gates": [],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T17:45:02.252Z",
+      "detail": {
+        "tree": "sha256:aa204f766889c1d81fcb23e990b249794239634b64ee11449775e3b672d22e2a",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T17:46:41.761Z",
+      "detail": {
+        "tree": "sha256:7f4883620dc00369b925885cb182ac1f3e50d91088d25763903c32b720ad4375",
+        "runs": [
+          "run-2"
+        ]
+      }
+    },
+    {
+      "id": "ev-3",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T17:46:41.835Z"
+    }
+  ],
+  "base": "8f5f69ad83351812adab3d7ed8cc070c6459b059",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:a4c7fd7eeac66a3f9df394eb85d7fd01113c971a87f15947b76c7a9b10831257",
+      "tree": "sha256:aa204f766889c1d81fcb23e990b249794239634b64ee11449775e3b672d22e2a",
+      "recorded_at": "2026-11-12T17:45:02.252Z"
+    },
+    {
+      "id": "run-2",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:349af9ea99a79838e2ff911d14912a555aad778ed53819b7cda17a1430d66328",
+      "tree": "sha256:7f4883620dc00369b925885cb182ac1f3e50d91088d25763903c32b720ad4375",
+      "recorded_at": "2026-11-12T17:46:41.761Z"
+    }
+  ],
+  "assumptions": [
+    "Se suben también las versiones mayores (astro 7, typescript 7, vitest 5) solo si tests, astro check y build pasan; si una rompe, se queda en la última versión compatible y se justifica"
+  ],
+  "closed_at": "2026-11-12T17:46:41.835Z"
+}

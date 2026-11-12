@@ -1,0 +1,228 @@
+{
+  "schema": "idd-state/v1",
+  "change": "portfolio-redesign-wow",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "usa el criterio del plugin de retama, sin ser un proyecto para retama, solo en cuanto a diseño y retama-3d, me explico? esto es mi portfolio, no tiene nada que ver con retama, pero la verdad que tiene cosas muy buenas, de skills, y hagamos un portfolio con efecto WoW y con el humanizer cambias los literales más orientado a Software Engineer, con conocimientos de desarrollo con IA, puedes añadir Snakeblack/Ospec-Workflow como proyecto IA y Harness y que ademas de trabajar en Ibercaja, hago proyectos a empresas y pequeñas empresas con Retama",
+    "kind": "feature",
+    "summary": "Rediseño del portfolio con efecto WoW siguiendo el criterio de diseño del plugin de Retama (taste-skill, humanizer y las skills de three.js/GSAP de retama-motion): nueva dirección de arte, escena 3D con Three.js, literales ES/EN reescritos hacia Software Engineer con desarrollo con IA, Ospec-Workflow como proyecto de IA y harness, y Retama como actividad paralela a Ibercaja",
+    "acceptance": "pnpm build genera / y /en con la página rediseñada: h1 con el nombre y el rol de Software Engineer, sección de Ospec-Workflow, experiencia con Ibercaja y Retama, proyectos con Ospec-Workflow, sobre mí y contacto; escena Three.js en el hero que respeta prefers-reduced-motion y deja la página legible sin WebGL ni JavaScript; textos ES y EN sin los patrones del humanizer; la suite de vitest pasa y el inspector de taste-skill da 0 FAIL a 1440, 768 y 390"
+  },
+  "facts": {
+    "coverage": [
+      {
+        "category": "inputs",
+        "cite": {
+          "kind": "path",
+          "path": "src/components/HeroSection.astro",
+          "line": 32
+        }
+      },
+      {
+        "category": "uniqueness",
+        "cite": {
+          "kind": "request",
+          "text": "puedes añadir Snakeblack/Ospec-Workflow como proyecto IA y Harness"
+        }
+      },
+      {
+        "category": "persistence",
+        "question": "El sitio guarda hoy la preferencia de tema claro/oscuro en localStorage. ¿Mantengo los dos temas con su selector, o el rediseño usa un único tema oscuro fijo y retiro el selector?"
+      },
+      {
+        "category": "copy",
+        "question": "¿Cómo deben leerse tus dos ocupaciones actuales? (a) Hoy pone empresa «Hiberus» (2025 - Actual) con Ibercaja como cliente: ¿«Ibercaja» a secas, «Hiberus · Ibercaja» u otra fórmula, y con qué puesto? (b) Retama (retama.dev): ¿entrada actual «Retama · Cofundador, producto y desarrollo · 2026 - Actual» con enlace a retama.dev, u otro cargo, otro año o sin enlace?"
+      },
+      {
+        "category": "url-state",
+        "question": "La sección de proyectos tiene hoy el botón «Ver todos» que escribe ?show_all=true en la URL. ¿Puedo retirarlo y mostrar todos los proyectos a la vez (la URL ?show_all=true dejaría de tener efecto), o debe seguir funcionando?"
+      },
+      {
+        "category": "accessibility",
+        "cite": {
+          "kind": "path",
+          "path": "src/components/CommonScripts.astro",
+          "line": 20
+        }
+      },
+      {
+        "category": "errors",
+        "cite": {
+          "kind": "path",
+          "path": "src/components/WebGLBackground.astro",
+          "line": 162
+        }
+      }
+    ]
+  },
+  "plan": {
+    "paths": [
+      ".gitignore",
+      "README.md",
+      "idd/config.yaml",
+      "package.json",
+      "src/components/AboutSection.astro",
+      "src/components/CommonScripts.astro",
+      "src/components/ContactSection.astro",
+      "src/components/ExperienceSection.astro",
+      "src/components/Footer.astro",
+      "src/components/HeroSection.astro",
+      "src/components/HomePage.astro",
+      "src/components/Navigation.astro",
+      "src/components/OspecSection.astro",
+      "src/components/ProjectsSection.astro",
+      "src/components/SkillsSection.astro",
+      "src/components/SocialLinks.astro",
+      "src/components/ThemeToggle.astro",
+      "src/components/WebGLBackground.astro",
+      "src/data/portfolio.json",
+      "src/layouts/Layout.astro",
+      "src/pages/en/index.astro",
+      "src/pages/index.astro",
+      "src/scene/snake.ts",
+      "src/scene/trail.ts",
+      "src/styles/global.css",
+      "src/types/portfolio.ts",
+      "src/utils/madridClock.ts",
+      "src/utils/ospecObligations.ts",
+      "src/utils/translations.ts",
+      "tests/e2e/animation-refactor.spec.ts"
+    ],
+    "work_units": 5,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "Dirección de arte repartida por taste-skill (sector personal-portfolio): «name-as-monument», el nombre como titular a todo el ancho; se elige porque puede cargar la idea propia del sujeto (el alias Snakeblack) mejor que las otras dos repartidas",
+      "La escena 3D usa Three.js (dependencia nueva, servida desde el propio sitio y cargada después del primer pintado) en lugar del WebGL crudo actual, porque la petición pide el criterio de retama-3d (skills de three.js)",
+      "Los tests que afirman detalles del diseño anterior (clases, fuente Geist, botón show_all) se actualizan al nuevo diseño; los de comportamiento que se conserva (anclas, reduced motion, datos ES/EN, build de ambas rutas) se mantienen",
+      "La serpiente se pinta como un trazo de pincel de tinta (sumi-e): geometría 3D sin luces, mancha plana con vetas de pincel seco, ojo y lengua carmesí. El usuario lo pidió durante la construcción, con una imagen de referencia, en lugar del render brillante y del dibujo de escamas a línea que vio antes",
+      "El movimiento distintivo de la página es la serpiente y no el fundido lento que repartió la hoja de dirección: el hero no tiene fotografías que fundir. Es un cambio de la casilla de movimiento de la hoja",
+      "La serpiente no pasa nunca por detrás del texto: en el hero deambula por la franja libre entre la navegación y el nombre, medida en el DOM, y al bajar se aparta a la derecha de la columna (en pantallas estrechas se desvanece)",
+      "El estado inicial oculto de las entradas lo pone solo el script (GSAP), nunca el CSS: sin JavaScript o si el script falla, el contenido se ve entero",
+      "Se retiran las habilidades blandas, los chips de color por tecnología, el selector de tema y el botón «Ver todos»; las dos páginas comparten HomePage.astro",
+      "El botón de contacto va en la navegación y no sobre el nombre: encima del titular el inspector de taste-skill lo mide como una etiqueta suelta"
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared 5 work units",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-3"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "open-facts",
+      "status": "resolved",
+      "opened_turn": 0,
+      "answer": "1. oscuro solo, 2. Trabajo en Hiberus y el cliente es Ibercaja, me vale lo de retama, 3. ok, si queda bien en le diseño, adelante. 4. ok",
+      "source": "user",
+      "resolved_turn": 1
+    },
+    {
+      "id": "checks-changed",
+      "status": "resolved",
+      "reason": "idd/config.yaml declares test: pnpm test:run, and the base declares no checks",
+      "checks": [
+        {
+          "name": "test",
+          "command": "pnpm test:run"
+        }
+      ],
+      "config": {
+        "strict_tdd": false,
+        "impact": {},
+        "contracts": {}
+      },
+      "opened_turn": 0,
+      "answer": "4. ok",
+      "source": "user",
+      "resolved_turn": 1
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T17:06:00.856Z",
+      "detail": {
+        "tree": "sha256:4a75111b56b1f132896b836c1649b05bd9891ab62447b1d194ffb6dd2598fe7c",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T17:06:22.487Z",
+      "detail": {
+        "tree": "sha256:4a75111b56b1f132896b836c1649b05bd9891ab62447b1d194ffb6dd2598fe7c",
+        "runs": [
+          "run-2"
+        ]
+      }
+    },
+    {
+      "id": "ev-3",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T17:06:22.513Z"
+    }
+  ],
+  "base": "a27e42c3c7f5a5ff778e5b7b8658f65db5040642",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:e3dd65035f0f4c1ca400c7159ac603590e0fc5aace64f405fdae8c8fd73a485c",
+      "tree": "sha256:4a75111b56b1f132896b836c1649b05bd9891ab62447b1d194ffb6dd2598fe7c",
+      "recorded_at": "2026-11-12T17:06:00.856Z"
+    },
+    {
+      "id": "run-2",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:a3ed85dbbdc2fd1f8a096f8720fa8b297c0341c2fd6a502d06da5c4a7a061c66",
+      "tree": "sha256:4a75111b56b1f132896b836c1649b05bd9891ab62447b1d194ffb6dd2598fe7c",
+      "recorded_at": "2026-11-12T17:06:22.487Z"
+    }
+  ],
+  "assumptions": [
+    "El puesto en Hiberus se muestra como «Software Engineer · cliente: Ibercaja»; el usuario pidió orientar los literales a Software Engineer y dijo que trabaja en Hiberus con Ibercaja como cliente, pero no dictó el cargo",
+    "Al stack se añaden Claude Code, Codex, Cursor, MCP, OpenSpec, Gemini API, RabbitMQ y Three.js porque aparecen en sus repositorios (ospec-workflow, DevTools, este portfolio) o en su experiencia; el usuario debe confirmarlos",
+    "«Programo profesionalmente desde 2019» sale de su primer puesto (2019-2020), y CEF se muestra como una sola entrada 2021-2024 con sus dos puestos"
+  ],
+  "closed_at": "2026-11-12T17:06:22.513Z"
+}

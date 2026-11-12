@@ -8,19 +8,21 @@ export interface AboutBlock {
   paragraph2: string;
 }
 
-export interface About {
-  es: AboutBlock;
-  en: AboutBlock;
+export interface Fact {
+  label: TranslatedString;
+  value: TranslatedString;
 }
 
 export interface PersonalInfo {
   name: string;
+  displayName: string;
   title: TranslatedString;
-  greeting: TranslatedString;
   description: TranslatedString;
-  about: About;
+  intro: { es: string[]; en: string[] };
+  about: { es: AboutBlock; en: AboutBlock };
+  facts: Fact[];
   sleepingMessage: TranslatedString;
-  location: string;
+  location: TranslatedString;
   email: string;
   image: string;
 }
@@ -31,64 +33,84 @@ export interface SocialLinks {
   twitter: string;
 }
 
+export interface OspecInfo {
+  repo: string;
+  docs: string;
+  image: string;
+  hosts: string[];
+}
+
 export interface ExperienceEntry {
   company: string;
-  position: TranslatedString;
   website?: string;
-  period: string;
+  position: TranslatedString;
+  /** `to: null` es un puesto actual. */
+  period: { from: number; to: number | null };
   description: TranslatedString;
-  highlights?: string[];
 }
 
-export interface EducationEntry {
-  institution: string;
-  area: string;
-  studyType: string;
-  startDate: string;
-  endDate?: string;
-  gpa?: string;
-  courses?: string[];
-}
+export type SkillCategory = 'frontend' | 'backend' | 'ai' | 'tools';
 
-export type SkillCategory = "frontend" | "backend" | "database" | "design" | "devops" | "other";
-
-export interface TechnicalSkillEntry {
+export interface SkillEntry {
   name: string;
-  type: "technical";
   category: SkillCategory;
-  level?: string;
-  icon?: string;
 }
 
-export interface SoftSkillEntry {
-  name: TranslatedString;
-  type: "soft";
-  description?: TranslatedString;
+/** Un nombre propio que no se traduce, o uno por idioma. */
+export type LocalizedName = string | TranslatedString;
+
+export type ProjectLinkKind = 'site' | 'github' | 'docs' | 'npm' | 'download';
+
+export interface ProjectLink {
+  kind: ProjectLinkKind;
+  url: string;
 }
 
-export type SkillEntry = TechnicalSkillEntry | SoftSkillEntry;
+export interface ProjectFigure {
+  value: string;
+  label: TranslatedString;
+}
+
+/** Un bloque de «Cómo funciona»; sin título, la página usa el genérico. */
+export interface ProjectSection {
+  title?: string;
+  paragraphs: string[];
+}
+
+/** Una web dentro de un proyecto que agrupa varias (las landings). */
+export interface ProjectItem {
+  name: string;
+  description: TranslatedString;
+  url: string;
+  screenshot: string;
+  width: number;
+  height: number;
+}
 
 export interface ProjectEntry {
-  name: string;
+  /** Ruta de la página: /proyectos/<slug>/ y /en/projects/<slug>/. */
+  slug: string;
+  name: LocalizedName;
+  /** Frase de la tarjeta y meta description: 155 caracteres como mucho. */
   description: TranslatedString;
+  /** Entrada de la página del proyecto. */
+  summary: TranslatedString;
+  how?: { es: ProjectSection[]; en: ProjectSection[] };
+  figures?: ProjectFigure[];
+  items?: ProjectItem[];
   technologies: string[];
   year: string;
   screenshot: string;
-  url?: string;
-  repo?: string;
-}
-
-export interface LanguageEntry {
-  language: string;
-  fluency: string;
+  width: number;
+  height: number;
+  links: ProjectLink[];
 }
 
 export interface PortfolioData {
   personalInfo: PersonalInfo;
   social: SocialLinks;
+  ospec: OspecInfo;
   experience: ExperienceEntry[];
-  education: EducationEntry[];
   skills: SkillEntry[];
   projects: ProjectEntry[];
-  languages: LanguageEntry[];
 }

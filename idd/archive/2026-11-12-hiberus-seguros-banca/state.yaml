@@ -1,0 +1,69 @@
+{
+  "schema": "idd-state/v1",
+  "change": "hiberus-seguros-banca",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "por cierto, no es seguros digitales, es el Area de Seguros de Banca",
+    "kind": "docs",
+    "summary": "Corrige el ámbito de Hiberus: Área de Seguros de Banca de Ibercaja, no seguros digitales",
+    "acceptance": "La intro y la entrada de experiencia de Hiberus nombran el Área de Seguros de Banca de Ibercaja en es y su equivalente en en; no queda 'seguros digitales' ni 'digital insurance'; los tests pasan"
+  },
+  "facts": {
+    "basis": "Corrección literal del usuario: 'no es seguros digitales, es el Area de Seguros de Banca'"
+  },
+  "plan": {
+    "paths": [
+      "src/data/portfolio.json"
+    ],
+    "work_units": 1,
+    "decision": false,
+    "operations": []
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-1"
+      ]
+    }
+  ],
+  "gates": [],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T18:23:08.381Z",
+      "detail": {
+        "tree": "sha256:da5ac178d83abe4f54e8002b8b152fe4337a5d6a1abcdcd26cc0f3cff2640e61",
+        "runs": [
+          "run-1"
+        ]
+      }
+    }
+  ],
+  "base": "3387806344bf7aa054b9d499f889f05dd6ec4177",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:e4709b655212947f85ccef6897b97a10228f8ec42a9a32da90470c64584cd642",
+      "tree": "sha256:da5ac178d83abe4f54e8002b8b152fe4337a5d6a1abcdcd26cc0f3cff2640e61",
+      "recorded_at": "2026-11-12T18:23:08.381Z"
+    }
+  ],
+  "closed_at": "2026-11-12T18:23:08.453Z"
+}

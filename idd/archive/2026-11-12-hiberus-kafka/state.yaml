@@ -1,0 +1,91 @@
+{
+  "schema": "idd-state/v1",
+  "change": "hiberus-kafka",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "haz lo que dejamos pendiente",
+    "kind": "docs",
+    "summary": "Añade la arquitectura event-driven con Kafka a la experiencia en Hiberus",
+    "acceptance": "experience[0].description y la intro de Hiberus en es y en cuentan que los primeros proyectos usaron RabbitMQ y el último migró a Kafka con arquitectura orientada a eventos; Kafka aparece en skills backend; los tests de contenido (sin emojis ni rayas) pasan"
+  },
+  "facts": {
+    "basis": "Respuesta del usuario en la sesión anterior: 'migramos, hicimos algunos proyectos en rabbitmq y el último en kafka' y 'donde veas mejor' para la ubicación"
+  },
+  "plan": {
+    "paths": [
+      "src/data/portfolio.json"
+    ],
+    "work_units": 1,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "Kafka se suma como evolución: RabbitMQ sigue en skills y en el relato de los proyectos anteriores"
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared a non-obvious decision",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-1"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    }
+  ],
+  "gates": [],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T17:44:46.394Z",
+      "detail": {
+        "tree": "sha256:a14b9dff82d3633858577df78dc502c6efb050c8a85ee53765f6af992a192980",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T17:44:49.965Z"
+    }
+  ],
+  "base": "c62a15e0ba34e57cf24efdb8a16404f740665695",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:3b48801e34ae963f73200831f35fb7c9fe2e0b26c2c1d6fe39b3ecfdab24e0df",
+      "tree": "sha256:a14b9dff82d3633858577df78dc502c6efb050c8a85ee53765f6af992a192980",
+      "recorded_at": "2026-11-12T17:44:46.394Z"
+    }
+  ],
+  "closed_at": "2026-11-12T17:44:49.965Z"
+}

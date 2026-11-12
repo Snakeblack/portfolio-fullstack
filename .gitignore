@@ -33,3 +33,6 @@ skills-lock.json
 # test artifacts
 coverage/
 test-results/
+
+# taste-skill working files
+.taste-skill/

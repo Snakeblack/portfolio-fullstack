@@ -8,7 +8,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm dev --host 127.0.0.1 --port 4322 --force',
+    // Astro 7 pasa `astro dev` a segundo plano cuando detecta un agente;
+    // --ignore-lock lo mantiene en primer plano para que Playwright lo controle.
+    command: 'pnpm dev --host 127.0.0.1 --port 4322 --ignore-lock',
     url: 'http://127.0.0.1:4322',
     reuseExistingServer: false,
     timeout: 120_000,

@@ -1,75 +1,49 @@
-# Portfolio Minimal 🚀
+# Portfolio de Michael Retamozo
 
-![Astro](https://img.shields.io/badge/Astro-5.8.0-orange?style=for-the-badge&logo=astro)
-![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4.1.7-blue?style=for-the-badge&logo=tailwind-css)
-![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript)
+Portfolio personal en [mretamozo.com](https://mretamozo.com), en español y en inglés. Es un sitio estático hecho con [Astro](https://astro.build), con una escena de [Three.js](https://threejs.org) en la cabecera y animaciones de entrada con [GSAP](https://gsap.com).
 
-## 📋 Descripción
+## Qué tiene
 
-Portfolio web personal minimalista y elegante construido con [Astro](https://astro.build) y [Tailwind CSS](https://tailwindcss.com). Esta aplicación está diseñada para mostrar tu experiencia, proyectos y habilidades profesionales de manera atractiva y eficiente.
+- Una sola página por idioma (`/` y `/en/`) con estas secciones: cabecera, Ospec-Workflow, experiencia, proyectos, sobre mí y contacto.
+- La cabecera pinta una serpiente a tinta, por el alias Snakeblack. La geometría es 3D, pero se dibuja sin luces, como un trazo de pincel. Sigue el cursor y se aparta del texto al bajar.
+- En la sección de Ospec-Workflow se puede marcar qué toca un cambio y ver las obligaciones que deriva `ospec`.
+- Tema oscuro único. Las fuentes (Gambarino y General Sans) se sirven desde `public/fonts/`; no se carga nada de terceros.
+- Sin JavaScript o sin WebGL la página se lee entera, y con `prefers-reduced-motion` la escena se queda en una pose y nada entra animado.
 
-El sitio incluye:
-- Diseño responsivo para todo tipo de dispositivos
-- Modo oscuro/claro con transiciones suaves
-- Soporte multiidioma (Español e Inglés)
-- Carga de datos desde archivos JSON para fácil actualización
-- Optimización de rendimiento y SEO
-- Tipado estricto con TypeScript
+## Comandos
 
-## 🌟 Características
+El proyecto usa pnpm y necesita Node.js 22 o superior.
 
-- **Rendimiento Óptimo**: Construido con Astro para una carga ultra rápida
-- **Personalizable**: Fácil personalización a través del archivo JSON de datos
-- **Internacional**: Soporte nativo para español e inglés
-- **Tipado Seguro**: Implementado con TypeScript para minimizar errores
-- **SEO Optimizado**: Incluye generación de sitemap para mejor indexación
+| Comando | Qué hace |
+| :-- | :-- |
+| `pnpm install` | Instala las dependencias |
+| `pnpm dev` | Servidor de desarrollo en `localhost:4321` |
+| `pnpm build` | Compila el sitio en `./dist/` |
+| `pnpm preview` | Sirve la compilación en local |
+| `pnpm test:run` | Tests unitarios y de la compilación (Vitest) |
+| `pnpm exec playwright test` | Tests en navegador (Playwright) |
 
-## ⚡ Instalación y Uso
-
-### Prerrequisitos
-- Node.js (versión 18 o superior)
-- npm o yarn
-
-### Comandos
-
-Todos los comandos se ejecutan desde la raíz del proyecto:
-
-| Comando           | Acción                                       |
-| :---------------- | :------------------------------------------- |
-| `npm install`     | Instala las dependencias                     |
-| `npm run dev`     | Inicia el servidor local de desarrollo en `localhost:4321` |
-| `npm run build`   | Compila el sitio para producción en `./dist/`  |
-| `npm run preview` | Previsualiza la compilación de producción localmente   |
-
-## 📁 Estructura del Proyecto
+## Estructura
 
 ```
-├── public/                # Archivos estáticos
-│   ├── assets/            # Imágenes y recursos
-│   └── profile.webp       # Imagen de perfil
+├── public/
+│   ├── assets/screenshots/   # Capturas de los proyectos
+│   └── fonts/                # Gambarino y General Sans
 ├── src/
-│   ├── components/        # Componentes Astro reutilizables
-│   ├── data/              
-│   │   └── portfolio.json # Datos del portfolio (experiencia, proyectos, etc.)
-│   ├── layouts/           # Plantillas de página
-│   ├── pages/             # Páginas del sitio
-│   │   └── en/            # Páginas en inglés
-│   ├── styles/            # Estilos CSS
-│   ├── types/             # Definiciones TypeScript
-│   └── utils/             # Utilidades y funciones auxiliares
-├── astro.config.mjs       # Configuración de Astro
-└── tsconfig.json          # Configuración de TypeScript
+│   ├── components/           # Secciones de la página
+│   ├── data/portfolio.json   # Textos, experiencia, proyectos y stack
+│   ├── layouts/              # Plantilla, metadatos y datos estructurados
+│   ├── pages/                # `/` y `/en/`
+│   ├── scene/                # La serpiente: geometría del rastro y escena de Three.js
+│   ├── styles/global.css     # Tokens de color y tipografía, y todo el diseño
+│   ├── utils/                # Traducciones y lógica pequeña con tests
+│   └── __tests__/            # Tests de Vitest
+├── tests/e2e/                # Tests de Playwright
+└── idd/                      # Cambios hechos con ospec-workflow
 ```
 
-## 🔧 Personalización
+## Cambiar el contenido
 
-Para personalizar el portfolio, modifica el archivo `src/data/portfolio.json` con tu información personal, experiencia, proyectos y habilidades.
+Los textos de cada persona, empresa y proyecto están en `src/data/portfolio.json`, con sus dos idiomas. Los de la interfaz (navegación, títulos de sección, botones) están en `src/utils/translations.ts`. Un test comprueba que los dos idiomas tienen las mismas claves.
 
-## 💡 Mejoras futuras
-
-- Añadir más idiomas
-- Implementar un blog
-- Añadir animaciones avanzadas
-- Mejorar la accesibilidad
-- Implementar PWA (Progressive Web App)
-
+Para añadir un proyecto hace falta su captura en `public/assets/screenshots/` y el ancho y el alto de esa imagen en su entrada del JSON.

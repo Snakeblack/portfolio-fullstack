@@ -1,0 +1,390 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from './Navigation.astro';
+import Footer from './Footer.astro';
+import CommonScripts from './CommonScripts.astro';
+import portfolioData from '../data/portfolio.json';
+import { getTranslations, type Locale } from '../utils/translations';
+import { isCover, localizedName, nextProject, projectPath } from '../utils/projects';
+import type { PortfolioData, ProjectEntry } from '../types/portfolio';
+
+interface Props {
+  project: ProjectEntry;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const { personalInfo, social, projects } = portfolioData as unknown as PortfolioData;
+const t = getTranslations(locale);
+const p = t.projects;
+
+const otherLocale: Locale = locale === 'es' ? 'en' : 'es';
+const home = locale === 'es' ? '/' : '/en/';
+const name = localizedName(project.name, locale);
+const next = nextProject(projects, project.slug);
+const [firstName, lastName] = personalInfo.displayName.split(' ');
+const siteUrl = Astro.site ? Astro.site.toString() : 'https://mretamozo.com/';
+const external = project.links.find((link) => link.kind === 'site') ?? project.links[0];
+
+const mainEntity = {
+  '@type': 'CreativeWork',
+  name,
+  description: project.summary[locale],
+  url: external?.url ?? new URL(projectPath(project.slug, locale), siteUrl).href,
+  image: new URL(project.screenshot, siteUrl).href,
+  dateCreated: project.year,
+  keywords: project.technologies.join(', '),
+  author: { '@id': `${siteUrl}#person` },
+};
+---
+
+<Layout
+  title={`${name} · ${p.titleSuffix}`}
+  description={project.description[locale]}
+  lang={locale}
+  alternates={{ es: projectPath(project.slug, 'es'), en: projectPath(project.slug, 'en') }}
+  mainEntity={mainEntity}
+>
+  <Navigation
+    name="MMRG"
+    currentLocale={locale}
+    email={personalInfo.email}
+    anchorBase={home}
+    otherLocaleUrl={projectPath(project.slug, otherLocale)}
+  />
+
+  <main class="project" id="top">
+    <header class="project__head">
+      <a class="project__back small plain-link" href={`${home}#projects`}>{p.back}</a>
+      <h1 class="project__title display mask" data-reveal="line"><span>{name}</span></h1>
+
+      <div class="project__intro">
+        <p class="project__summary" data-reveal>{project.summary[locale]}</p>
+
+        <div class="project__meta" data-reveal>
+          <dl class="project__facts">
+            <div><dt>{p.year}</dt><dd>{project.year}</dd></div>
+            <div><dt>{p.stack}</dt><dd>{project.technologies.join(', ')}</dd></div>
+          </dl>
+          {project.links.length > 0 && (
+            <ul class="project__links" aria-label={p.links}>
+              {project.links.map((link, index) => (
+                <li>
+                  <a
+                    class={index === 0 ? 'button' : 'link small'}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {p.linkKinds[link.kind]}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <div class="project__cover" data-reveal="shutter">
+      <img
+        src={project.screenshot}
+        width={project.width}
+        height={project.height}
+        alt={`${isCover(project.screenshot) ? p.coverAlt : p.screenshotAlt} ${name}`}
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+
+    {project.figures && (
+      <section class="project__figures" aria-label={p.figures}>
+        {project.figures.map((figure) => (
+          <div class="figure" data-reveal>
+            <span class="figure__value display">{figure.value}</span>
+            <span class="figure__label small muted">{figure.label[locale]}</span>
+          </div>
+        ))}
+      </section>
+    )}
+
+    {project.how && (
+      <section class="project__how">
+        <h2 class="project__label heading" data-reveal>{p.how}</h2>
+        <div class="project__blocks">
+          {project.how[locale].map((section) => (
+            <div class="block" data-reveal>
+              {section.title && <h3 class="block__title">{section.title}</h3>}
+              {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {project.items && (
+      <section class="project__sites">
+        <h2 class="project__label heading" data-reveal>{p.sites}</h2>
+        <ul class="sites">
+          {project.items.map((item) => (
+            <li class="site">
+              <a class="site__link" href={item.url} target="_blank" rel="noopener noreferrer">
+                <div class="site__picture" data-reveal="shutter">
+                  <img
+                    src={item.screenshot}
+                    width={item.width}
+                    height={item.height}
+                    alt={`${p.screenshotAlt} ${item.name}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <span class="site__name">{item.name}</span>
+                <span class="site__text muted">{item.description[locale]}</span>
+                <span class="site__visit small">{p.visit}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <a class="project__next" href={projectPath(next.slug, locale)}>
+      <span class="small muted">{p.next}</span>
+      <span class="project__next-name display">{localizedName(next.name, locale)}</span>
+    </a>
+  </main>
+
+  <Footer
+    firstName={firstName}
+    lastName={lastName}
+    copyrightName={personalInfo.name}
+    social={social}
+    currentLocale={locale}
+    anchorBase={home}
+    otherLocaleUrl={projectPath(project.slug, otherLocale)}
+  />
+
+  <CommonScripts />
+</Layout>
+
+<style>
+  .project {
+    padding: clamp(3rem, 8vw, 7rem) var(--margin) clamp(5rem, 12vw, 10rem);
+  }
+
+  .project__back {
+    display: inline-block;
+    margin-bottom: clamp(1.5rem, 4vw, 3rem);
+    color: var(--muted);
+  }
+
+  .project__title {
+    display: block;
+    font-size: clamp(3rem, 9vw, 9rem);
+    margin: 0;
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+
+  .project__intro {
+    display: grid;
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    margin-top: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .project__summary {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-lead);
+    line-height: 1.3;
+    max-width: 38ch;
+    text-wrap: pretty;
+  }
+
+  .project__facts {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    font-size: var(--step-small);
+  }
+
+  .project__facts div {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #262626;
+  }
+
+  .project__facts dt {
+    color: var(--muted);
+  }
+
+  .project__facts dd {
+    margin: 0;
+  }
+
+  .project__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+  }
+
+  .project__cover {
+    margin-top: clamp(3rem, 7vw, 6rem);
+    background: #1e1e1e;
+    overflow: clip;
+  }
+
+  .project__cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .project__figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: 2rem;
+    margin-top: clamp(3rem, 7vw, 6rem);
+  }
+
+  .figure {
+    display: grid;
+    gap: 0.4rem;
+    padding-top: 1rem;
+    border-top: 1px solid #262626;
+  }
+
+  .figure__value {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1;
+  }
+
+  .project__how,
+  .project__sites {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 2rem clamp(2rem, 6vw, 6rem);
+    margin-top: clamp(4rem, 10vw, 9rem);
+  }
+
+  .project__label {
+    margin: 0;
+    align-self: start;
+    position: sticky;
+    top: 2rem;
+  }
+
+  .project__blocks {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .block {
+    max-width: 62ch;
+  }
+
+  .block__title {
+    margin: 0 0 1rem;
+    font-weight: 500;
+    font-size: var(--step-body);
+  }
+
+  .block p {
+    margin: 0 0 1.1em;
+    color: #cfcfcf;
+    text-wrap: pretty;
+  }
+
+  .block p:last-child {
+    margin-bottom: 0;
+  }
+
+  .sites {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site__link {
+    display: grid;
+    gap: 0.35rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .site__picture {
+    margin-bottom: 0.6rem;
+    background: #1e1e1e;
+    overflow: clip;
+  }
+
+  .site__picture img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 900ms var(--ease-out);
+  }
+
+  .site__name {
+    font-weight: 500;
+  }
+
+  .site__visit {
+    margin-top: 0.35rem;
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--muted);
+  }
+
+  .project__next {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: clamp(5rem, 12vw, 10rem);
+    padding-top: 2rem;
+    border-top: 1px solid #262626;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project__next-name {
+    font-size: clamp(2.5rem, 7vw, 6.5rem);
+    transition: color var(--t-hover) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .project__next:hover .project__next-name {
+      color: var(--accent-strong);
+    }
+
+    .site__link:hover img {
+      transform: scale(1.02);
+    }
+
+    .site__link:hover .site__visit {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  @media (max-width: 47.99em) {
+    .project__intro,
+    .project__how,
+    .project__sites {
+      grid-template-columns: 1fr;
+    }
+
+    .project__label {
+      position: static;
+    }
+  }
+</style>

@@ -1,0 +1,173 @@
+{
+  "schema": "idd-state/v1",
+  "change": "seo",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "haz lo que dejamos pendiente + SEO + update de dependencias y comprueba que todo funciona bien, luego subes a main",
+    "kind": "feature",
+    "summary": "Mejora el SEO y la vista previa al compartir del portfolio",
+    "acceptance": "Ambos idiomas exponen una imagen de compartir 1200x630 en PNG con og:image:type, og:image:alt y twitter:image:alt, twitter:card summary_large_image, og:locale:alternate, apple-touch-icon y meta description dentro del límite acordado; hreflang coherente entre head y sitemap; tests de build lo comprueban y pnpm test:run, astro check y build pasan"
+  },
+  "facts": {
+    "coverage": [
+      {
+        "category": "inputs",
+        "question": "La meta description mide 190 caracteres en es y 188 en en y Google corta hacia los 155-160. ¿La reescribo para que quepa en 155 o la dejo como está?"
+      },
+      {
+        "category": "uniqueness",
+        "cite": {
+          "kind": "path",
+          "path": "astro.config.mjs",
+          "line": 26
+        }
+      },
+      {
+        "category": "persistence",
+        "cite": {
+          "kind": "path",
+          "path": "src/layouts/Layout.astro",
+          "line": 16
+        }
+      },
+      {
+        "category": "copy",
+        "question": "¿La imagen de compartir 1200x630 lleva solo nombre y rol en la tipografía del sitio sobre fondo #0a0a0a, o también tu foto de profile.webp?"
+      },
+      {
+        "category": "url-state",
+        "question": "Ahora una URL inexistente muestra la 404 genérica del hosting. ¿Añado una página 404 propia en es y en, con noindex y enlace a la home?"
+      },
+      {
+        "category": "accessibility",
+        "question": "¿El alt de la imagen de compartir es 'Michael Retamozo, Software Engineer en Madrid' / 'Michael Retamozo, Software Engineer in Madrid'?"
+      },
+      {
+        "category": "errors",
+        "cite": {
+          "kind": "path",
+          "path": "src/__tests__/astro6-build.test.ts",
+          "line": 31
+        }
+      }
+    ]
+  },
+  "plan": {
+    "paths": [
+      "astro.config.mjs",
+      "public/apple-touch-icon.png",
+      "public/og-image.png",
+      "src/__tests__/astro6-build.test.ts",
+      "src/components/HeroSection.astro",
+      "src/layouts/Layout.astro",
+      "src/pages/404.astro",
+      "src/utils/translations.ts"
+    ],
+    "work_units": 1,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "hreflang en es/en en head y sitemap, alineando el sitemap con lo que ya prueba astro6-build.test.ts",
+      "La 404 es una sola página bilingüe (es y en) porque los hostings estáticos sirven un único 404.html; noindex, sin canonical, hreflang ni JSON-LD",
+      "og-image.png (1200x630) se renderiza con Chromium y las fuentes del sitio: solo nombre, rol y dominio sobre #0a0a0a; el JSON-LD de Person sigue usando la foto profile.webp",
+      "apple-touch-icon.png sale del favicon.svg rasterizado a 180x180 sobre fondo #0a0a0a"
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared a non-obvious decision",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-3"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "open-facts",
+      "status": "resolved",
+      "opened_turn": 3,
+      "answer": "1. solo nombre 2. reescríbela 3. sí 4. vale",
+      "source": "user",
+      "resolved_turn": 4
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T18:22:38.295Z",
+      "detail": {
+        "tree": "sha256:9a063fda434090132c78dc45d89c1214d48358cb2c23c199aef8c1638381412b",
+        "runs": [
+          "run-1"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T18:22:50.470Z",
+      "detail": {
+        "tree": "sha256:9a063fda434090132c78dc45d89c1214d48358cb2c23c199aef8c1638381412b",
+        "runs": [
+          "run-2"
+        ]
+      }
+    },
+    {
+      "id": "ev-3",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T18:22:50.543Z"
+    }
+  ],
+  "base": "78101400360cb1eeb7dc8dd44826b64c1d9aba60",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:6aea9f43750b0bef24f30f14158c8717c42685569586af83a1a71f0efd324b31",
+      "tree": "sha256:9a063fda434090132c78dc45d89c1214d48358cb2c23c199aef8c1638381412b",
+      "recorded_at": "2026-11-12T18:22:38.295Z"
+    },
+    {
+      "id": "run-2",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:6011849fc7b1471b354d121c166d507d276ce5cd7c765e1b7033b962b9ad9e4c",
+      "tree": "sha256:9a063fda434090132c78dc45d89c1214d48358cb2c23c199aef8c1638381412b",
+      "recorded_at": "2026-11-12T18:22:50.470Z"
+    }
+  ],
+  "closed_at": "2026-11-12T18:22:50.543Z"
+}
