@@ -2,42 +2,40 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-const content = readFileSync(resolve(__dirname, '../components/WebGLBackground.astro'), 'utf-8');
+const component = readFileSync(resolve(__dirname, '../components/WebGLBackground.astro'), 'utf-8');
+const scene = readFileSync(resolve(__dirname, '../scene/snake.ts'), 'utf-8');
 
-describe('WebGLBackground shader optimization (REQ-WEBGL-001 to 004)', () => {
-  it('should define a single fragment shader source', () => {
-    expect(content).toMatch(/const\s+fragmentShaderSource\s*=/);
-    expect(content).not.toMatch(/fragmentShaderSourceDark/);
-    expect(content).not.toMatch(/fragmentShaderSourceLight/);
+describe('Escena 3D', () => {
+  it('carga three.js aparte, después del primer pintado', () => {
+    expect(component).toMatch(/import\('\.\.\/scene\/snake'\)/);
+    expect(component).not.toMatch(/^\s*import .* from ['"]three['"]/m);
+    expect(component).toMatch(/requestIdleCallback/);
   });
 
-  it('should expose theme-driven uniforms', () => {
-    expect(content).toMatch(/u_baseColor/);
-    expect(content).toMatch(/u_grainAmount/);
-    expect(content).toMatch(/u_isLight/);
+  it('si la escena no arranca, retira el lienzo y la página sigue', () => {
+    expect(component).toMatch(/\.catch\(/);
+    expect(component).toMatch(/dataset\.scene\s*=\s*'off'/);
   });
 
-  it('should not choose shader source by theme', () => {
-    expect(content).not.toMatch(/theme === 'light'/);
+  it('con movimiento reducido pinta una pose y no arranca el bucle', () => {
+    const reduced = scene.indexOf('if (reducedMotion) return;');
+    const loop = scene.indexOf('requestAnimationFrame(loop)');
+    expect(reduced).toBeGreaterThan(-1);
+    expect(loop).toBeGreaterThan(reduced);
+    expect(scene).toMatch(/prefers-reduced-motion: reduce/);
   });
 
-  it('should update uniforms on themeChanged instead of reinitializing WebGL', () => {
-    expect(content).toMatch(/document\.addEventListener\('themeChanged'/);
-    expect(content).not.toMatch(/initializeAndRunWebGL\(\)/);
+  it('para el bucle cuando la vista sale de pantalla o la pestaña se oculta', () => {
+    expect(scene).toMatch(/IntersectionObserver/);
+    expect(scene).toMatch(/visibilitychange/);
+    expect(scene).toMatch(/cancelAnimationFrame/);
   });
 
-  it('should not cancel and restart animation frame on theme change path', () => {
-    expect(content).not.toMatch(/cancelAnimationFrame/);
+  it('limita la densidad de píxeles', () => {
+    expect(scene).toMatch(/setPixelRatio\(Math\.min\(Math\.max\(window\.devicePixelRatio, 1\.5\), 2\)\)/);
   });
 
-  it('should keep a single render loop with requestAnimationFrame', () => {
-    const matches = content.match(/requestAnimationFrame\(/g) ?? [];
-    expect(matches.length).toBeGreaterThan(0);
-    expect(matches.length).toBeLessThanOrEqual(2);
-  });
-
-  it('should update uniforms with gl.uniform calls', () => {
-    expect(content).toMatch(/gl\.uniform3f/);
-    expect(content).toMatch(/gl\.uniform1f/);
+  it('no deja que el tiempo de un fotograma sea negativo ni largo', () => {
+    expect(scene).toMatch(/Math\.min\(Math\.max\(\(now - last\) \/ 1000, 0\), 0\.05\)/);
   });
 });

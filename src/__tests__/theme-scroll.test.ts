@@ -21,35 +21,11 @@ function getAllSourceFiles(dir: string): string[] {
 }
 
 describe('Theme + Scroll fixes (REQ-THEME-001, REQ-SCROLL-001)', () => {
-  describe('ThemeToggle.astro — no init code', () => {
-    const content = readFileSync(resolve(COMPONENTS_DIR, 'ThemeToggle.astro'), 'utf-8');
-
-    it('should NOT contain localStorage.getItem outside click handler', () => {
-      // The init block reads localStorage to initialize — that should be removed
-      // We check the script content: localStorage.getItem should only appear inside the click handler
-      // and the matchMedia listener (which checks for explicit user preference)
-      const scriptMatch = content.match(/<script[^>]*>([\s\S]*?)<\/script>/);
-      expect(scriptMatch).not.toBeNull();
-      const script = scriptMatch![1];
-
-      // Count occurrences of localStorage.getItem('color-theme')
-      const matches = script.match(/localStorage\.getItem\('color-theme'\)/g);
-      // Should only appear in the click handler's matchMedia listener (1 occurrence: the matchMedia change handler)
-      // NOT in the initialization block
-      if (matches) {
-        expect(matches.length).toBeLessThanOrEqual(1);
-      }
-    });
-
-    it('should NOT call classList.toggle(dark, ...) for initialization', () => {
-      // The init line: htmlElement.classList.toggle('dark', savedTheme === 'dark');
-      // should be removed. The click handler's classList.toggle('dark') (without 2nd arg) is fine.
-      const scriptMatch = content.match(/<script[^>]*>([\s\S]*?)<\/script>/);
-      expect(scriptMatch).not.toBeNull();
-      const script = scriptMatch![1];
-
-      // Check there's no classList.toggle('dark', someExpression) — 2-arg form is init only
-      expect(script).not.toMatch(/classList\.toggle\(\s*'dark'\s*,/);
+  describe('Tema solo oscuro', () => {
+    it('no queda selector de tema ni preferencia guardada', () => {
+      const sourceFiles = getAllSourceFiles(SRC_DIR);
+      const matches = sourceFiles.filter((filePath) => /ThemeToggle|color-theme|themeChanged/.test(readFileSync(filePath, 'utf-8')));
+      expect(matches).toEqual([]);
     });
   });
 

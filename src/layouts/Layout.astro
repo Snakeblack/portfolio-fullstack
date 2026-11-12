@@ -1,163 +1,120 @@
---- 
-import "@fontsource-variable/geist/wght.css";
+---
 import portfolioData from "../data/portfolio.json";
 import "../styles/global.css";
-import WebGLBackground from "../components/WebGLBackground.astro";
-const navLinks = [
-  { name: "About", url: "#about-header", id: "about-header" }, 
-  { name: "Experience", url: "#experience", id: "experience" },
-  { name: "Projects", url: "#projects", id: "projects" },
-  { name: "Skills", url: "#skills", id: "skills" },
-  { name: "Education", url: "#education", id: "education" },
-];
+import type { Locale } from "../utils/translations";
 
-const { social, personalInfo, skills: portfolioSkills } = portfolioData;
+const { social, personalInfo, skills } = portfolioData;
 
 interface Props {
   title: string;
-  description?: string;
-  lang?: string;
+  description: string;
+  lang?: Locale;
 }
 
-const { title, description, lang = "en" } = Astro.props;
-const typedLang = lang as 'es' | 'en';
+const { title, description, lang = "es" } = Astro.props;
 
 const siteUrl = Astro.site ? Astro.site.toString() : "https://mretamozo.com/";
-const ogImage = Astro.site ? `${Astro.site}profile.webp` : "https://mretamozo.com/profile.webp";
+const pageUrl = new URL(Astro.url.pathname, siteUrl).href;
+const ogImage = new URL("profile.webp", siteUrl).href;
+const twitterHandle = `@${social.twitter.substring(social.twitter.lastIndexOf("/") + 1)}`;
 
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Person",
-      "name": personalInfo.name,
-      "url": siteUrl,
-      "image": {
-        "@type": "ImageObject",
-        "url": ogImage,
-        "width": "1200",
-        "height": "1200"
-      },
-      "sameAs": [
-        social.linkedin,
-        social.github,
-        social.twitter
+      "@id": `${siteUrl}#person`,
+      name: personalInfo.name,
+      alternateName: [personalInfo.displayName, "Snakeblack"],
+      url: siteUrl,
+      image: ogImage,
+      sameAs: [social.linkedin, social.github, social.twitter],
+      jobTitle: personalInfo.title[lang],
+      description: personalInfo.description[lang],
+      worksFor: [
+        { "@type": "Organization", name: "Hiberus" },
+        { "@type": "Organization", name: "Retama", url: "https://retama.dev" },
       ],
-      "jobTitle": personalInfo.title[typedLang] || personalInfo.title["en"],
-      "description": personalInfo.description[typedLang] || personalInfo.description["en"],
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Exis-TI (Indra - DGC)"
-      },
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "42 Madrid"
-      },
-      "knowsAbout": portfolioSkills,
-      "email": personalInfo.email,
-      "nationality": "Spanish",
-      "workLocation": {
+      knowsAbout: skills.map((skill) => skill.name),
+      email: personalInfo.email,
+      workLocation: {
         "@type": "Place",
-        "address": {
+        address: {
           "@type": "PostalAddress",
-          "addressLocality": "Madrid",
-          "addressRegion": "Madrid",
-          "addressCountry": "Spain"
-        }
-      }
+          addressLocality: "Madrid",
+          addressCountry: "ES",
+        },
+      },
     },
     {
       "@type": "WebSite",
-      "url": siteUrl,
-      "name": personalInfo.name + " Portfolio",
-      "description": description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`,
-      "publisher": {
-        "@type": "Person",
-        "name": personalInfo.name
-      },
-      "inLanguage": typedLang,
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": siteUrl + "?s={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "@id": `${siteUrl}#website`,
+      url: siteUrl,
+      name: personalInfo.displayName,
+      description,
+      inLanguage: lang,
+      publisher: { "@id": `${siteUrl}#person` },
     },
     {
-      "@type": "WebPage",
-      "url": new URL(Astro.url.pathname, siteUrl).href,
-      "name": title,
-      "description": description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`,
-      "inLanguage": typedLang,
-      "isPartOf": {
-        "@id": siteUrl
-      },
-      "about": {
-        "@id": siteUrl + "#person"
-      },
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": siteUrl
-          }
-        ]
-      }
-    }
-  ]
+      "@type": "ProfilePage",
+      url: pageUrl,
+      name: title,
+      description,
+      inLanguage: lang,
+      isPartOf: { "@id": `${siteUrl}#website` },
+      mainEntity: { "@id": `${siteUrl}#person` },
+    },
+  ],
 };
 ---
 
 <!doctype html>
-<html lang={typedLang}>
+<html lang={lang}>
 	<head>
 		<script is:inline>
 			if ('scrollRestoration' in history) {
 				history.scrollRestoration = 'manual';
 			}
+			// Las animaciones de carga solo se activan si hay JavaScript.
+			document.documentElement.classList.add('js');
 		</script>
 		<meta charset="UTF-8" />
-		<meta name="description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} especializado en ${personalInfo.title[typedLang]} con experiencia en Angular y .NET.`} />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		<link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="canonical" href={new URL(Astro.url.pathname, siteUrl).href} />
-				{/* Metadatos técnicos adicionales */}
+		<meta name="description" content={description} />
 		<meta name="author" content={personalInfo.name} />
-		<meta name="keywords" content="portfolio, desarrollador web, full stack, frontend, backend, angular, react, .NET, programador, desarrollador" />
 		<meta name="robots" content="index, follow" />
-		<meta name="theme-color" content="#3730a3" />
-		
-		{/* Versiones de idiomas alternativos */}
-		<link rel="alternate" hreflang="es" href={new URL(typedLang === 'en' ? '/' : Astro.url.pathname, siteUrl).href} />
-		<link rel="alternate" hreflang="en" href={new URL(typedLang === 'es' ? '/en/' : Astro.url.pathname, siteUrl).href} />
-		<link rel="alternate" hreflang="x-default" href={new URL('/', siteUrl).href} />    {/* Etiquetas Open Graph */}
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`} />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:url" content={new URL(Astro.url.pathname, siteUrl).href} />
-    <meta property="og:site_name" content={personalInfo.name + " Portfolio"} />
-    <meta property="og:locale" content={typedLang === 'es' ? 'es_ES' : 'en_US'} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+		<meta name="theme-color" content="#0a0a0a" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="canonical" href={pageUrl} />
+		<link rel="preload" href="/fonts/gambarino-400.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/general-sans-400.woff2" as="font" type="font/woff2" crossorigin />
 
-    {/* Etiquetas de Twitter Card */}
-    <meta name="twitter:card" content="summary_large_image" />
-    {social.twitter && <meta name="twitter:site" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />}
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description || `Portfolio profesional de ${personalInfo.name} - ${personalInfo.title[typedLang]} con experiencia en desarrollo web fullstack.`} />
-    <meta name="twitter:image" content={ogImage} />
-    <meta name="twitter:creator" content={`@${social.twitter.substring(social.twitter.lastIndexOf('/') + 1)}`} />
+		<link rel="alternate" hreflang="es" href={new URL("/", siteUrl).href} />
+		<link rel="alternate" hreflang="en" href={new URL("/en/", siteUrl).href} />
+		<link rel="alternate" hreflang="x-default" href={new URL("/", siteUrl).href} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="profile" />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1024" />
+		<meta property="og:image:height" content="1024" />
+		<meta property="og:url" content={pageUrl} />
+		<meta property="og:site_name" content={personalInfo.displayName} />
+		<meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
+
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:site" content={twitterHandle} />
+		<meta name="twitter:creator" content={twitterHandle} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+
+		<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 		<script>
 			import { gsap } from 'gsap';
 			import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -166,31 +123,10 @@ const structuredData = {
 			ScrollTrigger.config({
 				autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
 				ignoreMobileResize: true,
-				syncInterval: 10,
 			});
 		</script>
 	</head>
-  <body
-    class:list={[
-      "flex flex-col min-h-screen bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text",
-      "transition-colors duration-300 ease-in-out",
-      "px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16", // Ajuste de padding horizontal responsivo
-    ]}
-  >
-  <WebGLBackground /> {/* Movido aquí para que ocupe toda la pantalla */}
-  <main class="w-screen mx-auto relative z-10">
-    <slot />
-  </main>
-		<script is:inline>
-      // Script para inicializar el tema basado en localStorage o prefers-color-scheme
-      if (localStorage.getItem('color-theme') === 'dark' || 
-          (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      // Notify components that theme is initialized
-      document.dispatchEvent(new CustomEvent('themeChanged'));
-    </script>
+	<body>
+		<slot />
 	</body>
 </html>

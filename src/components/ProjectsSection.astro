@@ -1,291 +1,80 @@
 ---
+import type { ProjectEntry } from '../types/portfolio';
 import { getTranslations, type Locale } from '../utils/translations';
-import { techColorMap, hexToRgba, type TechColorEntry } from '../utils/techColors';
-
-interface ProjectItem {
-	name: string;
-	description: { [key: string]: string };
-	url?: string; // Made url optional to match data
-	technologies?: string[];
-	year: string;
-	screenshot?: string;
-}
 
 interface Props {
-	title: string;
-	projects: ProjectItem[];
-	currentLocale: string;
-	viewAllText?: string; // Made optional as it's derived
-	maxProjects?: number;
+  projects: ProjectEntry[];
+  githubUrl: string;
+  currentLocale: Locale;
 }
 
-const { title, projects, currentLocale, maxProjects: initialMaxProjects = 3 } = Astro.props;
-const t = getTranslations(currentLocale as Locale);
+const { projects, githubUrl, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale).projects;
 
-const urlParams = new URLSearchParams(Astro.url.search);
-const showAll = urlParams.get('show_all') === 'true';
+// El muro desigual: cada fila tiene otra altura (en vw) y otro reparto de anchos.
+// Sin `weights`, cada tesela ocupa lo que pide la proporción de su imagen.
+const rowPlan: { size: number; height: number; weights?: number[] }[] = [
+  { size: 2, height: 24 },
+  { size: 3, height: 17.5 },
+  { size: 2, height: 21, weights: [1.25, 2.1] },
+  { size: 2, height: 25, weights: [2.2, 1.4] },
+];
+// En el teléfono: una a todo el ancho, luego dos a 62/38 y dos a 38/62.
+const phonePlan = ['full', 'wide', 'narrow', 'narrow', 'wide'] as const;
 
-const buttonText = showAll ? t.actions.viewLess : t.actions.viewAll;
-const showAllId = `show-all-projects-btn`;
-
-const getTechChipStyles = (tech: string) => {
-	const normalizedTechKey = Object.keys(techColorMap).find(
-		(key) => key.toLowerCase() === tech.toLowerCase() && key !== 'default'
-	);
-	const styleInfo = normalizedTechKey ? techColorMap[normalizedTechKey] : techColorMap['default'];
-
-	const opacityValue = 0.7; // Adjusted opacity for better visibility
-
-	let bgColorStyle = '';
-	let bgClass = '';
-
-	if (styleInfo.bg.startsWith('#')) {
-		bgColorStyle = `background-color: ${hexToRgba(styleInfo.bg, opacityValue)};`;
-	} else {
-		bgClass = styleInfo.bg;
-	}
-
-	return {
-		bgColorStyle: bgColorStyle,
-		bgClass: bgClass,
-		textClass: styleInfo.text
-	};
-};
+const rows: { height: number; tiles: { project: ProjectEntry; weight: number; phone?: string }[] }[] = [];
+let cursor = 0;
+for (let r = 0; cursor < projects.length; r++) {
+  const plan = rowPlan[r % rowPlan.length];
+  const slice = projects.slice(cursor, cursor + plan.size);
+  rows.push({
+    height: plan.height,
+    tiles: slice.map((project, i) => ({
+      project,
+      weight: plan.weights?.[i] ?? project.width / project.height,
+      phone: phonePlan[(cursor + i) % phonePlan.length],
+    })),
+  });
+  cursor += plan.size;
+}
 ---
 
-<section id="projects" class="max-w-6xl mx-auto px-6 py-8 md:py-16 scroll-animate scroll-mt-20">
-	<header class="text-center scroll-animate-fast">
-		<h2 class="text-3xl md:text-4xl font-bold text-light-text dark:text-dark-text mb-12 md:mb-16 title-animate">
-			{title}
-		</h2>
-	</header>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
-		{
-			projects.map((project, index) => {
-				const projectDescription =
-					project.description[currentLocale as keyof typeof project.description] || project.description['en'];
-				const isVisibleInitially = index < initialMaxProjects;
-				return (
-					<article
-						class={`project-item ${!showAll && !isVisibleInitially ? 'project-hidden' : 'project-visible'} project-card-hover group bg-light-card-bg dark:bg-dark-card-bg rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ease-in-out relative`}
-						style={`transition-delay: ${index * 100}ms;`}
-						data-project-index={index}
-					>
-						{project.screenshot && (
-							<div class="relative w-full h-48 overflow-hidden">
-								<img
-									src={project.screenshot}
-									alt={`Screenshot of ${project.name}`}
-									class="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 group-hover:brightness-95"
-									loading="lazy"
-								/>
-								<div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-							</div>
-						)}
-						<div class="p-6 flex flex-col grow">
-							<h3 class="text-xl font-semibold text-light-text dark:text-dark-text mb-2">{project.name}</h3>
-							<p class="text-sm text-light-subtext dark:text-dark-subtext mb-4 grow text-balance leading-relaxed">
-								{projectDescription}
-							</p>
-							{project.technologies && project.technologies.length > 0 && (
-								<div class="mb-4">
-									<h4 class="text-xs font-semibold uppercase tracking-wider text-light-subtext dark:text-dark-subtext mb-2">
-										{currentLocale === 'es' ? 'Tecnologías' : 'Technologies'}
-									</h4>
-									<div class="flex flex-wrap gap-2">
-										{project.technologies.map((tech) => {
-											const { bgColorStyle, bgClass, textClass } = getTechChipStyles(tech);
-											return (
-												<span
-													style={bgColorStyle}
-													class={`tech-chip ${bgClass} ${textClass} px-3 py-1 rounded-full text-[0.7rem] font-medium shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105`}
-												>
-													{tech}
-												</span>
-											);
-										})}
-									</div>
-								</div>
-							)}
-							<div class="mt-auto pt-4 flex items-center justify-between border-t border-light-border/50 dark:border-dark-border/50">
-								<span class="text-xs text-light-subtext dark:text-dark-subtext italic">{project.year}</span>
-								{project.url && (
-									<a
-										href={project.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										aria-label={`View project ${project.name}`}
-										class="inline-flex items-center gap-1.5 text-xs font-medium text-light-accent dark:text-dark-accent hover:text-light-accent-hover dark:hover:text-dark-accent-hover hover:underline transition-colors duration-300 ease-in-out"
-									>
-										{currentLocale === 'es' ? 'Ver Proyecto' : 'View Project'}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											class="h-3.5 w-3.5"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-											stroke-width="2.5"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-											/>
-										</svg>
-									</a>
-								)}
-							</div>
-						</div>
-					</article>
-				);
-			})
-		}
-	</div>
-	{
-		projects.length > initialMaxProjects && (
-			<div
-				id="button-container"
-				class="-mt-16 md:mt-16 text-center scroll-animate-fast transition-all duration-800 ease-in-out"
-				style="transition-delay: 0.2s;"
-			>
-				<a
-					href={showAll ? Astro.url.pathname.split('?')[0] : `${Astro.url.pathname.split('?')[0]}?show_all=true`}
-					id={showAllId}
-					class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-light-accent dark:bg-dark-accent hover:bg-light-accent-hover dark:hover:bg-dark-accent-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg"
-					role="button"
-					aria-pressed={showAll ? 'true' : 'false'}
-				>
-					{buttonText}
-				</a>
-			</div>
-		)
-	}
+<section class="projects" id="projects">
+  <div class="projects__head">
+    <h2 class="projects__title display mask" data-reveal="line"><span>{t.title}</span></h2>
+    <a class="link small" href={githubUrl} target="_blank" rel="noopener noreferrer" data-reveal>{t.more}</a>
+  </div>
+
+  <div class="wall">
+    {rows.map((row) => (
+      <div class="wall__row" style={`--row-height: clamp(${row.height * 8}px, ${row.height}vw, ${row.height * 18}px)`}>
+        {row.tiles.map(({ project, weight, phone }) => (
+          <a
+            class="tile"
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={`--ratio: ${weight.toFixed(3)}`}
+            data-phone={phone}
+          >
+            <div class="tile__picture" data-reveal="shutter">
+              <img
+                src={project.screenshot}
+                width={project.width}
+                height={project.height}
+                alt={`${t.screenshotAlt} ${project.name}`}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div class="tile__caption">
+              <span class="tile__name">{project.name}</span>
+              <span class="tile__year">{project.year}</span>
+              <p class="tile__text">{project.description[currentLocale]}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    ))}
+  </div>
 </section>
-
-<script
-	define:vars={{
-		initialShowAllState: showAll,
-		initialMaxProjects,
-		viewAllText: t.actions.viewAll,
-		viewLessText: t.actions.viewLess,
-		buttonId: showAllId
-	}}
->
-	document.addEventListener('DOMContentLoaded', () => {
-		const btn = document.getElementById(buttonId);
-		const projectItems = document.querySelectorAll('.project-item');
-		const buttonContainer = document.getElementById('button-container');
-		if (!btn || projectItems.length === 0 || !buttonContainer) return;
-
-		let isCurrentlyShowingAll = initialShowAllState;
-
-		const updateButtonAndItems = () => {
-			btn.textContent = isCurrentlyShowingAll ? viewLessText : viewAllText;
-			btn.setAttribute('aria-pressed', isCurrentlyShowingAll.toString());
-
-			// Cambiar clases del contenedor del botón según el estado
-			if (isCurrentlyShowingAll) {
-				// Al mostrar todos: mt-12 md:mt-16
-				buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
-			} else {
-				// Al mostrar menos: -mt-16 md:mt-16 (por defecto)
-				buttonContainer.className = buttonContainer.className.replace('mt-12 md:mt-16', '-mt-16 md:mt-16');
-			}
-
-			projectItems.forEach((item, index) => {
-				if (isCurrentlyShowingAll) {
-					item.classList.remove('project-hidden');
-					setTimeout(() => {
-						item.classList.add('project-visible');
-					}, index * 80);
-				} else {
-					if (index >= initialMaxProjects) {
-						item.classList.remove('project-visible');
-						setTimeout(
-							() => {
-								item.classList.add('project-hidden');
-							},
-							(projectItems.length - index) * 40
-						);
-					} else {
-						item.classList.remove('project-hidden');
-						item.classList.add('project-visible');
-					}
-				}
-			});
-		};
-
-		// Configurar clases iniciales basadas en el estado de la URL
-		if (initialShowAllState) {
-			buttonContainer.className = buttonContainer.className.replace('-mt-16 md:mt-16', 'mt-12 md:mt-16');
-		}
-
-		// Initial setup based on URL state (Astro already handles this for no-JS, but good for consistency if JS runs late)
-		// updateButtonAndItems(); // Astro handles initial render, so this might be redundant or cause a flash
-
-		btn.addEventListener('click', (e) => {
-			e.preventDefault();
-
-			// Disable button temporarily to prevent spam clicking
-			btn.style.pointerEvents = 'none';
-
-			isCurrentlyShowingAll = !isCurrentlyShowingAll;
-
-			const currentUrl = new URL(window.location.href);
-			if (isCurrentlyShowingAll) {
-				currentUrl.searchParams.set('show_all', 'true');
-			} else {
-				currentUrl.searchParams.delete('show_all');
-			}
-			history.pushState({}, '', currentUrl.toString());
-
-			updateButtonAndItems(); // Update UI immediately
-			// Re-enable button after animation completes (increased time for new animations)
-			setTimeout(() => {
-				btn.style.pointerEvents = 'auto';
-			}, 1200); // Increased to match new animation duration
-		});
-	});
-</script>
-
-<style>
-	.tech-chip {
-		/* Base styles for tech chips */
-		line-height: 1.25;
-	}
-	.project-card-hover:hover .group-hover\:opacity-100 {
-		opacity: 1;
-	}
-	/* Project animation styles - Ultra smooth and fresh */
-	.project-hidden {
-		visibility: hidden;
-		height: 0;
-		margin: 0;
-		overflow: hidden;
-	}
-
-	.project-visible {
-		visibility: visible;
-		height: auto;
-	}
-	/* Ensure smooth grid transitions with spring effect */
-	.grid {
-		transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	}
-
-	/* Better hover animations with 3D effect */
-	.project-card-hover {
-		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-		transform-style: preserve-3d;
-		backface-visibility: hidden;
-	}
-
-	.project-card-hover:hover {
-		transform: translateY(-12px) scale(1.03) rotateX(5deg);
-		box-shadow:
-			0 25px 50px rgba(0, 0, 0, 0.15),
-			0 15px 35px rgba(0, 0, 0, 0.1),
-			0 5px 15px rgba(0, 0, 0, 0.05);
-	}
-
-</style>

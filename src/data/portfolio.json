@@ -1,33 +1,79 @@
 {
   "personalInfo": {
     "name": "Manuel Michael Retamozo García",
+    "displayName": "Michael Retamozo",
     "title": {
-      "es": "Desarrollador Full Stack",
-      "en": "Full Stack Developer"
-    },
-    "greeting": {
-      "es": "¡Hola! Soy ",
-      "en": "Hi there! I'm "
+      "es": "Software Engineer",
+      "en": "Software Engineer"
     },
     "description": {
-      "es": "Desarrollador Full Stack que disfruta construyendo cosas que viven en internet. Me especializo en crear experiencias digitales sólidas y escalables, poniendo el foco en la calidad del código y en que el usuario final disfrute navegando.",
-      "en": "Full Stack Developer who enjoys building things that live on the internet. I specialize in creating solid and scalable digital experiences, focusing on code quality and ensuring the end user enjoys the journey."
+      "es": "Software Engineer en Madrid. Software de empresa, productos para clientes y herramientas para agentes de IA.",
+      "en": "Software Engineer in Madrid. Enterprise software, client products and tools for AI coding agents."
+    },
+    "intro": {
+      "es": [
+        "Programo profesionalmente desde 2019 y hoy reparto el trabajo entre tres sitios.",
+        "En Hiberus formo parte del equipo que construye los seguros digitales de Ibercaja: microservicios en .NET 8 y microfrontends en Angular, unidos con Module Federation y RabbitMQ.",
+        "Con Retama, el estudio que llevo con mi hermano, hago aplicaciones web y herramientas internas para empresas y pequeños negocios.",
+        "Y mantengo Ospec-Workflow, un arnés para agentes de IA que programan. Lo uso en mis proyectos, esta web incluida."
+      ],
+      "en": [
+        "I have been writing software professionally since 2019, and today my work is split across three places.",
+        "At Hiberus I am on the team building Ibercaja's digital insurance: .NET 8 microservices and Angular microfrontends, tied together with Module Federation and RabbitMQ.",
+        "With Retama, the studio I run with my brother, I build web apps and internal tools for companies and small businesses.",
+        "I also maintain Ospec-Workflow, a harness for AI coding agents. I use it on my own projects, this site included."
+      ]
     },
     "about": {
       "es": {
-        "paragraph1": "Más allá del código, soy una persona curiosa por naturaleza. Me encanta el desafío de convertir una idea abstracta en una solución funcional. Mi fuerte es el frontend (¡donde ocurre la magia visual!), pero me muevo con soltura en el backend porque entender todo el puzzle es clave.",
-        "paragraph2": "He trabajado con tecnologías como Angular, React, .NET y bases de datos SQL, pero las herramientas son solo eso: herramientas. Lo que realmente me motiva es aprender constantemente y aplicar ese conocimiento para resolver problemas reales. Si no estoy programando, probablemente me encuentres explorando nuevas tecnologías o desconectando en la naturaleza."
+        "paragraph1": "Empecé con aplicaciones de escritorio y pasé por soporte técnico, y de ahí me quedó la costumbre de mirar el sistema entero antes de tocar una parte. Hoy trabajo sobre todo con .NET y Angular, y con agentes de IA que programan: los dirijo, reviso lo que hacen y hago las herramientas que comprueban su trabajo.",
+        "paragraph2": "Cuando no programo, suelo estar en la naturaleza."
       },
       "en": {
-        "paragraph1": "Beyond code, I'm naturally curious. I love the challenge of turning an abstract idea into a functional solution. My strength lies in the frontend (where the visual magic happens!), but I navigate the backend with ease because understanding the whole puzzle is key.",
-        "paragraph2": "I've worked with technologies like Angular, React, .NET, and SQL databases, but tools are just that: tools. What really drives me is constant learning and applying that knowledge to solve real problems. If I'm not coding, you'll probably find me exploring new tech or unplugging in nature."
+        "paragraph1": "I started with desktop applications and spent time in technical support, which left me with the habit of looking at the whole system before touching one part. Today I work mostly with .NET and Angular, and with AI coding agents: I direct them, review what they do and build the tools that check their work.",
+        "paragraph2": "When I am not coding, I am usually outdoors."
       }
     },
+    "facts": [
+      {
+        "label": {
+          "es": "Base",
+          "en": "Based in"
+        },
+        "value": {
+          "es": "Madrid, España",
+          "en": "Madrid, Spain"
+        }
+      },
+      {
+        "label": {
+          "es": "Programando desde",
+          "en": "Coding since"
+        },
+        "value": {
+          "es": "2019",
+          "en": "2019"
+        }
+      },
+      {
+        "label": {
+          "es": "Ahora",
+          "en": "Now"
+        },
+        "value": {
+          "es": "Hiberus (Ibercaja) y Retama",
+          "en": "Hiberus (Ibercaja) and Retama"
+        }
+      }
+    ],
     "sleepingMessage": {
-      "es": "😴 Probablemente esté durmiendo ahora, ¡pero responderé tan pronto como pueda!",
-      "en": "😴 I'm probably sleeping right now, but I'll reply as soon as I can!"
+      "es": "Aquí es de noche: te contesto por la mañana.",
+      "en": "It is night here: I will reply in the morning."
     },
-    "location": "Madrid, España",
+    "location": {
+      "es": "Madrid, España",
+      "en": "Madrid, Spain"
+    },
     "email": "hello@mretamozo.com",
     "image": "/profile.webp"
   },
@@ -36,89 +82,138 @@
     "github": "https://github.com/snakeblack",
     "twitter": "https://x.com/michael_snake"
   },
+  "ospec": {
+    "repo": "https://github.com/Snakeblack/ospec-workflow",
+    "docs": "https://ospec-workflow.mretamozo.com",
+    "image": "/assets/screenshots/ospec-workflow-square.webp",
+    "hosts": [
+      "Claude Code",
+      "Codex",
+      "Cursor",
+      "VS Code",
+      "Copilot CLI",
+      "OpenCode",
+      "Antigravity"
+    ]
+  },
   "experience": [
     {
       "company": "Hiberus",
       "position": {
-        "es": "Desarrollador Full Stack",
-        "en": "Full Stack Developer"
+        "es": "Software Engineer · cliente: Ibercaja",
+        "en": "Software Engineer · client: Ibercaja"
       },
-      "period": "2025 - Actual",
+      "period": {
+        "from": 2025,
+        "to": null
+      },
       "description": {
-        "es": "Actualmente en Ibercaja, estoy inmerso en el sector Fintech construyendo el futuro de los seguros digitales. Trabajo en una arquitectura compleja de microservicios (.NET 8) y microfrontends (Angular v19+), donde cada pieza cuenta. Mi día a día implica orquestar módulos con Module Federation y asegurar que la comunicación en tiempo real (RabbitMQ) fluya sin problemas. Es un reto constante de escalabilidad e impacto directo en el negocio.",
-        "en": "Currently at Ibercaja, I'm immersed in the Fintech sector building the future of digital insurance. I work on a complex architecture of microservices (.NET 8) and microfrontends (Angular v19+), where every piece counts. My day-to-day involves orchestrating modules with Module Federation and ensuring real-time communication (RabbitMQ) flows smoothly. It's a constant challenge of scalability and direct business impact."
+        "es": "Trabajo en la plataforma de seguros digitales de Ibercaja. La arquitectura combina microservicios en .NET 8 con microfrontends en Angular 19 que se cargan con Module Federation, y los servicios se comunican en tiempo real por RabbitMQ.",
+        "en": "I work on Ibercaja's digital insurance platform. The architecture combines .NET 8 microservices with Angular 19 microfrontends loaded through Module Federation, and the services talk to each other in real time over RabbitMQ."
       }
     },
     {
-      "company": "Exis-TI (Indra - DGC)",
+      "company": "Retama",
+      "website": "https://retama.dev",
       "position": {
-        "es": "Ingeniero de Software",
-        "en": "Software Engineer"
+        "es": "Cofundador · producto y desarrollo",
+        "en": "Co-founder · product and development"
       },
-      "period": "2024 - 2025",
+      "period": {
+        "from": 2026,
+        "to": null
+      },
       "description": {
-        "es": "Formé parte del equipo encargado de modernizar las Valoraciones Catastrales del Gobierno de España. Un proyecto de gran envergadura donde la precisión y la seguridad eran innegociables. Desarrollé soluciones Fullstack (.NET, Angular, PL/SQL) colaborando estrechamente con equipos multidisciplinares para traer procesos críticos a la era digital.",
-        "en": "I was part of the team in charge of modernizing the Cadastral Valuations of the Government of Spain. A large-scale project where precision and security were non-negotiable. I developed Fullstack solutions (.NET, Angular, PL/SQL) collaborating closely with multidisciplinary teams to bring critical processes into the digital age."
+        "es": "Estudio de software a medida que llevo con mi hermano. Hacemos aplicaciones web, herramientas internas y agentes de IA para empresas y pequeños negocios; yo me ocupo del producto y del desarrollo.",
+        "en": "A custom software studio I run with my brother. We build web apps, internal tools and AI agents for companies and small businesses; I take care of product and development."
       }
     },
     {
-      "company": "CEF.- Centro de Estudios Financieros",
+      "company": "Exis-TI",
       "position": {
-        "es": "Desarrollador web",
-        "en": "Web Developer"
+        "es": "Ingeniero de software · Indra, DGC",
+        "en": "Software Engineer · Indra, DGC"
       },
-      "period": "2022 - 2024",
+      "period": {
+        "from": 2024,
+        "to": 2025
+      },
       "description": {
-        "es": "Aquí es donde realmente pulí mis habilidades Fullstack. Tuve la oportunidad de liderar el desarrollo de aplicaciones web desde la hoja en blanco hasta el despliegue. Usando Angular y .NET, creé soluciones completas, tomando decisiones de diseño y arquitectura que impactaron directamente en la experiencia del usuario final.",
-        "en": "This is where I really polished my Fullstack skills. I had the opportunity to lead the development of web applications from a blank sheet to deployment. Using Angular and .NET, I created complete solutions, making design and architecture decisions that directly impacted the end-user experience."
+        "es": "Formé parte del equipo que modernizó las valoraciones catastrales del Gobierno de España. Desarrollé en .NET, Angular y PL/SQL junto a equipos de varias disciplinas, con la precisión y la seguridad como requisitos fijos.",
+        "en": "I was part of the team that modernised the Spanish Government's cadastral valuations. I developed in .NET, Angular and PL/SQL alongside teams from several disciplines, with precision and security as fixed requirements."
       }
     },
     {
-      "company": "CEF.- Centro de Estudios Financieros",
+      "company": "CEF",
       "position": {
-        "es": "Técnico de TI",
-        "en": "IT Technician"
+        "es": "Desarrollador web, antes técnico de TI · Centro de Estudios Financieros",
+        "en": "Web developer, previously IT technician · Centro de Estudios Financieros"
       },
-      "period": "2021 - 2023",
+      "period": {
+        "from": 2021,
+        "to": 2024
+      },
       "description": {
-        "es": "Mis inicios resolviendo problemas en la trinchera. Instalación, configuración y soporte técnico. Aprendí a entender las frustraciones de los usuarios y a resolver incidencias bajo presión, una base fundamental para cualquier desarrollador.",
-        "en": "My beginnings solving problems in the trenches. Installation, configuration, and technical support. I learned to understand user frustrations and resolve incidents under pressure, a fundamental foundation for any developer."
+        "es": "Empecé en soporte: instalar, configurar y resolver incidencias con el usuario delante. Desde 2022 desarrollé aplicaciones web con Angular y .NET de principio a fin, desde el diseño hasta la puesta en producción.",
+        "en": "I started in support: installing, configuring and solving incidents with the user in front of me. From 2022 I built web applications with Angular and .NET end to end, from design to production."
       }
     },
     {
-      "company": "La fábrica de software",
+      "company": "La Fábrica",
       "position": {
-        "es": "Programador",
-        "en": "Programmer"
+        "es": "Programador · La fábrica de software",
+        "en": "Programmer · La fábrica de software"
       },
-      "period": "2019 - 2020",
+      "period": {
+        "from": 2019,
+        "to": 2020
+      },
       "description": {
-        "es": "Primera toma de contacto profesional con el código. Desarrollo y mantenimiento de aplicaciones de escritorio (VB.NET, C#). Aquí aprendí la importancia de escribir código mantenible y de entender el legado.",
-        "en": "First professional contact with code. Development and maintenance of desktop applications (VB.NET, C#). Here I learned the importance of writing maintainable code and understanding legacy systems."
+        "es": "Mi primer trabajo con código: desarrollo y mantenimiento de aplicaciones de escritorio en VB.NET y C#. Allí aprendí a entender el código heredado antes de cambiarlo.",
+        "en": "My first job writing code: building and maintaining desktop applications in VB.NET and C#. That is where I learned to understand legacy code before changing it."
       }
     }
   ],
   "projects": [
     {
+      "name": "Ospec-Workflow",
+      "description": {
+        "es": "Arnés para agentes de IA que programan: la CLI decide cuándo está terminado un cambio.",
+        "en": "Harness for AI coding agents: the CLI decides when a change is done."
+      },
+      "url": "https://github.com/Snakeblack/ospec-workflow",
+      "technologies": [
+        "Node.js",
+        "Go",
+        "Claude Code"
+      ],
+      "year": "2026",
+      "screenshot": "/assets/screenshots/ospec-workflow.webp",
+      "width": 1915,
+      "height": 821
+    },
+    {
       "name": "WebGL Backgrounds Generator",
       "description": {
-        "es": "Da vida a tu web con fondos animados en WebGL. Genera, personaliza y exporta efectos visuales hipnóticos en segundos, sin tocar una sola línea de shader. Potencia el 'wow factor' de tus proyectos.",
-        "en": "Bring your website to life with animated WebGL backgrounds. Generate, customize, and export hypnotic visual effects in seconds, without touching a single line of shader code. Boost the 'wow factor' of your projects."
+        "es": "Genera fondos animados en WebGL, los ajusta y los exporta sin escribir shaders.",
+        "en": "Generates animated WebGL backgrounds, tunes them and exports them without writing shaders."
       },
       "url": "https://background.mretamozo.com/",
       "technologies": [
         "Astro",
-        "TailwindCSS",
+        "Tailwind CSS",
         "Three.js"
       ],
       "year": "2025",
-      "screenshot": "/assets/screenshots/background-generator.webp"
+      "screenshot": "/assets/screenshots/background-generator.webp",
+      "width": 1920,
+      "height": 1075
     },
     {
       "name": "Barreto Construcciones",
       "description": {
-        "es": "Transformando la presencia digital del sector construcción. Una landing page de alto rendimiento diseñada para convertir visitas en clientes, integrando campañas de Google Ads y analítica avanzada para maximizar el ROI.",
-        "en": "Transforming the digital presence of the construction sector. A high-performance landing page designed to convert visits into clients, integrating Google Ads campaigns and advanced analytics to maximize ROI."
+        "es": "Web de una constructora pensada para captar clientes, con campañas de Google Ads y analítica.",
+        "en": "Website for a construction company built to bring in clients, with Google Ads campaigns and analytics."
       },
       "url": "https://www.barretoconstrucciones.es/",
       "technologies": [
@@ -127,284 +222,236 @@
         "Google Ads"
       ],
       "year": "2025",
-      "screenshot": "/assets/screenshots/barreto-construcciones.webp"
+      "screenshot": "/assets/screenshots/barreto-construcciones.webp",
+      "width": 1920,
+      "height": 1054
     },
     {
       "name": "DevTools MMRG",
       "description": {
-        "es": "Tu navaja suiza para el desarrollo. Herramientas esenciales explicadas por IA para que no pierdas tiempo buscando y te centres en crear. Un repositorio centralizado para impulsar tu productividad.",
-        "en": "Your Swiss Army knife for development. Essential tools explained by AI so you don't waste time searching and can focus on creating. A centralized repository to boost your productivity."
+        "es": "Colección de herramientas para desarrollar, cada una explicada con IA.",
+        "en": "A collection of developer tools, each one explained with AI."
       },
       "url": "https://devtools.mretamozo.com/",
       "technologies": [
         "Astro",
-        "Tailwindcss",
-        "API Gemini"
+        "Tailwind CSS",
+        "Gemini API"
       ],
       "year": "2025",
-      "screenshot": "/assets/screenshots/devtools.avif"
+      "screenshot": "/assets/screenshots/devtools.avif",
+      "width": 2647,
+      "height": 1362
     },
     {
-      "name": "Baterias Express",
+      "name": "Baterías Express",
       "description": {
-        "es": "Landing page diseñada para convertir. Servicio de delivery y reparación de baterías rápido y eficaz. Una interfaz directa para una necesidad urgente.",
-        "en": "Landing page designed to convert. Fast and effective battery delivery and repair service. A direct interface for an urgent need."
+        "es": "Web de un servicio de entrega y reparación de baterías de coche.",
+        "en": "Website for a car battery delivery and repair service."
       },
       "url": "https://www.bateriascoches24horas.es/",
       "technologies": [
         "Astro",
-        "Tailwindcss",
+        "Tailwind CSS",
         "Vercel"
       ],
       "year": "2024",
-      "screenshot": "/assets/screenshots/bateriasexpress.webp"
+      "screenshot": "/assets/screenshots/bateriasexpress.webp",
+      "width": 1920,
+      "height": 1080
     },
     {
       "name": "Recambios las Margaritas",
       "description": {
-        "es": "Presencia digital para el comercio local. Landing page optimizada para una tienda de recambios, facilitando el contacto y la localización.",
-        "en": "Digital presence for local business. Optimized landing page for a parts store, facilitating contact and location."
+        "es": "Web de una tienda de recambios, con el contacto y la ubicación a mano.",
+        "en": "Website for a car parts shop, with contact and location close at hand."
       },
       "url": "https://recambioslasmargaritas.es/",
       "technologies": [
         "Astro",
-        "Tailwindcss",
+        "Tailwind CSS",
         "Vercel"
       ],
       "year": "2024",
-      "screenshot": "/assets/screenshots/recambioslasmargaritas.webp"
+      "screenshot": "/assets/screenshots/recambioslasmargaritas.webp",
+      "width": 1920,
+      "height": 1080
     },
     {
       "name": "Blog",
       "description": {
-        "es": "Mi rincón digital donde comparto lo que aprendo. Artículos sobre desarrollo web, tecnología y mis experiencias programando.",
-        "en": "My digital corner where I share what I learn. Articles about web development, technology, and my coding experiences."
+        "es": "Mis apuntes sobre desarrollo web y lo que voy aprendiendo.",
+        "en": "My notes on web development and what I learn along the way."
       },
       "url": "https://blog.mretamozo.com/",
       "technologies": [
         "Next.js",
-        "Tailwindcss",
-        "Mdx"
+        "Tailwind CSS",
+        "MDX"
       ],
       "year": "2023",
-      "screenshot": "/assets/screenshots/blog.webp"
+      "screenshot": "/assets/screenshots/blog.webp",
+      "width": 1920,
+      "height": 1080
     },
     {
-      "name": "Prueba Tecnica: Reactive Forms",
+      "name": "Reactive Forms",
       "description": {
-        "es": "Demostración técnica de manejo avanzado de formularios en Angular. Clean Code y buenas prácticas aplicadas a un caso de uso real.",
-        "en": "Technical demonstration of advanced form handling in Angular. Clean Code and best practices applied to a real use case."
+        "es": "Prueba técnica de formularios reactivos en Angular.",
+        "en": "A technical test on reactive forms in Angular."
       },
       "url": "https://prueba-tecnica-alicunde.mretamozo.com/login",
       "technologies": [
         "Angular",
-        "Clean Code",
         "Reactive Forms"
       ],
       "year": "2023",
-      "screenshot": "/assets/screenshots/pruebatecnicareactiveforms.webp"
+      "screenshot": "/assets/screenshots/pruebatecnicareactiveforms.webp",
+      "width": 1920,
+      "height": 1080
     },
     {
       "name": "Device Manager",
       "description": {
-        "es": "Solución completa para la gestión de inventario tecnológico. Control de dispositivos, asignaciones y estado en tiempo real.",
-        "en": "Complete solution for technological inventory management. Device control, assignments, and real-time status."
+        "es": "Gestión del inventario de dispositivos, con sus asignaciones y su estado.",
+        "en": "Device inventory management, with assignments and status."
       },
       "url": "https://github.com/Snakeblack/device-manager",
       "technologies": [
         "Next.js",
-        "Tailwind",
-        "MySql"
+        "Tailwind CSS",
+        "MySQL"
       ],
       "year": "2022",
-      "screenshot": "/assets/screenshots/devicemanager.webp"
+      "screenshot": "/assets/screenshots/devicemanager.webp",
+      "width": 1920,
+      "height": 1080
     }
   ],
   "skills": [
     {
-      "name": "HTML",
-      "type": "technical",
-      "category": "frontend"
-    },
-    {
-      "name": "CSS",
-      "type": "technical",
+      "name": "TypeScript",
       "category": "frontend"
     },
     {
       "name": "JavaScript",
-      "type": "technical",
-      "category": "frontend"
-    },
-    {
-      "name": "TypeScript",
-      "type": "technical",
       "category": "frontend"
     },
     {
       "name": "Angular",
-      "type": "technical",
       "category": "frontend"
     },
     {
-      "name": ".NET",
-      "type": "technical",
-      "category": "backend"
+      "name": "Angular Material",
+      "category": "frontend"
     },
     {
       "name": "React",
-      "type": "technical",
       "category": "frontend"
     },
     {
       "name": "Next.js",
-      "type": "technical",
-      "category": "frontend"
-    },
-    {
-      "name": "Tailwindcss",
-      "type": "technical",
       "category": "frontend"
     },
     {
       "name": "Astro",
-      "type": "technical",
       "category": "frontend"
     },
     {
-      "name": "Node.js",
-      "type": "technical",
-      "category": "backend"
+      "name": "Three.js",
+      "category": "frontend"
     },
     {
-      "name": "SQL Server",
-      "type": "technical",
-      "category": "database"
+      "name": "Tailwind CSS",
+      "category": "frontend"
     },
     {
-      "name": "Oracle SQL",
-      "type": "technical",
-      "category": "database"
+      "name": "Bootstrap",
+      "category": "frontend"
     },
     {
-      "name": "PL/SQL",
-      "type": "technical",
-      "category": "database"
+      "name": "HTML, CSS",
+      "category": "frontend"
+    },
+    {
+      "name": "Figma",
+      "category": "frontend"
     },
     {
       "name": "C#",
-      "type": "technical",
+      "category": "backend"
+    },
+    {
+      "name": ".NET",
+      "category": "backend"
+    },
+    {
+      "name": "Node.js",
+      "category": "backend"
+    },
+    {
+      "name": "Java",
       "category": "backend"
     },
     {
       "name": "C",
-      "type": "technical",
-      "category": "other"
-    },
-    {
-      "name": "Java",
-      "type": "technical",
       "category": "backend"
     },
     {
-      "name": "Figma",
-      "type": "technical",
-      "category": "design"
+      "name": "RabbitMQ",
+      "category": "backend"
     },
     {
-      "name": "Angular Material",
-      "type": "technical",
-      "category": "frontend"
+      "name": "SQL Server",
+      "category": "backend"
+    },
+    {
+      "name": "Oracle SQL, PL/SQL",
+      "category": "backend"
     },
     {
       "name": "MongoDB",
-      "type": "technical",
-      "category": "database"
-    },
-    {
-      "name": "Firebase",
-      "type": "technical",
       "category": "backend"
     },
     {
-      "name": "Bootstrap",
-      "type": "technical",
-      "category": "frontend"
+      "name": "Firebase",
+      "category": "backend"
     },
     {
-      "name": "Azure DevOps",
-      "type": "technical",
-      "category": "devops"
+      "name": "Claude Code",
+      "category": "ai"
     },
     {
-      "name": "GitHub",
-      "type": "technical",
-      "category": "devops"
+      "name": "Codex",
+      "category": "ai"
     },
     {
-      "name": "Git",
-      "type": "technical",
-      "category": "devops"
+      "name": "Cursor",
+      "category": "ai"
+    },
+    {
+      "name": "MCP",
+      "category": "ai"
+    },
+    {
+      "name": "OpenSpec",
+      "category": "ai"
+    },
+    {
+      "name": "Gemini API",
+      "category": "ai"
     },
     {
       "name": "Docker",
-      "type": "technical",
-      "category": "devops"
+      "category": "tools"
     },
     {
-      "name": {
-        "es": "Comunicación Efectiva",
-        "en": "Effective Communication"
-      },
-      "type": "soft",
-      "description": {
-        "es": "Habilidad para transmitir ideas de forma clara y concisa.",
-        "en": "Ability to convey ideas clearly and concisely."
-      }
+      "name": "Azure DevOps",
+      "category": "tools"
     },
     {
-      "name": {
-        "es": "Trabajo en Equipo",
-        "en": "Teamwork"
-      },
-      "type": "soft",
-      "description": {
-        "es": "Capacidad para colaborar eficazmente con otros para alcanzar objetivos comunes.",
-        "en": "Ability to collaborate effectively with others to achieve common goals."
-      }
-    },
-    {
-      "name": {
-        "es": "Resolución de Problemas",
-        "en": "Problem Solving"
-      },
-      "type": "soft",
-      "description": {
-        "es": "Aptitud para identificar problemas y encontrar soluciones efectivas.",
-        "en": "Aptitude to identify problems and find effective solutions."
-      }
-    },
-    {
-      "name": {
-        "es": "Adaptabilidad",
-        "en": "Adaptability"
-      },
-      "type": "soft",
-      "description": {
-        "es": "Flexibilidad para ajustarse a nuevas situaciones y cambios.",
-        "en": "Flexibility to adjust to new situations and changes."
-      }
-    },
-    {
-      "name": {
-        "es": "Pensamiento Crítico",
-        "en": "Critical Thinking"
-      },
-      "type": "soft",
-      "description": {
-        "es": "Capacidad para analizar información de manera objetiva y tomar decisiones fundamentadas.",
-        "en": "Ability to analyze information objectively and make well-founded decisions."
-      }
+      "name": "Git, GitHub",
+      "category": "tools"
     }
   ]
 }

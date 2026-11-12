@@ -1,36 +1,63 @@
 ---
+import type { SocialLinks } from '../types/portfolio';
+import { getTranslations, type Locale } from '../utils/translations';
+
 interface Props {
-  builtWithText: string;
-  andText: string;
+  firstName: string;
+  lastName: string;
   copyrightName: string;
-  currentLocale: string; // Added currentLocale for potential future use
+  social: SocialLinks;
+  currentLocale: Locale;
 }
 
-const { builtWithText, andText, copyrightName, currentLocale } = Astro.props;
-const currentYear = new Date().getFullYear();
-const copyrightText = `© ${currentYear} ${copyrightName}.`; // Slightly reordered for a common pattern
-const madeWithText = currentLocale === 'es' ? 'Hecho con' : 'Made with';
+const { firstName, lastName, copyrightName, social, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale);
+const otherLocaleUrl = currentLocale === 'es' ? '/en/' : '/';
+const otherLocale = currentLocale === 'es' ? 'en' : 'es';
+const sourceUrl = 'https://github.com/Snakeblack/portfolio-fullstack';
+const sections = [
+  { href: '#ospec', label: t.nav.ospec },
+  { href: '#work', label: t.nav.work },
+  { href: '#projects', label: t.nav.projects },
+  { href: '#about', label: t.nav.about },
+  { href: '#contact', label: t.nav.contact },
+];
 ---
 
-<footer class="border-t border-light-border dark:border-dark-border py-10 md:py-12 mt-20 scroll-animate">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-      <p class="text-xs text-light-subtext dark:text-dark-subtext text-center sm:text-left">
-        {madeWithText}
-        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" aria-label="Astro website" class="font-medium text-light-accent dark:text-dark-accent hover:underline hover:opacity-80 transition-opacity">
-          Astro
-        </a>
-        {currentLocale === 'es' ? 'y' : 'and'}
-        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" aria-label="Tailwind CSS website" class="font-medium text-light-accent dark:text-dark-accent hover:underline hover:opacity-80 transition-opacity">
-          Tailwind CSS
-        </a>.
-      </p>
-      
-      <div class="flex items-center">
-        <span class="text-xs text-light-subtext dark:text-dark-subtext">
-          {copyrightText}
-        </span>
+<footer class="footer">
+  <p class="footer__name display"><span class="mask" data-reveal="line"><span>{firstName}</span></span>{' '}<span class="mask" data-reveal="line"><span>{lastName}</span></span></p>
+
+  <div class="footer__row">
+    <ul class="footer__places" data-reveal>
+      <li><a href={social.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href={social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a href={social.twitter} target="_blank" rel="noopener noreferrer">X</a></li>
+    </ul>
+
+    <div class="footer__links" data-reveal>
+      <div>
+        <h3>{t.footer.sections}</h3>
+        <ul>
+          {sections.map((item) => (
+            <li><a class="plain-link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3>{t.footer.site}</h3>
+        <ul>
+          <li>
+            <a class="plain-link" href={otherLocaleUrl} hreflang={otherLocale} lang={otherLocale}>{t.nav.otherLocale}</a>
+          </li>
+          <li><a class="plain-link" href={sourceUrl} target="_blank" rel="noopener noreferrer">{t.footer.source}</a></li>
+          <li>{t.footer.madeWith}</li>
+        </ul>
       </div>
     </div>
+  </div>
+
+  <div class="footer__legal">
+    <p>© {new Date().getFullYear()} {copyrightName}</p>
+    <p><a class="plain-link" href="#top">{t.footer.top}</a></p>
   </div>
 </footer>

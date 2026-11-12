@@ -1,0 +1,57 @@
+---
+import type { SocialLinks } from '../types/portfolio';
+import { getTranslations, type Locale } from '../utils/translations';
+
+interface Props {
+  email: string;
+  mailSubject: string;
+  location: string;
+  sleepingMessage: string;
+  social: SocialLinks;
+  currentLocale: Locale;
+}
+
+const { email, mailSubject, location, sleepingMessage, social, currentLocale } = Astro.props;
+const t = getTranslations(currentLocale).contact;
+const [user, domain] = email.split('@');
+---
+
+<section class="contact" id="contact">
+  <h2 class="contact__title" data-reveal>{t.title}</h2>
+
+  <a class="contact__mail display" href={`mailto:${email}?subject=${encodeURIComponent(mailSubject)}`} ><span class="mask" data-reveal="line"><span>{user}@</span></span><span class="mask" data-reveal="line"><span>{domain}</span></span></a>
+
+  <div class="contact__foot" data-reveal>
+    <p>
+      {location}<span data-clock hidden>. {t.clock}: <time></time>.</span>
+      <span data-night hidden>{sleepingMessage}</span>
+    </p>
+    <ul class="contact__social">
+      <li><a class="plain-link" href={social.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a class="plain-link" href={social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a class="plain-link" href={social.twitter} target="_blank" rel="noopener noreferrer">X</a></li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  import { madridClock } from '../utils/madridClock';
+
+  const clock = document.querySelector<HTMLElement>('[data-clock]');
+  const night = document.querySelector<HTMLElement>('[data-night]');
+  const time = clock?.querySelector('time');
+
+  if (clock && night && time) {
+    const tick = () => {
+      const now = new Date();
+      const madrid = madridClock(now);
+      time.textContent = madrid.label;
+      time.dateTime = now.toISOString();
+      clock.hidden = false;
+      night.hidden = !madrid.night;
+    };
+
+    tick();
+    setInterval(tick, 30_000);
+  }
+</script>

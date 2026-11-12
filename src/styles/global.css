@@ -1,13 +1,72 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-light-subtext) transparent;
+/* Fuentes servidas desde el propio sitio (Fontshare: Gambarino y General Sans). */
+@font-face {
+  font-family: 'Gambarino';
+  src: url('/fonts/gambarino-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-html.dark {
-  scrollbar-color: var(--color-dark-subtext) transparent;
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Color: negro y carmesí. Un fondo, una tinta, un acento. */
+  --bg: #0a0a0a;
+  --surface: #151515;
+  --ink: #efefef;
+  --muted: #8c8c8c;
+  --accent: #b11226;
+  --accent-strong: #c9152c;
+  --accent-ink: #ffffff;
+  --field: #efefef;
+  --field-ink: #0a0a0a;
+  --field-muted: #565656;
+
+  /* Tipografía: cinco pasos. */
+  --font-display: 'Gambarino', Georgia, 'Times New Roman', serif;
+  --font-text: 'General Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --step-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);
+  --step-poster: clamp(3.5rem, 9.5vw, 9rem);
+
+  /* Marco: un solo par de márgenes en toda la página. */
+  --margin: clamp(1.25rem, 2.2vw, 2rem);
+  --content: calc(100vw - 2 * var(--margin));
+  --gap-section: clamp(6rem, 12vw, 12rem);
+
+  /* Movimiento. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+  scrollbar-color: var(--muted) var(--bg);
+  -webkit-text-size-adjust: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -16,119 +75,1117 @@ html.dark {
   }
 }
 
-:where(section[id], main[id]) {
-  scroll-margin-top: 96px;
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--step-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 
-/* Custom Scrollbar for Webkit */
-::-webkit-scrollbar {
-  width: 8px;
+:where(section[id]) {
+  scroll-margin-top: 2rem;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-light-subtext);
-  border-radius: 20px;
-  border: 3px solid transparent;
-  background-clip: content-box;
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background-color: var(--color-dark-subtext);
+a {
+  color: inherit;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-light-text);
+p {
+  text-wrap: pretty;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-dark-text);
+code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 1em;
 }
 
-@theme {
-  /* Colores para Modo Claro */
-  --color-light-bg: oklch(0.98 0.01 240);       /* Gris muy claro con tono fresco */
-  --color-light-text: oklch(0.25 0.02 240);      /* Gris oscuro para texto */
-  --color-light-subtext: oklch(0.40 0.02 240);   /* Gris medio-oscuro para texto secundario */
-  --color-light-card-bg: oklch(0.95 0.01 240);  /* Gris claro para fondos de tarjetas */
-  --color-light-border: oklch(0.90 0.01 240);   /* Gris ligeramente más oscuro para bordes */
-  --color-light-accent: oklch(0.45 0.15 260);     /* Azul oscuro para acentos */
-  --color-light-accent-hover: oklch(0.40 0.16 260); /* Azul más oscuro para hover */
-  /* Colores para Modo Oscuro */
-  --color-dark-bg: oklch(0.15 0.01 240);        /* Gris muy oscuro con tono fresco */
-  --color-dark-text: oklch(0.90 0.01 240);       /* Gris claro para texto */
-  --color-dark-subtext: oklch(0.65 0.01 240);    /* Gris medio-claro para texto secundario */
-  --color-dark-card-bg: oklch(0.22 0.015 240);   /* Gris oscuro para fondos de tarjetas - Ligeramente más claro */
-  --color-dark-border: oklch(0.28 0.015 240);    /* Gris oscuro ligeramente más claro para bordes - Ligeramente más claro */
-  --color-dark-accent: oklch(0.7 0.15 260);      /* Azul brillante para acentos en modo oscuro */
-  --color-dark-accent-hover: oklch(0.75 0.16 260);/* Azul ligeramente más brillante para hover */
+/* Máscara de los titulares que suben al entrar: recorta, con aire para astas y descendentes. */
+.mask {
+  display: inline-block;
+  vertical-align: bottom;
+  overflow: clip;
+  padding-block: 0.14em;
+  margin-block: -0.14em;
 }
 
-/* Variante personalizada para modo oscuro */
-@custom-variant dark (&:where(.dark, .dark *));
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  font-kerning: normal;
+}
 
-/* Utilidades de animación */
-@layer utilities {
-  .scroll-animate,
-  .scroll-animate-fast,
-  .title-animate {
-    opacity: 0;
-    transform: translateY(20px);
-    will-change: opacity, transform;
+.heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-head);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.small {
+  font-size: var(--step-small);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.link {
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--muted);
+  transition: text-decoration-color var(--t-hover) ease, color var(--t-hover) ease;
+}
+
+.plain-link {
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.22em;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--t-hover) ease;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 500;
+  font-size: var(--step-small);
+  text-decoration: none;
+  transition: transform var(--t-press) var(--ease-out), background-color var(--t-hover) ease;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover,
+  .plain-link:hover {
+    text-decoration-color: currentColor;
   }
 
-  .stagger-children > * {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  
-  /* Noscript fallback: ensure content is visible when JavaScript is disabled */
-  @media (scripting: none) {
-    .scroll-animate,
-    .scroll-animate-fast,
-    .title-animate,
-    .stagger-children > * {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-  }
-  
-  /* Helper to ensure visibility if JS fails or for SEO bots if needed (though JS is usually fine) */
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-animate,
-    .scroll-animate-fast,
-    .title-animate,
-    .stagger-children > * {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
+  .button:hover {
+    background: var(--accent-strong);
   }
 }
 
-html, body {
+/* ───────── Escenario: la vista 3D se queda fija detrás del hero y de la introducción ───────── */
+
+.stage {
+  position: relative;
+}
+
+.stage__view {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  margin-bottom: -100svh;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.stage__canvas {
+  display: block;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1200ms var(--ease-out);
+}
+
+.stage__canvas[data-ready] {
+  opacity: 1;
+}
+
+.stage__canvas[data-scene='off'] {
+  display: none;
+}
+
+/* ───────── Navegación ───────── */
+
+.nav {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem var(--margin) 0;
+  font-size: var(--step-small);
+}
+
+.nav__mark {
+  margin-right: auto;
+  font-family: var(--font-display);
+  font-size: var(--step-lead);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-html {
-  overflow-x: hidden; /* Prevent horizontal scrollbar if content overflows slightly */
+.nav__links a {
+  display: inline-block;
+  padding: 0.5rem 0;
 }
 
-body {
-  @apply bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text;
-  font-family: 'Geist Variable', sans-serif;
-  line-height: 1.7;
-  position: relative; /* Needed for z-index of children to work correctly with fixed background */
-  transition: background-color 0.3s ease, color 0.3s ease;
+.nav__toggle {
+  display: none;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: var(--color-dark-text); /* Usar la variable para que se actualice */
+@media (max-width: 47.99em) {
+  .js .nav__toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .nav__mark {
+    margin-right: 0;
+  }
+
+  .nav__action {
+    margin-left: auto;
+  }
+
+  .nav__links {
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+  }
+
+  .js .nav__links {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    padding: 5rem var(--margin) 2.5rem;
+    background: var(--surface);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--t-ui) ease, visibility 0s linear var(--t-ui);
+  }
+
+  .js .nav__links[data-open] {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity var(--t-ui) ease;
+  }
+
+  .js .nav__links a {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-decoration: none;
+  }
+
+  .js .nav__toggle[aria-expanded='true'] {
+    position: fixed;
+    top: 1.5rem;
+    left: var(--margin);
+    z-index: 11;
+  }
 }
+
+/* ───────── Hero: el nombre como monumento, sobre el borde inferior ───────── */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100svh;
+}
+
+.hero__band {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 1.25rem var(--margin);
+  padding: 0 var(--margin) 1.25rem;
+}
+
+.hero__lead {
+  max-width: 30ch;
+  margin: 0;
+  font-size: var(--step-lead);
+  line-height: 1.3;
+}
+
+.monument {
+  grid-column: 1 / -1;
+  margin: 0;
+  /* «Michael Retamozo» mide 7,083 em con este interletrado: llena el ancho entre los márgenes. */
+  font-size: calc(var(--content) / 7.15);
+  white-space: nowrap;
+}
+
+.mask > span {
+  display: inline-block;
+}
+
+h2.mask,
+h3.mask {
+  display: block;
+}
+
+@media (max-width: 47.99em) {
+  .hero__band {
+    grid-template-columns: 1fr;
+  }
+
+  .monument {
+    /* En dos líneas manda «Retamozo», 3,867 em. */
+    font-size: calc(var(--content) / 3.92);
+    white-space: normal;
+  }
+
+  .monument__word {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .monument__word > span {
+    transform: translateY(105%);
+    animation: load-line 900ms var(--ease-expo) forwards;
+    animation-delay: calc(120ms + var(--i, 0) * 90ms);
+  }
+
+  .js .hero [data-load] {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: load-rise 500ms var(--ease-out) forwards;
+    animation-delay: var(--d, 420ms);
+  }
+}
+
+@keyframes load-line {
+  to {
+    transform: none;
+  }
+}
+
+@keyframes load-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ───────── Introducción: columna estrecha junto a la vista ───────── */
+
+.intro {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--margin);
+  min-height: 100svh;
+  align-content: center;
+  padding: 4rem var(--margin) 10rem;
+}
+
+.intro__column {
+  grid-column: 2 / span 4;
+  max-width: 22.5rem;
+}
+
+.intro__column p {
+  margin: 0 0 1.5em;
+  color: var(--muted);
+}
+
+.intro__column p:first-child {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.intro__column p:last-child {
+  margin-bottom: 0;
+  color: var(--ink);
+}
+
+@media (max-width: 47.99em) {
+  .intro {
+    display: block;
+    min-height: 0;
+    padding: 4.5rem var(--margin) 6rem;
+  }
+
+  .intro__column {
+    max-width: 78%;
+  }
+}
+
+/* ───────── Ospec-Workflow: lámina cuadrada y texto escueto ───────── */
+
+.ospec {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 88svh;
+  background: var(--surface);
+}
+
+.ospec__plate {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 2.5rem var(--margin);
+}
+
+.ospec__plate img {
+  display: block;
+  width: 100%;
+  max-width: min(100%, 76svh);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.ospec__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3rem;
+  padding: 2.5rem var(--margin) 2.5rem 0;
+}
+
+.ospec__lead {
+  max-width: 44ch;
+  margin: 1.5rem 0 0;
+}
+
+.ospec__hosts {
+  max-width: 44ch;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: var(--step-small);
+}
+
+.touches {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+html:not(.js) .touches {
+  display: none;
+}
+
+.touches legend {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  color: var(--muted);
+  font-size: var(--step-small);
+}
+
+.touches__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.75rem;
+}
+
+.touch {
+  min-height: 2.75rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--step-lead);
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.25em;
+  text-decoration-color: transparent;
+  transition: color var(--t-hover) ease, text-decoration-color var(--t-hover) ease;
+}
+
+.touch[aria-pressed='true'] {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .touch:hover {
+    color: var(--ink);
+  }
+}
+
+.owes {
+  margin: 0;
+}
+
+.owes__title {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: var(--step-small);
+}
+
+.owes__list {
+  display: grid;
+  gap: 0.75rem;
+  min-height: 17rem;
+  align-content: start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.owes__item {
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+  gap: 0.25rem 1.25rem;
+  align-items: baseline;
+  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+}
+
+.owes__item[hidden] {
+  display: none;
+}
+
+@starting-style {
+  .owes__item {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.owes__item code {
+  color: var(--ink);
+}
+
+.owes__item span {
+  color: var(--muted);
+  font-size: var(--step-small);
+}
+
+.ospec__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  min-height: 4.5rem;
+  padding: 0 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out);
+}
+
+.cell:active {
+  transform: scale(0.985);
+}
+
+.cell--ink {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.cell--tone {
+  background: #232323;
+  color: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cell--ink:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .cell--tone:hover {
+    background: #2e2e2e;
+  }
+}
+
+@media (max-width: 47.99em) {
+  .ospec {
+    grid-template-columns: 1fr;
+  }
+
+  .ospec__plate {
+    padding: 1rem var(--margin) 0;
+  }
+
+  .ospec__body {
+    padding: 2rem var(--margin) 2.5rem;
+    gap: 2.5rem;
+  }
+
+  .owes__list {
+    min-height: 0;
+  }
+
+  .owes__item {
+    grid-template-columns: 1fr;
+  }
+
+  .ospec__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .cell {
+    min-height: 3.75rem;
+  }
+}
+
+/* ───────── Experiencia: una empresa por línea de cartel ───────── */
+
+.work {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+  padding: var(--gap-section) var(--margin);
+}
+
+.section-title {
+  margin: 0 0 clamp(2.5rem, 5vw, 5rem);
+}
+
+.jobs {
+  display: grid;
+  gap: clamp(1.75rem, 3vw, 3rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience-item {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--margin);
+  align-items: start;
+}
+
+.job__name {
+  grid-column: 1 / span 7;
+  margin: 0;
+  font-size: var(--step-poster);
+  transition: color var(--t-hover) ease;
+}
+
+.job__facts {
+  grid-column: 8 / -1;
+  padding-top: clamp(0.5rem, 1.1vw, 1.1rem);
+}
+
+.job__period {
+  margin: 0;
+  font-size: var(--step-lead);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.job__role {
+  margin: 0.35rem 0 0.9rem;
+  font-weight: 500;
+}
+
+.job__text {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .experience-item:hover .job__name {
+    color: var(--accent-strong);
+  }
+}
+
+@media (max-width: 47.99em) {
+  .experience-item {
+    display: block;
+  }
+
+  .job__name {
+    font-size: 15vw;
+  }
+
+  .job__facts {
+    padding-top: 0.6rem;
+  }
+}
+
+/* ───────── Proyectos: título gigante y muro desigual ───────── */
+
+.projects {
+  position: relative;
+  z-index: 2;
+  background: var(--surface);
+  padding: var(--gap-section) var(--margin);
+}
+
+.projects__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.projects__title {
+  margin: 0;
+  font-size: var(--step-poster);
+}
+
+.wall {
+  display: grid;
+  gap: 2.25rem 0;
+}
+
+.wall__row {
+  display: flex;
+  gap: 8px;
+}
+
+.tile {
+  flex: var(--ratio) 1 0;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.tile__picture {
+  height: var(--row-height);
+  overflow: clip;
+  background: #1e1e1e;
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: opacity var(--t-ui) ease, transform 900ms var(--ease-out);
+}
+
+.tile__caption {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 1rem;
+  padding-top: 0.6rem;
+  font-size: var(--step-small);
+}
+
+.tile__name {
+  font-weight: 500;
+}
+
+.tile__year {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tile__text {
+  grid-column: 1 / -1;
+  max-width: 48ch;
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wall:has(.tile:hover) .tile:not(:hover) img {
+    opacity: 0.45;
+  }
+
+  .tile:hover img {
+    transform: scale(1.02);
+  }
+}
+
+@media (max-width: 47.99em) {
+  .projects__head {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .projects__title {
+    font-size: 17vw;
+  }
+
+  .wall {
+    /* Tres columnas dan los dos repartos: 62/38 y 38/62. */
+    grid-template-columns: 38fr 24fr 38fr;
+    gap: 1.5rem 6px;
+  }
+
+  .wall__row {
+    display: contents;
+  }
+
+  .tile {
+    grid-column: span 3;
+  }
+
+  .tile__picture {
+    height: 220px;
+  }
+
+  .tile:not([data-phone='full']) .tile__text {
+    display: none;
+  }
+
+  .wall .tile[data-phone='wide'] {
+    grid-column: span 2;
+  }
+
+  .wall .tile[data-phone='narrow'] {
+    grid-column: span 1;
+  }
+
+  .wall .tile[data-phone='wide'] .tile__picture,
+  .wall .tile[data-phone='narrow'] .tile__picture {
+    height: 150px;
+  }
+
+  .wall .tile[data-phone='narrow'] .tile__caption {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───────── Sobre mí: datos al lado, párrafo ancho ───────── */
+
+.about {
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+  display: grid;
+  grid-template-columns: 34% minmax(0, 1fr);
+  row-gap: clamp(4rem, 8vw, 7.5rem);
+  padding: var(--gap-section) var(--margin);
+}
+
+.about__side {
+  padding-right: var(--margin);
+}
+
+.about__title {
+  margin: 0 0 2.5rem;
+}
+
+.facts {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 14rem;
+  margin: 0;
+  font-size: var(--step-small);
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.about__text {
+  max-width: 46ch;
+  margin: 0;
+  font-size: var(--step-lead);
+  line-height: 1.35;
+}
+
+.about__text + .about__text {
+  margin-top: 1em;
+}
+
+.about__label {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--step-small);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.stack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem var(--margin);
+  max-width: 56rem;
+}
+
+.stack h4 {
+  margin: 0 0 0.9rem;
+  font-size: var(--step-small);
+  font-weight: 500;
+}
+
+.stack ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: var(--step-small);
+}
+
+@media (max-width: 47.99em) {
+  .about {
+    display: flex;
+    flex-direction: column;
+    row-gap: 3rem;
+  }
+
+  .about__main {
+    order: -1;
+  }
+
+  .about__title {
+    margin-bottom: 1.5rem;
+  }
+
+  .facts {
+    grid-template-columns: 1fr 1fr;
+    max-width: none;
+  }
+
+  .stack {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ───────── Contacto: el correo como tipografía de cartel ───────── */
+
+.contact {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 3rem;
+  min-height: clamp(28rem, 80svh, 44rem);
+  padding: var(--gap-section) var(--margin) 2.5rem;
+  background: var(--surface);
+}
+
+.contact__title {
+  max-width: 24ch;
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--step-lead);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.contact__mail {
+  align-self: end;
+  /* «hello@mretamozo.com» mide 9,12 em. */
+  font-size: calc(var(--content) / 9.2);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: color var(--t-hover) ease;
+}
+
+.contact__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  font-size: var(--step-small);
+}
+
+.contact__foot p {
+  margin: 0;
+}
+
+.contact__social {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .contact__mail:hover {
+    color: var(--accent-strong);
+  }
+}
+
+@media (max-width: 47.99em) {
+  .contact__mail {
+    /* En dos líneas manda «mretamozo.com», 6,427 em. */
+    font-size: calc(var(--content) / 6.5);
+    white-space: normal;
+  }
+
+  .contact__mail > .mask {
+    display: block;
+  }
+
+  .contact__foot {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* ───────── Pie: el nombre vuelve, en los colores inversos ───────── */
+
+.footer {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 4.5rem;
+  padding: 3rem var(--margin) 1.5rem;
+  background: var(--field);
+  color: var(--field-ink);
+  overflow: clip;
+}
+
+.footer ::selection {
+  background: var(--field-ink);
+  color: var(--field);
+}
+
+.footer__name {
+  margin: 0;
+  font-size: calc(var(--content) / 7.15);
+  white-space: nowrap;
+}
+
+.footer__row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--margin);
+  row-gap: 3rem;
+}
+
+.footer__places {
+  grid-column: 1 / span 5;
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: var(--step-lead);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--accent);
+}
+
+.footer__places a {
+  text-decoration: none;
+}
+
+.footer__links {
+  grid-column: 7 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem var(--margin);
+  font-size: var(--step-small);
+}
+
+.footer__links h3 {
+  margin: 0 0 0.75rem;
+  color: var(--field-muted);
+  font-size: inherit;
+  font-weight: 400;
+}
+
+.footer__links ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  font-size: var(--step-small);
+}
+
+.footer__legal p {
+  margin: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .footer__places a:hover {
+    color: var(--field-ink);
+  }
+}
+
+@media (max-width: 47.99em) {
+  .footer {
+    gap: 3rem;
+  }
+
+  .footer__name {
+    font-size: calc(var(--content) / 3.92);
+    white-space: normal;
+  }
+
+  .footer__name > .mask {
+    display: block;
+  }
+
+  .footer__places,
+  .footer__links {
+    grid-column: 1 / -1;
+  }
+
+}
+
+/* Estado inicial de las entradas: solo lo pone el script (GSAP), nunca el CSS, para que
+   el contenido se vea aunque el script falle o no haya JavaScript. */
