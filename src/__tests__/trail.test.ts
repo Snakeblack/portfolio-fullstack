@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bodyRadius, resampleTrail, steerAngle } from '../scene/trail';
+import { bodyRadius, hurry, resampleTrail, steerAngle, strayFraction, wanderZone } from '../scene/trail';
 
 describe('steerAngle', () => {
   it('llega al ángulo deseado si está dentro del giro máximo', () => {
@@ -67,5 +67,65 @@ describe('bodyRadius', () => {
       expect(radius).toBeLessThan(previous);
       previous = radius;
     }
+  });
+});
+
+describe('wanderZone', () => {
+  const halfWidth = 8.9;
+
+  it('en el hero la zona está centrada y ocupa casi todo el ancho', () => {
+    const zone = wanderZone(0, halfWidth, false);
+    expect(zone.centre).toBe(0);
+    expect(zone.span).toBeCloseTo(halfWidth * 0.8);
+  });
+
+  it('al bajar a la introducción la zona se va a la mitad derecha y deja libre la columna de texto', () => {
+    const zone = wanderZone(1, halfWidth, false);
+    expect(zone.centre - zone.span).toBeGreaterThan(0);
+    expect(zone.centre + zone.span).toBeLessThan(halfWidth);
+  });
+
+  it('se desplaza de forma continua con el scroll, nunca hacia la izquierda', () => {
+    let previous = wanderZone(0, halfWidth, false);
+    for (let scroll = 0.1; scroll <= 1.0001; scroll += 0.1) {
+      const zone = wanderZone(scroll, halfWidth, false);
+      expect(zone.centre).toBeGreaterThan(previous.centre);
+      expect(zone.centre - zone.span).toBeGreaterThan(previous.centre - previous.span);
+      previous = zone;
+    }
+  });
+
+  it('en pantallas estrechas no hay sitio al lado: la zona no se mueve', () => {
+    expect(wanderZone(0, 2.4, true)).toEqual(wanderZone(1, 2.4, true));
+    expect(wanderZone(1, 2.4, true).centre).toBe(0);
+  });
+});
+
+describe('strayFraction', () => {
+  // Cuatro anillos en x = -3, -1, 1 y 3.
+  const centres = new Float32Array([-3, 0, 0, -1, 5, 0, 1, 0, 0, 3, -2, 0]);
+
+  it('cuenta la parte del cuerpo que queda a la izquierda del borde', () => {
+    expect(strayFraction(centres, 4, -4)).toBe(0);
+    expect(strayFraction(centres, 4, -2)).toBe(0.25);
+    expect(strayFraction(centres, 4, 0)).toBe(0.5);
+    expect(strayFraction(centres, 4, 10)).toBe(1);
+  });
+
+  it('sin anillos no hay nada fuera', () => {
+    expect(strayFraction(centres, 0, 10)).toBe(0);
+  });
+});
+
+describe('hurry', () => {
+  it('con todo el cuerpo en su zona la serpiente va a su ritmo', () => {
+    expect(hurry(0)).toBe(1);
+  });
+
+  it('se da más prisa cuanto más cuerpo queda fuera, hasta un tope', () => {
+    expect(hurry(0.1)).toBeGreaterThan(1);
+    expect(hurry(0.2)).toBeGreaterThan(hurry(0.1));
+    expect(hurry(0.25)).toBe(hurry(1));
+    expect(hurry(1)).toBe(5);
   });
 });

@@ -43,6 +43,14 @@ describe('Escena 3D', () => {
     expect(resize).toMatch(/shapeRings\(\);/);
   });
 
+  it('al hacer scroll no traslada la escena en bloque: mueve la zona y la serpiente nada hasta ella', () => {
+    expect(scene).not.toMatch(/position\.x\s*=[^;]*scroll/);
+    expect(scene).not.toMatch(/\brig\b/);
+    expect(scene).toMatch(/wanderZone\(scroll, halfWidth, narrow\)/);
+    // La prisa por salir de detrás del texto no se aplica mientras persigue al cursor.
+    expect(scene).toMatch(/chasing \? 1 : hurry\(strayFraction\(/);
+  });
+
   it('limita la densidad de píxeles', () => {
     expect(scene).toMatch(/setPixelRatio\(Math\.min\(Math\.max\(window\.devicePixelRatio, 1\.5\), 2\)\)/);
   });

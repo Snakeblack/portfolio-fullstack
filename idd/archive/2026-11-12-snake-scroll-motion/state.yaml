@@ -1,0 +1,181 @@
+{
+  "schema": "idd-state/v1",
+  "change": "snake-scroll-motion",
+  "mode": "idd",
+  "status": "closed",
+  "intent": {
+    "request": "lo unico que no me convence es el desplazamiento de la serpiente al hacer scroll, no queda bien",
+    "kind": "bug",
+    "summary": "Al bajar del hero a la introducción la serpiente ya no se traslada en bloque pegada al scroll: se mueve la zona por la que deambula y la serpiente nada hasta ella, con el cuerpo siguiendo su rastro",
+    "acceptance": "En escritorio, al hacer scroll hasta la introducción ninguna parte de la escena se desliza de lado: la cabeza gira y nada hacia la derecha, el cuerpo la sigue por su rastro y deja libre la columna de texto en unos dos segundos; en móvil sigue desvaneciéndose y con movimiento reducido sigue quieta"
+  },
+  "facts": {
+    "basis": "El usuario eligió la opción 1 tal como se le describió (se mueve la zona, la cabeza va hacia allí y el cuerpo sigue su rastro, cruzando un momento por detrás del texto); móvil, cursor y movimiento reducido no cambian"
+  },
+  "plan": {
+    "paths": [
+      "src/__tests__/WebGLBackground.test.ts",
+      "src/__tests__/trail.test.ts",
+      "src/scene/snake.ts",
+      "src/scene/trail.ts"
+    ],
+    "work_units": 1,
+    "decision": true,
+    "operations": [],
+    "decisions": [
+      "El grupo que desplazaba la serpiente entera con el scroll desaparece. Con el scroll se mueve el centro de la zona por la que deambula (src/scene/trail.ts, wanderZone) y la cabeza nada hasta allí.",
+      "Mientras parte del cuerpo queda a la izquierda de su zona, la simulación avanza más deprisa (hasta 5 veces) y vuelve a su ritmo según el cuerpo entra: a la velocidad de paseo el cuerpo, que mide 19 unidades, tardaría unos 10 segundos en salir de detrás del texto. No se acelera mientras persigue al cursor."
+    ]
+  },
+  "signals": [
+    {
+      "id": "always",
+      "reason": "every change with a resolved intent",
+      "source": "declaration"
+    },
+    {
+      "id": "bug-fix",
+      "reason": "the intent is a bug fix",
+      "source": "declaration"
+    },
+    {
+      "id": "multi-unit-or-decision",
+      "reason": "declared a non-obvious decision",
+      "source": "declaration"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "checks-pass",
+      "signal": "always",
+      "status": "satisfied",
+      "evidence": [
+        "ev-2"
+      ]
+    },
+    {
+      "id": "repro-test",
+      "signal": "bug-fix",
+      "status": "satisfied",
+      "evidence": [
+        "ev-1"
+      ]
+    },
+    {
+      "id": "living-doc",
+      "signal": "multi-unit-or-decision",
+      "status": "satisfied",
+      "evidence": [
+        "ev-3"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "ambiguous-intent",
+      "status": "resolved",
+      "opened_turn": 15,
+      "answer": "la 1, que nade hasta la derecha",
+      "source": "user",
+      "resolved_turn": 16
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-1",
+      "kind": "repro-run-pair",
+      "obligation": "repro-test",
+      "recorded_at": "2026-11-12T22:38:34.923Z",
+      "detail": {
+        "red": "run-1",
+        "green": "run-2",
+        "counterproof": [
+          "run-3",
+          "run-4"
+        ]
+      }
+    },
+    {
+      "id": "ev-2",
+      "kind": "check-run",
+      "obligation": "checks-pass",
+      "recorded_at": "2026-11-12T22:41:00.837Z",
+      "detail": {
+        "tree": "sha256:9c927c8a5870932e4e81bbcb2174336a2a27fdd93b3b8b8bf637ab6f0fa6a1bd",
+        "runs": [
+          "run-5"
+        ]
+      }
+    },
+    {
+      "id": "ev-3",
+      "kind": "living-doc-current",
+      "obligation": "living-doc",
+      "recorded_at": "2026-11-12T22:41:00.923Z"
+    }
+  ],
+  "base": "71c51c3798795693a69af7a3081c7964cc78c9e7",
+  "runs": [
+    {
+      "id": "run-1",
+      "purpose": "repro-test",
+      "command": "pnpm exec vitest run src/__tests__/trail.test.ts src/__tests__/WebGLBackground.test.ts",
+      "exit_code": 1,
+      "output_sha256": "sha256:7a3507e8e86753e334a30563b5621b22dbbd36e4bacab9ac492daa54bdbe6631",
+      "tree": "sha256:1138fd910ff2c4c99f85dda03cb39ac9042be649fee1ef6f9bdf03de61e9015e",
+      "recorded_at": "2026-11-12T22:38:08.339Z"
+    },
+    {
+      "id": "run-2",
+      "purpose": "repro-test",
+      "command": "pnpm exec vitest run src/__tests__/trail.test.ts src/__tests__/WebGLBackground.test.ts",
+      "exit_code": 0,
+      "output_sha256": "sha256:6fb7021151f7908eceb8f406a156138463f061059e5f881760ea7e776ac7525b",
+      "tree": "sha256:82eed1c9c4b35f59887a7705176ec036bd443bef980010c1a5ebfba600b310b8",
+      "recorded_at": "2026-11-12T22:38:34.923Z",
+      "counterproof": [
+        "run-3",
+        "run-4"
+      ]
+    },
+    {
+      "id": "run-3",
+      "purpose": "counterproof",
+      "obligation": "repro-test",
+      "base": "71c51c3798795693a69af7a3081c7964cc78c9e7",
+      "mount": "sha256:c41c126249637228cc06ac86e478ac61a0749dd1aa298970325e0b733c7baf09",
+      "command": "pnpm exec vitest run src/__tests__/trail.test.ts src/__tests__/WebGLBackground.test.ts",
+      "exit_code": 1,
+      "output_sha256": "sha256:97668b054a798caabee3978a50db6d9337ace5ae3b4239c5fb2c87ddb4e1f0c1",
+      "tree": "sha256:82eed1c9c4b35f59887a7705176ec036bd443bef980010c1a5ebfba600b310b8",
+      "recorded_at": "2026-11-12T22:38:34.923Z"
+    },
+    {
+      "id": "run-4",
+      "purpose": "counterproof",
+      "obligation": "repro-test",
+      "base": "71c51c3798795693a69af7a3081c7964cc78c9e7",
+      "mount": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "control": true,
+      "command": "pnpm exec vitest run src/__tests__/trail.test.ts src/__tests__/WebGLBackground.test.ts",
+      "exit_code": 0,
+      "output_sha256": "sha256:4636766304c6feffb79d0cb38d128b69664ad8e9d22c4cefe0871d260d0b9a12",
+      "tree": "sha256:82eed1c9c4b35f59887a7705176ec036bd443bef980010c1a5ebfba600b310b8",
+      "recorded_at": "2026-11-12T22:38:34.923Z"
+    },
+    {
+      "id": "run-5",
+      "purpose": "checks",
+      "name": "test",
+      "command": "pnpm test:run",
+      "exit_code": 0,
+      "output_sha256": "sha256:4a59417c655935720bb8c620a1599c3ad860c62d04a184e960253e655aaa5f38",
+      "tree": "sha256:9c927c8a5870932e4e81bbcb2174336a2a27fdd93b3b8b8bf637ab6f0fa6a1bd",
+      "recorded_at": "2026-11-12T22:41:00.837Z"
+    }
+  ],
+  "assumptions": [
+    "Medido en Chromium a unos 52 fps con un salto de scroll instantáneo y cuatro posiciones de partida: el cuerpo sale de la columna de texto en 1,4 a 2,5 s y no vuelve a pisarla. La prisa (hasta 5 veces, máxima con un cuarto del cuerpo fuera) es un valor elegido para acercarse a lo que se le describió al usuario, que no lo ha visto aún en movimiento."
+  ],
+  "closed_at": "2026-11-12T22:41:00.923Z"
+}

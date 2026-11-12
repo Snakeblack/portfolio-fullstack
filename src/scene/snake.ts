@@ -6,7 +6,6 @@ import {
   Color,
   DoubleSide,
   DynamicDrawUsage,
-  Group,
   LinearMipmapLinearFilter,
   Mesh,
   MeshBasicMaterial,
@@ -18,7 +17,7 @@ import {
   SRGBColorSpace,
   WebGLRenderer,
 } from 'three';
-import { bodyRadius, resampleTrail, steerAngle } from './trail';
+import { bodyRadius, hurry, resampleTrail, steerAngle, strayFraction, wanderZone } from './trail';
 
 /** Alto visible del mundo en z = 0, en unidades de escena. */
 const VIEW_HEIGHT = 10;
@@ -31,6 +30,9 @@ const POINTER_MEMORY_MS = 2600;
 const TAU = Math.PI * 2;
 /** Anillo del cuerpo, contado desde el hocico, a cuya altura van los ojos. */
 const EYE_RING = 6;
+
+/** Cuánto puede salirse el cuerpo por la izquierda de su zona sin que se considere fuera de ella. */
+const STRAY_SLACK = 1.5;
 
 /** Largo de cuerpo, en radios, que cubre una repetición de la textura de tinta. */
 const BRUSH_TILE = 16;
@@ -56,9 +58,6 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   renderer.outputColorSpace = SRGBColorSpace;
 
   const scene = new Scene();
-  // Todo lo que forma la serpiente cuelga de aquí, para poder apartarla entera con el scroll.
-  const rig = new Group();
-  scene.add(rig);
   const band = stage.querySelector<HTMLElement>('.hero__band');
   const nav = stage.querySelector<HTMLElement>('.nav');
   const camera = new PerspectiveCamera(FOV, 1, 0.1, 100);
@@ -111,18 +110,18 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   // trazo pasa sobre sí mismo deja un filo oscuro que separa las dos pasadas.
   const halo = new Mesh(geometry, groundHull(0.045));
   halo.frustumCulled = false;
-  rig.add(halo, body);
+  scene.add(halo, body);
 
   const eyeGeometry = new SphereGeometry(1, 20, 14);
   const eyeMaterial = new MeshBasicMaterial({ color: CRIMSON, toneMapped: false });
   const eyes = [0, 1].map(() => {
     const eye = new Mesh(eyeGeometry, eyeMaterial);
-    rig.add(eye);
+    scene.add(eye);
     return eye;
   });
 
   const tongue = new Mesh(tongueGeometry(), new MeshBasicMaterial({ color: CRIMSON, side: DoubleSide, toneMapped: false }));
-  rig.add(tongue);
+  scene.add(tongue);
 
   // ── Estado ──
   const trail = new Float32Array(MAX_TRAIL_POINTS * 3);
@@ -207,13 +206,12 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   /** El punto al que va la cabeza cuando nadie mueve el cursor: recorre una curva cerrada por la vista. */
   function wander(dt: number): [number, number] {
     // La zona: en el hero, la franja libre entre la navegación y el nombre, para no pasar nunca
-    // por detrás del texto; después, toda la altura (y `rig` la aparta de la columna de texto).
+    // por detrás del texto; después, toda la altura de la mitad derecha, lejos de la columna de texto.
     const top = heroTop + (4.4 - heroTop) * scroll;
     const bottom = heroBottom + (-4.4 - heroBottom) * scroll;
     const reach = radius + 0.75; // lo que el cuerpo se sale del punto que persigue al girar
-    const centreX = 0;
+    const { centre: centreX, span: spanX } = wanderZone(scroll, halfWidth, narrow);
     const centreY = (top + bottom) / 2;
-    const spanX = halfWidth * (narrow ? 0.62 : 0.8 - 0.4 * scroll);
     const spanY = Math.max((top - bottom) / 2 - reach, 0.5);
 
     // La fase avanza a velocidad constante sobre la curva, para que el punto no se pare en los
@@ -314,9 +312,8 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   function measureScroll(): void {
     const top = stageOffset - window.scrollY;
     scroll = Math.min(Math.max(-top / Math.max(viewHeight, 1), 0), 1);
-    // Al bajar a la introducción la serpiente se aparta a la derecha, al ritmo del scroll, y deja
-    // libre la columna de texto. En pantallas estrechas no hay sitio al lado: se desvanece.
-    rig.position.x = narrow ? 0 : halfWidth * 0.55 * scroll;
+    // Al bajar a la introducción la zona de la serpiente se va a la derecha (wanderZone) y ella
+    // nada hasta allí. En pantallas estrechas no hay sitio al lado: se desvanece.
     const opacity = narrow ? String(1 - 0.9 * scroll) : '';
     if (opacity !== shownOpacity) {
       shownOpacity = opacity;
@@ -326,8 +323,8 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
 
   // ── Arranque: la serpiente llega ya extendida, no crece desde un punto ──
   resize();
-  for (let i = 0; i < 1500; i++) step(1 / 60, 0);
   measureScroll();
+  for (let i = 0; i < 1500; i++) step(1 / 60, 0);
   rebuild();
   renderer.render(scene, camera);
   canvas.dataset.ready = '';
@@ -347,7 +344,7 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
       if (event.pointerType === 'touch') return;
       const rect = canvas.getBoundingClientRect();
       if (event.clientY < rect.top || event.clientY > rect.bottom) return;
-      pointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2 * halfWidth - rig.position.x;
+      pointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2 * halfWidth;
       pointer.y = (0.5 - (event.clientY - rect.top) / rect.height) * VIEW_HEIGHT;
       pointer.at = performance.now();
     },
@@ -355,6 +352,7 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
   );
 
   let visible = true;
+  let pace = 1;
   let frame = 0;
   let last = performance.now();
 
@@ -364,7 +362,16 @@ export function mountSnake(canvas: HTMLCanvasElement): void {
     const dt = Math.min(Math.max((now - last) / 1000, 0), 0.05);
     last = now;
     measureScroll();
-    step(dt, now);
+
+    // Si el scroll ha dejado parte del cuerpo a la izquierda de su zona, detrás del texto, la
+    // serpiente se da prisa: la simulación avanza más deprisa y vuelve a su ritmo según entra.
+    const zone = wanderZone(scroll, halfWidth, narrow);
+    const chasing = now - pointer.at < POINTER_MEMORY_MS;
+    const wanted = chasing ? 1 : hurry(strayFraction(centres, RINGS, zone.centre - zone.span - STRAY_SLACK));
+    pace += (wanted - pace) * Math.min(dt * 6, 1);
+    const steps = Math.ceil(pace);
+    for (let i = 0; i < steps; i++) step((dt * pace) / steps, now);
+
     rebuild();
     renderer.render(scene, camera);
     frame = requestAnimationFrame(loop);
