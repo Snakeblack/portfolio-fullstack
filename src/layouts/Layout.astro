@@ -149,16 +149,6 @@ const structuredData = {
 		<meta name="twitter:image:alt" content={t.meta.imageAlt} />
 
 		{!noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
-		<script>
-			import { gsap } from 'gsap';
-			import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-			gsap.registerPlugin(ScrollTrigger);
-			ScrollTrigger.config({
-				autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize',
-				ignoreMobileResize: true,
-			});
-		</script>
 	</head>
 	<body>
 		<slot />

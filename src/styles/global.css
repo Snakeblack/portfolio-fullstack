@@ -1157,5 +1157,5 @@ html:not(.js) .touches {
 
 }
 
-/* Estado inicial de las entradas: solo lo pone el script (GSAP), nunca el CSS, para que
+/* Estado inicial de las entradas: solo lo pone el script (src/utils/reveal.ts), nunca el CSS, para que
    el contenido se vea aunque el script falle o no haya JavaScript. */

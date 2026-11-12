@@ -2,100 +2,24 @@
 ---
 
 <script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
   import { initSmoothAnchors } from "../utils/scrollUtils";
+  import { initReveal } from "../utils/reveal";
 
-  gsap.registerPlugin(ScrollTrigger);
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const reveal = initReveal(document, motion.matches);
 
-  const SHOWN = { opacity: 1, y: 0, yPercent: 0, scale: 1, clipPath: 'inset(0% 0% 0% 0%)' };
+  // Si se pide movimiento reducido con la página abierta, lo que quede oculto se muestra ya.
+  motion.addEventListener('change', () => {
+    if (motion.matches) reveal.destroy();
+  });
 
-  // Cada tipo de pieza entra a su manera: el texto sube, los titulares de cartel salen de una
-  // máscara y las imágenes se abren como un obturador.
-  function initScrollAnimations() {
-    const media = gsap.matchMedia();
-
-    media.add('(prefers-reduced-motion: reduce)', () => {
-      // El estado final ya es el que hay en el HTML: nada que ocultar ni que mover.
-    });
-
-    media.add('(prefers-reduced-motion: no-preference)', () => {
-      const rises = gsap.utils.toArray<HTMLElement>('[data-reveal=""]');
-      const lines = gsap.utils.toArray<HTMLElement>('[data-reveal="line"]');
-      const words = (line: HTMLElement) => line.querySelectorAll(':scope > span');
-      const shutters = gsap.utils.toArray<HTMLElement>('[data-reveal="shutter"]');
-
-      gsap.set(rises, { opacity: 0, y: 24 });
-      lines.forEach((line) => gsap.set(words(line), { yPercent: 112 }));
-      gsap.set(shutters, { clipPath: 'inset(0% 0% 100% 0%)' });
-      shutters.forEach((shutter) => gsap.set(shutter.querySelectorAll('img'), { scale: 1.1 }));
-
-      ScrollTrigger.batch(rises, {
-        start: 'top 88%',
-        once: true,
-        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07, overwrite: 'auto' }),
-      });
-
-      // El disparador es la máscara, que no se mueve; lo que sube son las palabras de dentro.
-      ScrollTrigger.batch(lines, {
-        start: 'top 94%',
-        once: true,
-        onEnter: (batch) => {
-          const rising = batch.flatMap((line) => Array.from(words(line as HTMLElement)));
-          gsap.to(rising, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.09, overwrite: 'auto' });
-        },
-      });
-
-      ScrollTrigger.batch(shutters, {
-        start: 'top 90%',
-        once: true,
-        onEnter: (batch) => {
-          gsap.to(batch, { clipPath: SHOWN.clipPath, duration: 1.1, ease: 'power3.inOut', stagger: 0.08, overwrite: 'auto' });
-          batch.forEach((shutter, index) => {
-            gsap.to(shutter.querySelectorAll('img'), { scale: 1, duration: 1.5, ease: 'power2.out', delay: index * 0.08, clearProps: 'transform' });
-          });
-        },
-      });
-    });
-
-    ScrollTrigger.sort();
-    ScrollTrigger.refresh();
-
-    return () => {
-      media.revert();
-    };
-  }
-
-  let cleanupScrollAnimations = () => {};
-  let cleanupAnchors = () => {};
+  initSmoothAnchors();
 
   // Al saltar a un ancla, lo que haya en esa sección se muestra ya, sin esperar al scroll.
   function revealAnchorTarget(target?: HTMLElement | null) {
     const resolvedTarget = target ?? (window.location.hash ? document.querySelector<HTMLElement>(window.location.hash) : null);
-    if (!resolvedTarget) {
-      return;
-    }
-
-    const revealTargets = Array.from(
-      resolvedTarget.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal="line"] > span, [data-reveal="shutter"] img')
-    );
-
-    revealTargets.forEach((node) => {
-      gsap.to(node, { ...SHOWN, duration: 0.35, ease: 'power1.out', overwrite: 'auto' });
-    });
+    if (resolvedTarget) reveal.showWithin(resolvedTarget);
   }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    cleanupAnchors();
-    cleanupScrollAnimations();
-
-    cleanupAnchors = initSmoothAnchors();
-    cleanupScrollAnimations = initScrollAnimations();
-  });
-
-  window.addEventListener('load', () => {
-    ScrollTrigger.refresh();
-  });
 
   window.addEventListener('hashchange', () => {
     window.setTimeout(revealAnchorTarget, 50);

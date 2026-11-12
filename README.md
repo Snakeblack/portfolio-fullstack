@@ -1,6 +1,6 @@
 # Portfolio de Michael Retamozo
 
-Portfolio personal en [mretamozo.com](https://mretamozo.com), en español y en inglés. Es un sitio estático hecho con [Astro](https://astro.build), con una escena de [Three.js](https://threejs.org) en la cabecera y animaciones de entrada con [GSAP](https://gsap.com).
+Portfolio personal en [mretamozo.com](https://mretamozo.com), en español y en inglés. Es un sitio estático hecho con [Astro](https://astro.build), con una escena de [Three.js](https://threejs.org) en la cabecera. Las animaciones de entrada no usan librería: son un `IntersectionObserver` y la Web Animations API.
 
 ## Qué tiene
 
@@ -36,7 +36,7 @@ El proyecto usa pnpm y necesita Node.js 22 o superior.
 │   ├── pages/                # `/` y `/en/`
 │   ├── scene/                # La serpiente: geometría del rastro y escena de Three.js
 │   ├── styles/global.css     # Tokens de color y tipografía, y todo el diseño
-│   ├── utils/                # Traducciones y lógica pequeña con tests
+│   ├── utils/                # Traducciones, entradas al hacer scroll y lógica pequeña con tests
 │   └── __tests__/            # Tests de Vitest
 ├── tests/e2e/                # Tests de Playwright
 └── idd/                      # Cambios hechos con ospec-workflow

@@ -1,5 +1,5 @@
 import { beforeAll, describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { execSync } from 'child_process';
 
@@ -230,6 +230,22 @@ describe('Astro 6 build', () => {
       expect(entry).toContain('hreflang="en" href="https://mretamozo.com/en/projects/noema/"');
       expect(sitemap).not.toContain('/en/proyectos/');
       expect(sitemap).not.toMatch(/mretamozo\.com\/projects\//);
+    });
+  });
+
+  describe('rendimiento', () => {
+    const assets = () => readdirSync(resolve(DIST_DIR, '_astro'));
+
+    it('no envía ninguna librería de animación y Three.js solo se carga aparte', () => {
+      const scripts = assets().filter((file) => file.endsWith('.js'));
+      const eager = [...es.matchAll(/<script[^>]+src="\/_astro\/([^"]+)"/g)].map((match) => match[1]);
+      for (const file of scripts) {
+        const source = readFileSync(resolve(DIST_DIR, '_astro', file), 'utf-8');
+        expect(source).not.toMatch(/ScrollTrigger|gsap/i);
+        if (eager.includes(file)) expect(source.length).toBeLessThan(8_000);
+      }
+      expect(scripts.some((file) => file.startsWith('snake.'))).toBe(true);
+      expect(eager.some((file) => file.startsWith('snake.'))).toBe(false);
     });
   });
 
